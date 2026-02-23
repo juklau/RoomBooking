@@ -43,7 +43,6 @@ class Coordinator
     public function setUser(User $user): static
     {
         $this->user = $user;
-
         return $this;
     }
 
@@ -60,14 +59,12 @@ class Coordinator
         if (!$this->classes->contains($class)) {
             $this->classes->add($class);
         }
-
         return $this;
     }
 
     public function removeClass(Classe $class): static
     {
         $this->classes->removeElement($class);
-
         return $this;
     }
 }
