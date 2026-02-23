@@ -1,0 +1,32 @@
+
+.env
+###> symfony/framework-bundle ###
+/.env.local
+/.env.local.php
+/.env.*.local
+/config/secrets/prod/prod.decrypt.private.php
+/public/bundles/
+/var/
+/vendor/
+###< symfony/framework-bundle ###
+
+###> Docker ###
+/docker/
+docker-compose.override.yml
+###< Docker ###
+
+###> Base de données ###
+/sql/*.backup.sql
+###< Base de données ###
+
+###> IDE ###
+/.idea/
+/.vscode/
+*.swp
+*.swo
+###< IDE ###
+
+###> OS ###
+.DS_Store
+Thumbs.db
+###< OS ###

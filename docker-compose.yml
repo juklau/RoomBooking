@@ -1,0 +1,132 @@
+
+# ============================================================
+#  RoomBooking — Docker Compose
+#  Stack : PHP 8.3-FPM + Nginx + MySQL 8 + phpMyAdmin
+# ============================================================
+
+services:
+
+  # ------------------------------------------------------------
+  # Service Web PHP-FPM (Symfony)
+  # ------------------------------------------------------------
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: roombooking-web
+    volumes:
+      # Montage précis du projet Symfony
+      - ./public:/var/www/html/public
+      - ./src:/var/www/html/src
+      - ./config:/var/www/html/config
+      - ./templates:/var/www/html/templates
+      - ./migrations:/var/www/html/migrations
+      # - ./vendor:/var/www/html/vendor => enlevé car il est généré à l'intérieur du conteneur => si je laisse, il va être écrasé!!
+      - ./docker/php/php.ini:/usr/local/etc/php/conf.d/custom.ini
+
+      # Fichiers Symfony racine nécessaires
+      # - ./composer.json:/var/www/html/composer.json => généré par Composer dans le conteneur
+      # - ./composer.lock:/var/www/html/composer.lock => généré par Composer dans le conteneur
+      - ./.env:/var/www/html/.env
+      # - ./symfony.lock:/var/www/html/symfony.lock => généré par Composer dans le conteneur
+    env_file:
+      - ./.env
+    environment:
+      APP_ENV: dev
+      APP_SECRET: ${APP_SECRET}
+      DATABASE_URL: "mysql://${DB_USER}:${DB_PASSWORD}@mysql:3306/${DB_NAME}?serverVersion=8.0&charset=utf8mb4"
+    depends_on:
+      mysql:
+        condition: service_healthy
+    networks:
+      - roombooking-network
+
+  # ------------------------------------------------------------
+  # Service Nginx (reverse proxy vers PHP-FPM)
+  # ------------------------------------------------------------
+  nginx:
+    image: nginx:1.25-alpine
+    container_name: roombooking-nginx
+    restart: unless-stopped
+    ports:
+      - "9084:80"   
+    volumes:
+      - ./public:/var/www/html/public
+      - ./docker/nginx/default.conf:/etc/nginx/conf.d/default.conf
+    depends_on:
+      - web
+    networks:
+      - roombooking-network
+
+  # ------------------------------------------------------------
+  # Service Base de Données MySQL 8
+  # ------------------------------------------------------------
+  mysql:
+    image: mysql:8.0
+    container_name: roombooking-db
+    # Pas de port exposé : phpMyAdmin communique via le réseau interne Docker
+    # Décommenter uniquement en dev si besoin d'un client SQL local :
+    # ports:
+    #   - "3306:3306"
+    env_file:
+      - ./.env
+    environment:
+      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${DB_NAME}       
+      MYSQL_USER: ${DB_USER}
+      MYSQL_PASSWORD: ${DB_PASSWORD}
+      TZ: Europe/Paris
+    command: >
+      --default-authentication-plugin=mysql_native_password
+      --character-set-server=utf8mb4
+      --collation-server=utf8mb4_unicode_ci
+    volumes:
+      # Persistance des données MySQL
+      - mysql-data:/var/lib/mysql
+      # Scripts SQL d'initialisation (commenté pour backup/restore)
+    
+      - ./sql:/docker-entrypoint-initdb.d:ro
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p${DB_ROOT_PASSWORD}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - roombooking-network
+
+  # ------------------------------------------------------------
+  # Service phpMyAdmin (développement uniquement)
+  # ------------------------------------------------------------
+  phpmyadmin:
+    image: phpmyadmin:latest
+    container_name: roombooking-phpmyadmin
+    restart: unless-stopped
+    ports:
+      - "8084:80"  
+    env_file:
+      - ./.env
+    environment:
+      PMA_HOST: mysql
+      PMA_PORT: 3306
+      PMA_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}
+      # Pour se connecter avec l'utilisateur applicatif :
+      # PMA_USER: ${DB_USER}
+      # PMA_PASSWORD: ${DB_PASSWORD}
+    depends_on:
+      - mysql
+    networks:
+      - roombooking-network
+
+# ------------------------------------------------------------
+# Volumes nommés pour la persistance
+# ------------------------------------------------------------
+volumes:
+  mysql-data:
+    # driver: local  (driver par défaut)
+
+# ------------------------------------------------------------
+# Réseau pour la communication inter-conteneurs
+# ------------------------------------------------------------
+networks:
+  roombooking-network:
+    driver: bridge
