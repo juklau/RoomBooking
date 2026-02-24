@@ -1,0 +1,204 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Dashboard Admin — RoomBooking{% endblock %}
+
+{% block stylesheets %}
+    <link rel="stylesheet" href="{{ asset('styles/admin.css')}}">
+{% endblock %}
+
+{% block body %}
+
+<div class="container-fluid px-4">
+
+   {# ---- Header ---- #}
+
+    <div class="dashboard-header">
+        <div class="d-flex align-items-center justify-content-between">
+            <div>
+                <div class="d-flex align-items-center gap-2 mb-1">
+                    <span class="badge-admin">Administrateur</span>
+                </div>
+                <h1>Bonjour, {{ app.user.firstname ?? app.user.userIdentifier }} 👋</h1>
+                {# date('d MMMM Y') #}
+                <p>Voici un aperçu global de RoomBooking {{ 'now'|date("m/d/Y","Europe/Paris") }}</p>
+            </div>
+        </div>
+    </div>
+
+    {# ---- Stats ---- #}
+
+    <div class="row g-3 mb-4">
+        <div class="col-6 col-md-4 col-lg-2">
+            <div class="stat-card text-center flex-column d-flex shadow">
+                <div class="stat-icon mx-auto" id="stat-icon-rooms" >🏫</div>
+                <div class="stat-value">{{ stats.rooms }}</div>
+                <div class="stat-label">Salles</div>
+            </div>
+        </div>
+
+        <div class="col-6 col-md-4 col-lg-2">
+            <div class="stat-card text-center flex-column d-flex shadow">
+                <div class="stat-icon mx-auto" id="stat-icon-classes">🎓</div>
+                <div class="stat-value">{{ stats.classes }}</div>
+                <div class="stat-label">Classes</div>
+            </div>
+        </div>
+
+        <div class="col-6 col-md-4 col-lg-2">
+            <div class="stat-card text-center flex-column d-flex shadow">
+                <div class="stat-icon mx-auto" id="stat-icon-students">👨‍🎓</div>
+                <div class="stat-value">{{ stats.students }}</div>
+                <div class="stat-label">Étudiants</div>
+            </div>
+        </div>
+
+        <div class="col-6 col-md-4 col-lg-2">
+            <div class="stat-card text-center flex-column d-flex shadow">
+                <div class="stat-icon mx-auto" id="stat-icon-coordinators">👨‍🏫</div>
+                <div class="stat-value">{{ stats.coordinators }}</div>
+                <div class="stat-label">Coordinateurs</div>
+            </div>
+        </div>
+
+        <div class="col-6 col-md-4 col-lg-2">
+            <div class="stat-card text-center flex-column d-flex shadow">
+                <div class="stat-icon mx-auto" id="stat-icon-reservations">📅</div>
+                <div class="stat-value">{{ stats.reservations }}</div>
+                <div class="stat-label">Réservations</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-4">
+
+        {# ---- Colonne gauche ---- #}
+        <div class="col-lg-8">
+
+            {# Prochaines réservations #}
+            <div class="mb-4">
+                <div class="section-title d-flex align-items-center">📅 Prochaines réservations</div>
+                <div class="reservations-table shadow">
+                    <table class="table table-borderless mb-0 text-center ">
+                        <thead>
+                            <tr>
+                                <th>Salle</th>
+                                <th>Utilisateur</th>
+                                <th>Début</th>
+                                <th>Fin</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% if upcomingReservations is empty %}
+                                <tr>
+                                    <td class="text-center text-muted py-4" colspan="4">
+                                        Aucun réservation à venir
+                                    </td>
+                                </tr>
+                            {% else %}
+                                {% for res in upcomingReservations %}
+                                    <tr>
+                                        <td>
+                                            <strong> {{ res.room.name }}</strong>
+                                        </td>
+                                        <td>
+                                            {{ res.user.firstname }} {{ res.user.lastname }}
+                                        </td>
+                                        <td>
+                                            {% set isToday = res.reservationStart|date('Y-m-d') == 'now'|date('Y-m-d') %}
+                                            <span class="status-dot {{ isToday ? 'status-today' : 'status-upcomint' }}"></span>
+                                            {{ res.reservationStart|date('d/m/Y H:i') }}
+                                        </td>
+                                        <td>{{ res.reservationEnd|date('d/m/Y H:i') }}</td>
+                                    </tr>
+                                {% endfor %}
+                            {% endif %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            {# Liste des salles #}
+            <div class="mb-4">
+                <div class="section-title d-flex align-items-center">🏫 Salles</div>
+                <div class="row g-3">
+                    {% for room in rooms %}
+                        <div class="col-md-6 ">
+                            <div class="room-card shadow">
+                                <div class="room-name">{{ room.name }}</div>
+                                <div class="room-capacity">
+                                    👥 {{ room.capacity }} places
+                                </div>
+                                {% if room.equipments is not empty %}
+                                    <div>
+                                        {% for equip in room.equipments %}
+                                            <span class="equipment-tag d-inline">{{ equip.name }}</span>
+                                        {% endfor %}
+                                    </div>
+                                {% else %}
+                                    <span class="equipment-tag d-inline">Aucun équipement</span>
+                                {% endif %}
+                            </div>
+                        </div>
+                    {% else %}
+                        <div class="col-12 text-muted">Aucune salle enregistrée.</div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+
+        {# ---- Colonne droite ---- #}
+        <div class="col-lg-4">
+
+            {# Actions rapides #}
+            <div class="mb-4">
+                <div class="section-title d-flex align-items-center">⚡ Actions rapides</div>
+                <div class="d-flex flex-column gap-2">
+                    <a href="#" class="action-btn text-decoration-none d-flex align-items-center">
+                        <span class="action-icon d-flex align-items-center justify-content-center" id="action-icon-rooms">🏫</span>
+                        Créer une salle
+                    </a>
+                    <a href="#" class="action-btn text-decoration-none d-flex align-items-center">
+                        <span class="action-ico d-flex align-items-center justify-content-centern" id="action-icon-students">👨‍🎓</span>
+                        Créer un étudiant
+                    </a>
+                    <a href="#" class="action-btn text-decoration-none d-flex align-items-center">
+                        <span class="action-icon d-flex align-items-center justify-content-center" id="action-icon-coordinators">👨‍🏫</span>
+                        Créer un coordinateur
+                    </a>
+                    <a href="#" class="action-btn text-decoration-none d-flex align-items-center">
+                        <span class="action-icon d-flex align-items-center justify-content-center" id="action-icon-classes">🎓</span>
+                        Créer une classe
+                    </a>
+                    <a href="#" class="action-btn text-decoration-none d-flex align-items-center">
+                        <span class="action-icon d-flex align-items-center justify-content-center" id="action-icon-reservations">📅</span>
+                        Réserver une salle
+                    </a>
+                </div>
+            </div>
+
+            {# Classes #}
+            <div class="mb-4">
+                <div class="section-title d-flex align-items-center">🎓 Classes</div>
+                <div class="d-flex flex-column gap-2">
+                    {% for classe in classes %}
+                        <div class="class-card d-flex align-items-center justify-content-between">
+                            <div>
+                                <div class="class-name">{{ classe.name }}</div>
+                                <div class="class-count">
+                                    {{ classe.students|length }} étudiant{{ classe.students|length > 1 ? 's' : '' }}
+                                </div>
+                            </div>
+
+                            <a href="#" class="btn btn-sm btn-outline-secondary" id="btn-details">Voir →</a>
+                        </div>
+                    {% else %}
+                        <p class="txt-muted small">Aucune classe enregistrée.</p>
+                    {% endfor %}
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+</div>
+{% endblock %}

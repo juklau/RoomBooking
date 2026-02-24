@@ -1,0 +1,47 @@
+{# templates/partials/form.html.twig #}
+
+{% macro input(name, label, value = null, options = []) %}
+
+    {% set type = options.type|default('text') %}
+    {% set id = options.id|default(name) %}
+    {% set class = options.class|default('') %}
+    {% set required = options.required|default(false) %}
+    {% set autocomplete = options.autocomplete|default(null) %}
+    {% set placeholder = options.placeholder|default(null) %}
+
+    <div class="mb-3 {{ class }}">
+        <label for="{{ id }}" class="form-label">{{ label }}</label>
+        <input
+            type="{{ type }}"
+            class="form-control"
+            id="{{ id }}"
+            name="{{ name }}"
+            value="{{ value ?? '' }}"
+            {% if required %}required{% endif %}
+            {% if autocomplete %}autocomplete="{{ autocomplete }}"{% endif %}
+            {% if placeholder %}placeholder="{{ placeholder }}"{% endif %}
+        >
+    </div>
+
+{% endmacro %}
+
+
+{% macro textarea(name, label, value = null, options = {}) %}
+    {% set id = options.id|default(name) %}
+    {% set class = options.class|default('') %}
+    {% set required = options.required|default(false) %}
+    {% set rows = options.rows|default(4) %}
+    {% set placeholder = options.placeholder|default(null) %}
+
+    <div class="mb-3 {{ class }}">
+        <label for="{{ id }}" class="form-label">{{ label }}</label>
+        <textarea
+            class="form-control"
+            id="{{ id }}"
+            name="{{ name }}"
+            rows="{{ rows }}"
+            {% if required %}required{% endif %}
+            {% if placeholder %}placeholder="{{ placeholder }}"{% endif %}
+        >{{ value ?? '' }}</textarea>
+    </div>
+{% endmacro %}

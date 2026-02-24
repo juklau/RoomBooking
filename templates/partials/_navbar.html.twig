@@ -1,0 +1,39 @@
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <div class="container">
+
+        <a class="navbar-brand fw-bold" href="{{ path('app_home') }}">
+           RoomBooking
+        </a>
+
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarMain">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse" id="navbarMain">
+
+            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                {# Exemple liens #}
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ path('app_home') }}">Accueil</a>
+                </li>
+            </ul>
+
+            <div class="d-flex align-items-center gap-2">
+                {% if app.user %}
+                    <span class="navbar-text text-white-50 me-5">
+                        {{ app.user.userIdentifier }}
+                    </span>
+
+                    <a class="btn btn-outline-light btn-sm" href="{{ path('app_logout') }}">
+                        Déconnexion
+                    </a>
+                {% else %}
+                    <a class="btn btn-outline-light btn-sm" href="{{ path('app_login') }}">
+                        Connexion
+                    </a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</nav>
+

@@ -1,0 +1,55 @@
+{% extends 'base.html.twig' %}
+
+{% import 'partials/form.html.twig' as form %}
+
+{% block title %}Connexion — RoomBooking{% endblock %}
+
+{% block body %}
+<div class="row justify-content-center mt-5">
+    <div class="col-12 col-md-6 col-lg-5 mt-5">
+
+        <div class="card shadow-lg border-0">
+            <div class="card-body p-4">
+                    
+                <h1 class="h4 fw-bold mb-4 text-center">Connexion</h1>
+                <p class="text-muted mb-4 text-center">Connectez-vous pour réserver une salle</p>
+
+                {% if error %}
+                    <div class="alert alert-danger">
+                        {{ error.messageKey|trans(error.messageData, 'security') }}
+                    </div>
+                {% endif %}
+
+                <form method="post" action="{{ path('app_login') }}">
+
+                    <div class="form-group">
+                        {{ form.input('email', 'Votre email', last_username, {
+                            type: 'email',
+                            required: true,
+                            autocomplete: 'email',
+                            attrs: { autofocus: 'autofocus' }
+                        }) }}
+                    </div>
+
+                    <div class="form-group">
+                        {{ form.input('password', 'Mot de passe', null, {
+                            type: 'password',
+                            required: true,
+                            autocomplete: 'current_password',
+                        })}}
+                    </div>
+                    
+
+                    <input type="hidden" name="_csrf_token" value="{{ csrf_token('authenticate') }}">
+
+                    <div class="form-group">
+                        <button type="submit" class="btn btn-primary w-100">Se connecter</button>
+                    
+                    </div>
+
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

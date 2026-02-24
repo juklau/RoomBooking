@@ -1,0 +1,265 @@
+
+body {
+    background-color: #cbcbcb;
+    color: #070707;
+}
+
+.dashboard-header {
+    padding: 2rem 0 1.5rem;
+    border-bottom: 1px solid #21262d;
+    margin-bottom: 2rem;
+}
+
+.dashboard-header h1 {
+    font-size: 1.6rem;
+    font-weight: 700;
+    color: #000000;
+    margin-bottom: 0.25rem;
+}
+
+.dashboard-header p {
+    color: #464b52;
+    font-size: 0.9rem;
+    margin: 0;
+}
+
+/* Badge admin */
+.badge-admin {
+    background: rgba(248, 81, 73, 0.3);
+    color: #f85149;
+    border: 1px solid rgba(248, 81, 73, 0.45);
+    border-radius: 20px;
+    padding: 0.25rem 0.75rem;
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+}
+
+/* Stat cards */
+.stat-card {
+    background: #5f6265;
+    border: 1px solid #21262d;
+    border-radius: 12px;
+    padding: 1.4rem 1.5rem;
+    transition: border-color 0.2s, transform 0.2s;
+}
+
+.stat-card:hover {
+    /* border: 1px solid #f85149; */
+    transform: translateY(-2px);
+}
+
+.stat-card .stat-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
+    font-size: 1.6rem;
+    margin-bottom: 1rem;
+}
+
+.stat-card .stat-value {
+    font-size: 2rem;
+    font-weight: 700;
+    color: #ffffff;
+    line-height: 1;
+    margin-bottom: 0.3rem;
+}
+
+.stat-card .stat-label {
+    font-size: 0.82rem;
+    color: #ffffff;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+}
+
+#stat-icon-rooms,
+#action-icon-rooms{
+    background: rgba(56,139,253,0.15); 
+    color: #388bfd;
+}
+
+#stat-icon-classes,
+#action-icon-classes{
+    background: rgba(63,185,80,0.15); 
+    color: #3fb950;
+}
+
+#stat-icon-students,
+#action-icon-students{
+    background: rgba(210,153,34,0.15); 
+    color: #d29922;
+}
+
+#stat-icon-coordinators,
+#action-icon-coordinators{
+    background: rgba(163,113,247,0.15); 
+    color: #a371f7;
+}
+
+#stat-icon-reservations,
+#action-icon-reservations{
+    background: rgba(248,81,73,0.15); 
+    color: #f85149;
+}
+
+
+/* Section titles */
+.section-title {
+    font-size: 1rem;
+    font-weight: 600;
+    color: #050505;
+    margin-bottom: 1rem;
+    gap: 0.5rem;
+}
+
+.section-title::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: #21262d;
+}
+
+/* Room cards */
+.room-card {
+    background: #5f6265;
+    border: 1px solid #21262d;
+    border-radius: 10px;
+    padding: 1.2rem;
+    height: 100%;
+    transition: border-color 0.2s;
+}
+
+.room-card:hover {
+    background: rgba(56,139,253,0.15); 
+}
+
+.room-card:hover .room-name,
+.room-card:hover .room-capacity{
+    color: #000000;
+}
+
+.room-card .room-name {
+    font-weight: 600;
+    font-size: 0.95rem;
+    color: #fcfdff;
+    margin-bottom: 0.4rem;
+}
+
+.room-card .room-capacity {
+    font-size: 0.8rem;
+    color: #fcfdff;
+    margin-bottom: 0.75rem;
+}
+
+.room-card .equipment-tag {
+    background: #21262d;
+    color: #fcfdff;
+    border-radius: 6px;
+    padding: 0.25rem 0.55rem;
+    font-size: 0.72rem;
+    margin: 0.1rem;
+}
+
+/* Class cards */
+.class-card {
+    background: #272d35;
+    border: 1px solid #21262d;
+    border-radius: 10px;
+    padding: 1.2rem;
+    transition: border-color 0.2s;
+}
+
+.class-card:hover { border-color: #388bfd; }
+
+.class-card .class-name {
+    font-weight: 600;
+    font-size: 0.92rem;
+    color: #e6edf3;
+}
+
+.class-card .class-count {
+    font-size: 0.78rem;
+    color: #adb0b4;
+    margin-top: 0.2rem;
+}
+
+#btn-details{
+    color: #adb0b4 !important;
+}
+
+/* Reservations table */
+.reservations-table {
+    background: #5f6265;
+    border: 1px solid rgba(248,81,73,0.15);
+    border-radius: 12px;
+    overflow: hidden;
+}
+
+.reservations-table table {
+    margin: 0;
+    color: #e6edf3;
+}
+
+.reservations-table thead th {
+    background: #5f6265;
+    border-color: #21262d;
+    color: #fcfdff;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    font-weight: 600;
+    padding: 0.85rem 1rem;
+}
+
+.reservations-table tbody td {
+    border-color: #21262d;
+    font-size: 0.87rem;
+    padding: 0.8rem 1rem;
+    vertical-align: middle;
+}
+
+.reservations-table tbody tr:hover td {
+    background: rgba(248,81,73,0.15);
+    color: #e6edf3;
+}
+
+/* Quick actions */
+.action-btn {
+    background: #272d35;
+    border: 1px solid #21262d;
+    border-radius: 10px;
+    padding: 1rem 1.2rem;
+    color: #e6edf3;
+    gap: 0.75rem;
+    font-size: 0.88rem;
+    font-weight: 500;
+    transition: all 0.2s;
+}
+
+.action-btn:hover {
+    background: #1c2128;
+    border-color: #388bfd;
+    color: #388bfd;
+    transform: translateY(-1px);
+}
+
+.action-btn .action-icon {
+    width: 36px;
+    height: 36px;
+    border-radius: 8px;
+    font-size: 1.5rem;
+    flex-shrink: 0;
+}
+
+/* Status dot */
+.status-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    display: inline-block;
+    margin-right: 6px;
+}
+
+.status-upcoming { background: #3fb950; }
+.status-today    { background: #f0883e; }
