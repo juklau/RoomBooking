@@ -1,0 +1,142 @@
+
+/* Student Dashboard CSS => accent couleur : bleu */
+
+
+/* badge étudiant */
+.badge-student {
+    background: rgba(76, 143, 220, 0.3);
+    color: #4078b7;
+    border: 1px solid rgba(88, 166, 255, 0.8);
+    border-radius: 20px;
+    padding: 0.25rem 0.75rem;
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+}
+
+/* badge classe */
+.badge-class {
+    background: rgba(210, 153, 34, 0.3);
+    color: #ad7f19;
+    border: 1px solid rgba(210, 153, 34, 0.65);
+    border-radius: 20px;
+    padding: 0.25rem 0.75rem;
+    font-size: 0.75rem;
+    font-weight: 500;
+}
+
+/* Stat icons spécifiques étudiant */
+#stat-icon-classmates {
+    background: rgba(88, 166, 255, 0.15);
+    color: #58a6ff;
+}
+
+#action-icon-reservations {
+    background: rgba(248, 81, 73, 0.15);
+    color: #f85149;
+}
+
+
+/* Room card avec bouton Réserver intégré */
+
+.room-card:hover {
+    border-color: #58a6ff;
+}
+
+/* Bouton accent étudiant */
+.btn-student {
+    background: rgba(88, 166, 255, 0.15);
+    color: #58a6ff;
+    border: 1px solid rgba(88, 166, 255, 0.3);
+    font-size: 0.78rem;
+    font-weight: 500;
+    white-space: nowrap;
+    transition: all 0.2s;
+}
+
+.btn-student:hover {
+    background: #58a6ff;
+    color: #0d1117;
+    border-color: #58a6ff;
+}
+
+/* Lien dans tableau vide */
+.link-student {
+    color: #58a6ff;
+    text-decoration: none;
+}
+
+.link-student:hover {
+    text-decoration: underline;
+}
+
+/* Action btn hover accent étudiant */
+.action-btn:hover {
+    border-color: #58a6ff;
+    color: #58a6ff;
+}
+
+/* Class block (repris de coordinator.css) */
+.class-block {
+    background: #2f3640;
+    border: 1px solid #21262d;
+    border-radius: 12px;
+    overflow: hidden;
+    transition: border-color 0.2s;
+}
+
+.class-block:hover { border-color: #58a6ff; }
+
+.class-block-header {
+    padding: 1rem 1.2rem;
+    border-bottom: 1px solid #21262d;
+}
+
+.class-block-name {
+    font-weight: 600;
+    font-size: 0.95rem;
+    color: #e6edf3;
+}
+
+.class-block-count {
+    font-size: 0.78rem;
+    color: #7d8590;
+}
+
+.class-block-students {
+    padding: 0.75rem 1.2rem 1rem;
+}
+
+/* Student row */
+.student-row {
+    background: #1c2128;
+    border: 1px solid #21262d;
+    border-radius: 8px;
+    padding: 0.6rem 0.9rem;
+    transition: border-color 0.2s;
+}
+
+.student-row:hover { border-color: #58a6ff; }
+
+.student-avatar {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: rgba(88, 166, 255, 0.15);
+    color: #58a6ff;
+    font-size: 0.72rem;
+    font-weight: 700;
+    flex-shrink: 0;
+}
+
+.student-name {
+    font-size: 0.85rem;
+    font-weight: 500;
+    color: #e6edf3;
+}
+
+.student-email {
+    font-size: 0.72rem;
+    color: #a9b1bc;
+}

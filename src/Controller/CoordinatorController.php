@@ -37,7 +37,7 @@ final class CoordinatorController extends AbstractController
             $totalStudents += count($classe->getStudents());
         }
 
-        //statistiques globales
+        //statistiques 
         $stats = [
             'my_classes'       => count($myClasses),
             'my_students'      => $totalStudents,
@@ -45,17 +45,17 @@ final class CoordinatorController extends AbstractController
             'reservations'     => $reservationRepo->countByUser($user),
         ];
 
-        //prochains réservations du coordinateur concernés 
+        //prochains réservations du coordinateur concerné
         $myReservations = $reservationRepo->findUpcomingByUser($user, 5);
 
         //toutes les salles
         $rooms = $roomRepo->findAll();
 
         return $this->render('coordinator/dashboard.html.twig', [
-            'stats' => $stats,
-            'myClasses' => $myClasses,
+            'stats'          => $stats,
+            'myClasses'      => $myClasses,
             'myReservations' => $myReservations,
-            'rooms' => $rooms,
+            'rooms'          => $rooms,
         ]);
 
     }

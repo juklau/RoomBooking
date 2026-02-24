@@ -1,4 +1,4 @@
-/* Admin Dashboard */
+/* Admin Dashboard CSS => accent couleur : rouge */
 
 body {
     background-color: #cbcbcb;
@@ -172,7 +172,9 @@ body {
     transition: border-color 0.2s;
 }
 
-.class-card:hover { border-color: #388bfd; }
+.class-card:hover { 
+    border-color: #f85149; 
+}
 
 .class-card .class-name {
     font-weight: 600;
@@ -237,8 +239,8 @@ body {
 
 .action-btn:hover {
     background: #1c2128;
-    border-color: #388bfd;
-    color: #388bfd;
+    border-color: #f85149;
+    color: #f85149;
     transform: translateY(-1px);
 }
 
