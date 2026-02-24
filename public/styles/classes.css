@@ -1,0 +1,167 @@
+/* RoomBooking — Admin Rooms CSS */
+
+.classe-card {
+    background: #5f6265;
+    border: 1px solid #21262d;
+    border-radius: 12px;
+    padding: 1.3rem;
+    height: 100%;
+    transition: border-color 0.2s, transform 0.2s;
+}
+
+.classe-card:hover {
+    border-color: #3fb950;
+    transform: translateY(-2px);
+}
+
+.classe-card-header { margin-bottom: 0.9rem; }
+
+.classe-card-name {
+    font-weight: 700;
+    font-size: 1rem;
+    color: #ffffff;
+    margin-bottom: 0.2rem;
+}
+
+.classe-card-count {
+    font-size: 0.8rem;
+    color: #e6edf3;
+}
+
+/* Badges actif / vide */
+.classe-badge {
+    border-radius: 20px;
+    padding: 0.15rem 0.65rem;
+    font-size: 0.7rem;
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+.classe-badge-active {
+    background: rgba(63, 185, 80, 0.4);
+    color: #1c5624;
+    border: 1px solid rgba(63, 185, 80, 0.65);
+}
+
+.classe-badge-empty {
+    background: rgba(125, 133, 144, 0.15);
+    color: #e6edf3;
+    border: 1px solid rgba(125, 133, 144, 0.3);
+}
+
+.btn-sm-action {
+    padding: 0.3rem 0.6rem;
+    font-size: 0.82rem;
+}
+
+
+/*-------------------------------- Aperçu étudiants dans la card liste -------------------------*/
+.classe-card-students {
+    margin-bottom: 0.9rem;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.3rem;
+}
+
+.student-chip {
+    background: #272d35;
+    color: #adb0b4;
+    border-radius: 20px;
+    padding: 0.15rem 0.6rem;
+    font-size: 0.72rem;
+}
+
+.student-chip-more {
+    background: rgba(63, 185, 80, 0.1);
+    color: #3fb950;
+    border-radius: 20px;
+    padding: 0.15rem 0.6rem;
+    font-size: 0.72rem;
+}
+
+.classe-card-actions {
+    border-top: 1px solid #21262d;
+    padding-top: 0.9rem;
+}
+
+.classe-card-actions .btn-action-secondary {
+    background: #272d35;
+    color: #e6edf3;
+    border: 1px solid #21262d;
+    border-radius: 8px;
+    padding: 0.45rem 0.9rem;
+    font-size: 0.82rem;
+    font-weight: 500;
+    transition: all 0.2s;
+}
+
+.classe-card-actions .btn-action-secondary:hover {
+    border-color: #3fb950;
+    color: #3fb950;
+}
+
+/* Bouton désactivé (suppression impossible car classe non vide) */
+.btn-action-disabled {
+    background: rgba(125, 133, 144, 0.08);
+    color: #4a5270;
+    /* color: #e6edf3; */
+    border: 1px solid rgba(125, 133, 144, 0.15);
+    border-radius: 8px;
+    padding: 0.45rem 0.7rem;
+    font-size: 0.85rem;
+    cursor: not-allowed;
+}
+
+/* --------------------------- Detail card + rooms.css => page show ------------------------- */
+.detail-count {
+    background: #272d35;
+    color: #7d8590;
+    border-radius: 20px;
+    padding: 0.1rem 0.6rem;
+    font-size: 0.75rem;
+}
+
+/* --------------------------------- Liste étudiants (page show) ---------------------------------- */
+.students-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    margin-top: 0.5rem;
+}
+
+.student-list-row {
+    background: #272d35;
+    border: 1px solid #21262d;
+    border-radius: 8px;
+    padding: 0.75rem 1rem;
+    transition: border-color 0.2s;
+}
+
+.student-list-row:hover { border-color: #3fb950; }
+
+.student-avatar-lg {
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    background: rgba(63, 185, 80, 0.15);
+    color: #3fb950;
+    font-size: 0.78rem;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.student-fullname {
+    font-size: 0.88rem;
+    font-weight: 600;
+    color: #e6edf3;
+}
+
+.student-email {
+    font-size: 0.75rem;
+    color: #b0b7c2;
+    margin-top: 0.1rem;
+}
+

@@ -9,7 +9,8 @@ use App\Repository\StudentRepository;
 use App\Repository\CoordinatorRepository;
 
 use App\Entity\Room;
-
+use App\Entity\Classe;
+use App\Form\ClasseType;
 use App\Form\RoomType;
 
 use Doctrine\ORM\EntityManagerInterface;
@@ -76,11 +77,8 @@ final class AdminController extends AbstractController
      * créer un room
     */
     #[Route('/rooms/new', name: 'app_admin_room_new')]
-    public function newRoom(
-        Request $request,
-        EntityManagerInterface $em
-    ):Response {
-
+    public function newRoom(Request $request, EntityManagerInterface $em):Response 
+    {
         $room = new Room();
 
         //créer un formulaire lié à l'entité Room
@@ -156,14 +154,7 @@ final class AdminController extends AbstractController
             'form' => $form,
             'room' => $room,
         ]);
-
-
-
-
     }
-
-
-
 
     /**
      * supprimer une salle
@@ -203,6 +194,131 @@ final class AdminController extends AbstractController
         return $this->redirectToRoute('app_admin_rooms');
 
     }
+
+     /************************************ Classes ********************************************/
+
+     /**
+     * lister les classes
+     */
+    #[Route('/classes', name: 'app_admin_classes')]
+    public function classes(ClasseRepository $classeRepo): Response
+    {
+        //récup toutes les classes
+        $classes = $classeRepo->findAll();
+
+        return $this->render('admin/classes/index.html.twig', [
+            'classes' => $classes,
+        ]);
+    }
+
+    /**
+     * créer une classe
+    */
+    #[Route('/classes/new', name: 'app_admin_classe_new')]
+    public function newClasse(Request $request,EntityManagerInterface $em):Response
+    {
+        $classe = new Classe();
+
+        //créer un formulaire lié à l'entité Classe
+        $form = $this->createForm(ClasseType::class, $classe);  //=> formulaire vide (null, null) => pas de $classe
+
+        // analyse la requête HTTP => POST (formulaire)
+        $form->handleRequest($request);
+
+        //si le formulaire est soumise et valide
+        if($form->isSubmitted() && $form->isValid()) {
+
+            //persister l'entité dans la BDD
+            $em->persist($classe);
+            $em->flush();
+
+            //message flush de confirmation
+            $this->addFlash('success', 'Classe "' . $classe->getName() . '" créée avec succès.');
+            
+            //redirection vers la détails de la classe créée
+            return $this->redirectToRoute('app_admin_classe_show', ['id' => $classe->getId()]);
+        }
+
+        return $this->render('admin/classes/new.html.twig', [
+            'form' => $form,
+        ]);
+    }
+
+    /**
+     * voir les détails d'une classe
+     */
+    #[Route('/classes/{id}', name: 'app_admin_classe_show', requirements: ['id' => '\d+'])]
+    public function classeShow(Classe $classe): Response
+    {
+        // Symfony injecte automatiquement l'objet Classe correspondant à l'id passé dans l'URL
+        // si l'id n'existe pas => 404 automatique
+
+        return $this->render('admin/classes/show.html.twig', [
+            'classe' => $classe,
+        ]);
+    }
+
+    /**
+     * Modifier le nom de la classe
+     */
+    #[Route('/classes/{id}/edit', name: 'app_admin_classe_edit', requirements: ['id' => '\d+'])]
+    public function classEdit(
+        Classe                 $classe,
+        Request                $request,
+        EntityManagerInterface $em
+    ): Response {
+
+        // u.a. ClasseType que la création => formulaire pré-rempli automatiquement
+        $form = $this->createForm(ClasseType::class, $classe);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+
+            // pas de persist()!! — Doctrine surveille déjà l'entité
+            $em->flush();
+            $this->addFlash('success', 'Classe "' . $classe->getName() . '" modifiée avec succès.');
+            return $this->redirectToRoute('app_admin_classe_show', ['id' => $classe->getId()]);
+        }
+
+        return $this->render('admin/classes/edit.html.twig', [
+            'form'   => $form,
+            'classe' => $classe,
+        ]);
+    }
+
+
+    /**
+     * supprimer une classe
+     */
+    #[Route('/classes/{id}/delete', name: 'app_admin_classe_delete', requirements: ['id' => '\d+'], methods: ['POST'])]
+    public function classeDelete(
+        Classe $classe,
+        Request $request,
+        EntityManagerInterface $em
+    ): Response {
+
+        //vérif le token CSRF => évite la suppression malveillant
+        if(!$this->isCsrfTokenValid('delete_classe_' . $classe->getId(), $request->request->get('_token'))){
+            $this->addFlash('error', 'Token invalide.');
+            return $this->redirectToRoute('app_admin_classes');
+        }
+
+        // règle métier => interdire la suppression si la classe a des étudiants
+        if (!$classe->getStudents()->isEmpty()) {
+            $this->addFlash('error', 'Impossible de supprimer "' . $classe->getName() . '" : elle contient encore des étudiants.');
+            return $this->redirectToRoute('app_admin_classe_show', ['id' => $classe->getId()]);
+        }
+
+        $name = $classe->getName();
+        $em->remove($classe);
+        $em->flush();
+
+        $this->addFlash('success', 'Classe"' . $name . '" supprimée avec succès.');
+        return $this->redirectToRoute('app_admin_classes');
+
+    }
+
+
 
 
 

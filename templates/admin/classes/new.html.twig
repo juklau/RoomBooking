@@ -1,10 +1,11 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Modifier {{ room.name }} — Admin RoomBooking{% endblock %}
+{% block title %}Créer une classe — Admin RoomBooking{% endblock %}
 
 {% block stylesheets %}
     <link rel="stylesheet" href="{{ asset('styles/admin.css') }}">
     <link rel="stylesheet" href="{{ asset('styles/rooms.css') }}">
+    <link rel="stylesheet" href="{{ asset('styles/classes.css') }}">
 {% endblock %}
 
 {% block body %}
@@ -20,17 +21,12 @@
                 <div class="d-flex align-items-center gap-2 mb-1">
                     <a href="{{ path('app_admin_dashboard') }}" class="breadcrumb-link">Dashboard</a>
                     <span class="breadcrumb-sep">›</span>
-
-                    <a href="{{ path('app_admin_rooms') }}" class="breadcrumb-link">Salles</a>
+                    <a href="{{ path('app_admin_classes') }}" class="breadcrumb-link">Classes</a>
                     <span class="breadcrumb-sep">›</span>
-
-                    <a href="{{ path('app_admin_room_show', {id: room.id}) }}" class="breadcrumb-link">{{ room.name }}</a>
-                    <span class="breadcrumb-sep">›</span>
-
-                    <span class="breadcrumb-current">Modifier</span>
+                    <span class="breadcrumb-current">Nouvelle classe</span>
                 </div>
-                <h1>Modifier {{ room.name }}</h1>
-                <p>Modifiez le nom et la capacité de la salle</p>
+                <h1>Créer une classe</h1>
+                <p>Remplissez le nom de la nouvelle promotion</p>
             </div>
         </div>
     </div>
@@ -40,36 +36,33 @@
         <div class="col-lg-6">
             <div class="form-card shadow">
 
-                 {{ form_start(form) }}
+                {{ form_start(form) }}
 
-                    {# Nom #}
                     <div class="form-field">
                         {{ form_label(form.name) }}
                         {{ form_widget(form.name) }}
                         {{ form_errors(form.name) }}
                     </div>
 
-                    {# Capacité #}
-                    <div class="form-field">
-                        {{ form_label(form.capacity) }}
-                        {{ form_widget(form.capacity) }}
-                        {{ form_errors(form.capacity) }}
-                    </div>
-
-                    {# Bouton #}
                     <div class="d-flex gap-2 mt-4">
-                            <button type="submit" class="btn-action-primary flex-fill text-center">
-                            ✓ Enregistrer les modifications
+                        <button type="submit" class="btn-action-primary flex-fill text-center">
+                            ✓ Créer la classe
                         </button>
-                        <a href="{{ path('app_admin_room_show', {id: room.id}) }}" class="btn-action-secondary flex-fill text-center d-inline text-decoration-none">
+                        <a href="{{ path('app_admin_classes') }}"
+                           class="btn-action-secondary flex-fill text-center text-decoration-none">
                             Annuler
                         </a>
                     </div>
 
                 {{ form_end(form) }}
-            <div>
-        <div>
-    <div>
 
-<div>
+            </div>
+
+            <div class="form-note mt-5">
+                 Les étudiants et coordinateurs pourront être ajoutés après la création.
+            </div>
+        </div>
+    </div>
+
+</div>
 {% endblock %}

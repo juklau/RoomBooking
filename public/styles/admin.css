@@ -5,7 +5,7 @@ body {
     color: #070707;
 }
 
-/* ---- Header ---- */
+/* --------------------------------------------------- Header ---------------------------------- */
 .dashboard-header {
     padding: 2rem 0 1.5rem;
     border-bottom: 1px solid #21262d;
@@ -25,7 +25,7 @@ body {
     margin: 0;
 }
 
-/* Badge admin */
+/*------------------------------- Badge admin ------------------------------------------------*/
 .badge-admin {
     background: rgba(248, 81, 73, 0.3);
     color: #d43f37;
@@ -38,7 +38,7 @@ body {
     text-transform: uppercase;
 }
 
-/* Stat cards */
+/* ------------------------------ Stat cards ------------------------------------------------------*/
 .stat-card {
     background: #5f6265;
     border: 1px solid #21262d;
@@ -106,7 +106,7 @@ body {
 }
 
 
-/* Section titles */
+/*---------------------------------------------- Section titles ----------------------------------------*/
 .section-title {
     font-size: 1rem;
     font-weight: 600;
@@ -122,7 +122,7 @@ body {
     background: #21262d;
 }
 
-/* Room cards */
+/*----------------------------------------- Room cards ------------------------------------*/
 .room-card {
     background: #5f6265;
     border: 1px solid #21262d;
@@ -163,7 +163,7 @@ body {
     margin: 0.1rem;
 }
 
-/* Class cards */
+/*------------------------------------------- Class cards ----------------------------------------*/
 .class-card {
     background: #272d35;
     border: 1px solid #21262d;
@@ -188,7 +188,7 @@ body {
     margin-top: 0.2rem;
 }
 
-/* Reservations table */
+/*------------------------------------------------- Reservations table -------------------------------*/
 .reservations-table {
     background: #5f6265;
     border: 1px solid rgba(248,81,73,0.15);
@@ -224,7 +224,7 @@ body {
     color: #e6edf3;
 }
 
-/* Quick actions */
+/*------------------------------------------------- Quick actions -----------------------------------*/
 .action-btn {
     background: #272d35;
     border: 1px solid #21262d;
@@ -252,7 +252,7 @@ body {
     flex-shrink: 0;
 }
 
-/* Status dot */
+/*------------------------------------------------ Status dot -------------------------------------*/
 .status-dot {
     width: 8px;
     height: 8px;
@@ -265,7 +265,7 @@ body {
 .status-today    { background: #f0883e; }
 
 
-/* ---- Bootstrap overrides ---- */
+/* ---- Bootstrap overrides  ???????????????? ---- */
 .btn-outline-secondary {
     --bs-btn-color: #7d8590;
     --bs-btn-border-color: #21262d;

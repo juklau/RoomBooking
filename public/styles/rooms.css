@@ -1,9 +1,7 @@
-
 /* RoomBooking — Admin Rooms CSS */
    
 
-
-/* ---- Breadcrumb ---- */
+/* -------------------------------------------- Breadcrumb ------------------------------------- */
 .breadcrumb-link {
     color: #4a5270;
     text-decoration: none;
@@ -25,11 +23,12 @@
     font-weight: 500;
 }
 
-/* ---- Boutons d'action ---- */
+
+/* ------------------------------------------ Boutons d'action ----------------------------------- */
 .btn-action-primary {
     background: rgba(248, 81, 73, 0.3);
     color: black;
-    border: 1px solid rgba(248, 81, 73, 0.65);
+    border: 1px solid rgba(248, 81, 73, 0.65); 
     border-radius: 8px;
     padding: 0.55rem 1.1rem;
     font-size: 0.85rem;
@@ -77,7 +76,8 @@
     color: #fff;
 }
 
-/* ---- Room card full (page liste) ---- */
+
+/* ------------------------------------- Room card full (page liste) --------------------------- */
 .room-card-full {
     background: #5f6265;
     border: 1px solid #21262d;
@@ -134,7 +134,8 @@
 
 .room-card-actions { border-top: 1px solid #21262d; padding-top: 0.9rem; }
 
-/* ---- Empty state ---- */
+
+/* --------------------------------------------- Empty state ----------------------------------- */
 .empty-state {
     text-align: center;
     padding: 4rem 2rem;
@@ -152,7 +153,7 @@
 }
 
 
-/* ---- Detail card ---- */
+/* ---------------------------------------- Detail card show pages------------------------------------- */
 .detail-card {
     background: #74777a;
     border: 1px solid #21262d;
@@ -228,7 +229,7 @@
 }
 
 
-/* ---- Formulaire ---- */
+/* ------------------------------------------ Formulaire ----------------------------------------- */
 .form-card {
     background: #7c8083;
     border: 1px solid #21262d;

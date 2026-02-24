@@ -8,14 +8,13 @@
 
 {% block body %}
 
-<div class="container-fluid px-4">
+<div class="container-fluid px-4 py-3 mt-3">
 
    {# ---- Header ---- #}
-
     <div class="dashboard-header">
         <div class="d-flex align-items-center justify-content-between">
             <div>
-                <div class="d-flex align-items-center gap-2 mb-1">
+                <div class="d-flex align-items-center gap-2 mb-2">
                     <span class="badge-admin">Administrateur</span>
                 </div>
                 <h1>Bonjour, {{ app.user.firstname ?? app.user.userIdentifier }} 👋</h1>
@@ -26,7 +25,6 @@
     </div> 
 
     {# ---- Stats ---- #}
-
     <div class="row g-3 mb-4">
         <div class="col-6 col-md-4 col-lg-2">
             <div class="stat-card text-center flex-column d-flex shadow">
@@ -157,9 +155,9 @@
             <div class="mb-4">
                 <div class="section-title d-flex align-items-center">⚡ Actions rapides</div>
                 <div class="d-flex flex-column gap-2">
-                    <a href="{{ path('app_admin_rooms') }}" class="action-btn text-decoration-none d-flex align-items-center">
+                    <a href="{{ path('app_admin_room_new') }}" class="action-btn text-decoration-none d-flex align-items-center">
                         <span class="action-icon d-flex align-items-center justify-content-center" id="action-icon-rooms">🏫</span>
-                        Gérer les salles
+                        Créer une salle
                     </a>
                     <a href="#" class="action-btn text-decoration-none d-flex align-items-center">
                         <span class="action-icon d-flex align-items-center justify-content-centern" id="action-icon-students">👨‍🎓</span>
@@ -169,7 +167,7 @@
                         <span class="action-icon d-flex align-items-center justify-content-center" id="action-icon-coordinators">👨‍🏫</span>
                         Créer un coordinateur
                     </a>
-                    <a href="#" class="action-btn text-decoration-none d-flex align-items-center">
+                    <a href="{{ path('app_admin_classe_new') }}" class="action-btn text-decoration-none d-flex align-items-center">
                         <span class="action-icon d-flex align-items-center justify-content-center" id="action-icon-classes">🎓</span>
                         Créer une classe
                     </a>
@@ -193,7 +191,7 @@
                                 </div>
                             </div>
 
-                            <a href="#" class="btn btn-sm btn-outline-secondary" id="btn-details">Voir →</a>
+                            <a href="{{ path('app_admin_classe_show', {id: classe.id}) }}" class="btn btn-sm btn-outline-secondary" id="btn-details">Voir →</a>
                         </div>
                     {% else %}
                         <p class="txt-muted small">Aucune classe enregistrée.</p>

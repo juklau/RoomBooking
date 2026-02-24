@@ -1,0 +1,139 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ classe.name }} — Admin RoomBooking{% endblock %}
+
+{% block stylesheets %}
+    <link rel="stylesheet" href="{{ asset('styles/admin.css') }}">
+    <link rel="stylesheet" href="{{ asset('styles/rooms.css') }}">
+    <link rel="stylesheet" href="{{ asset('styles/classes.css') }}">
+{% endblock %}
+
+{% block body %}
+<div class="container-fluid px-4 py-3 mt-3">
+
+    {# ---- Header ---- #}
+    <div class="dashboard-header">
+        <div class="d-flex align-items-center justify-content-between">
+            <div>
+                <div class="d-flex align-items-center gap-2 mb-2">
+                    <span class="badge-admin">Administrateur</span>
+                </div>
+                <div class="d-flex align-items-center gap-2 mb-1">
+                    <a href="{{ path('app_admin_dashboard') }}" class="breadcrumb-link">Dashboard</a>
+                    <span class="breadcrumb-sep">›</span>
+                    <a href="{{ path('app_admin_classes') }}" class="breadcrumb-link">Classes</a>
+                    <span class="breadcrumb-sep">›</span>
+                    <span class="breadcrumb-current">{{ classe.name }}</span>
+                </div>
+                <h1>{{ classe.name }}</h1>
+                <p>{{ classe.students|length }} étudiant{{ classe.students|length > 1 ? 's' : '' }}</p>
+            </div>
+            <div class="d-flex gap-2">
+
+                {# Tâche 9 : ajouter un étudiant à cette classe #}
+                <a href="#" class="btn-action-primary text-decoration-none d-inline">+ Ajouter un étudiant</a>
+                
+                {# Tâche 8+1 => modifier le nom de la classe #}
+                <a href="{{ path('app_admin_classe_edit', {id: classe.id}) }}" class="btn-action-primary text-decoration-none d-inline">Modifier</a>
+
+                {# Tâche 8 : supprimer la classe (seulement si vide) #}
+                {{ include('partials/_delete_classe.html.twig', { classe: classe }) }}
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-4">
+
+        {# ---- infos principales ---- #}
+        <div class="col-lg-4">
+            <div class="detail-card shadow">
+                <div class="detail-card-title">📋 Informations</div>
+
+                <div class="detail-row">
+                    <span class="detail-label">Nom</span>
+                    <span class="detail-value">{{ classe.name }}</span>
+                </div>
+
+                <div class="detail-row">
+                    <span class="detail-label">Nombre d'étudiants</span>
+                    <span class="detail-value">{{ classe.students|length }}</span>
+                </div>
+
+                <div class="detail-row">
+                    <span class="detail-label">Coordinateurs</span>
+                    <span class="detail-value">{{ classe.coordinators is defined ? classe.coordinators|length : 0 }}</span>
+                </div>
+
+                <div class="detail-row">
+                    <span class="detail-label">Statut</span>
+                    <span class="detail-value">
+                        {% if classe.students is empty %}
+                            <span class="classe-badge classe-badge-empty">Vide</span>
+                        {% else %}
+                            <span class="classe-badge classe-badge-active">Active</span>
+                        {% endif %}
+                    </span>
+                </div>
+            </div>
+        </div>
+
+        {# ---- Liste des étudiants ---- #}
+        <div class="col-lg-8">
+            <div class="detail-card shadow">
+                <div class="detail-card-title d-flex align-items-center justify-content-between">
+                    <span>👨‍🎓 Étudiants</span>
+                    <span class="detail-count">{{ classe.students|length }}</span>
+                </div>
+
+                {% if classe.students is empty %}
+                    <div class="empty-state-sm">
+                        <p>Aucun étudiant dans cette classe.</p>
+                        <a href="#" class="btn-action-primary text-decoration-none d-inline">+ Ajouter un étudiant</a>
+                    </div>
+                {% else %}
+                    <div class="students-list">
+                        {% for student in classe.students %}
+                            <div class="student-list-row d-flex align-items-center justify-content-between px-3">
+                                <div class="d-flex align-items-center gap-3">
+
+                                    {# Avatar avec initiales #}
+                                    <div class="student-avatar-lg">
+                                        {{ student.user.firstname|first|upper }}{{ student.user.lastname|first|upper }}
+                                    </div>
+                                    <div>
+                                        <div class="student-fullname">
+                                            {{ student.user.firstname }} {{ student.user.lastname }}
+                                        </div>
+                                        <div class="student-email">{{ student.user.email }}</div>
+                                    </div>
+                                </div>
+                                <div class="d-flex gap-4">
+                                    {# Tâche 11 : réinitialiser mot de passe #}
+                                    <a href="#" class="btn-action-secondary btn-sm-action"
+                                       title="Réinitialiser le mot de passe">
+                                        🔑
+                                    </a>
+                                    {# Tâche 12 : supprimer l'étudiant #}
+                                    <a href="#" class="btn-action-danger btn-sm-action"
+                                       title="Supprimer l'étudiant">
+                                        🗑
+                                    </a>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+
+    </div>
+
+    {# ---- Retour ---- #}
+    <div class="mt-5">
+        <a href="{{ path('app_admin_classes') }}" class="btn-action-secondary text-decoration-none d-inline">
+            ← Retour à la liste
+        </a>
+    </div>
+
+</div>
+{% endblock %}

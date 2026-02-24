@@ -1,0 +1,19 @@
+{# classe vide => afficher btn rouge #}
+{# classe pas vide => btn désactivé #}
+
+{% if classe.students is empty %}
+    <form method="post"
+          action="{{ path('app_admin_classe_delete', {id: classe.id}) }}"
+          onsubmit="return confirm('Supprimer la classe « {{ classe.name }} » ? Cette action est irréversible.')">
+
+        <input type="hidden" name="_token" value="{{ csrf_token('delete_classe_' ~ classe.id) }}">
+
+        <button type="submit" class="btn-action-danger">🗑 Supprimer</button>
+
+    </form>
+{% else %}
+    <span class="btn-action-disabled"
+          title="Impossible : la classe contient {{ classe.students|length }} étudiant{{ classe.students|length > 1 ? 's' : '' }}">
+        🗑 Supprimer
+    </span>
+{% endif %}

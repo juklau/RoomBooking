@@ -1,0 +1,109 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Salles — Admin RoomBooking{% endblock %}
+
+{% block stylesheets %}
+{# besoins tous ces 3 fichiers CSS => je réutilise les mêmes éléments!!  #}
+    <link rel="stylesheet" href="{{ asset('styles/admin.css') }}">
+    <link rel="stylesheet" href="{{ asset('styles/rooms.css') }}">
+    <link rel="stylesheet" href="{{ asset('styles/classes.css') }}">
+{% endblock %}
+
+{% block body %}
+<div class="container-fluid px-4 py-3 mt-3">
+    
+    {# ---- Header ---- #}
+    <div class="dashboard-header">
+        <div class="d-flex align-items-center justify-content-between">
+            <div>
+                <div class="d-flex align-items-center gap-2 mb-2">
+                    <span class="badge-admin">Administrateur</span>
+                </div>
+                <div class="d-flex align-items-center gap-2 mb-1">
+                    <a href="{{ path('app_admin_dashboard') }}" class="breadcrumb-link">Dashboard</a>
+                    <span class="breadcrumb-sep">›</span>
+                    <span class="breadcrumb-current">Classes</span>
+                </div>
+                <h1>Gestion des classes</h1>
+                <p>{{ classes|length }} classe{{ classes|length > 1 ? 's' : '' }} enregistrée{{ classes|length > 1 ? 's' : '' }}</p>
+            </div>
+            <div>
+                {# Tâche 7 : bouton vers Créer une classe #}
+                <a href="{{ path('app_admin_classe_new') }}" class="btn-action-primary text-decoration-none d-inline">+ Créer une classe</a>
+            </div>
+        </div>
+    </div>
+
+     {# ---- Liste des salles ---- #}
+    {% if classes is empty %}
+        <div class="empty-state">
+            <div class="empty-icon">🎓</div>
+            <p>Aucune classe enregistrée.</p>
+            <a href="#" class="btn-action-primary text-decoration-none d-inline">Créer la première classe</a>
+        </div>
+    {% else %}
+        <div class="row g-3">
+            {% for classe in classes %}
+                <div class="col-md-6 col-lg-4">
+                    <div class="classe-card shadow">
+
+                        {# En-tête de la card #}
+                        <div class="classe-card-header d-flex align-items-start justify-content-between">
+                            <div>
+                                <div class="classe-card-name">{{ classe.name }}</div>
+                                <div class="classe-card-count">
+                                    👨‍🎓 {{ classe.students|length }} étudiant{{ classe.students|length > 1 ? 's' : '' }}
+                                </div>
+                            </div>
+
+                            {# badge vide/none vide #}
+                            {% if classe.students is empty %}
+                                <span class="classe-badge classe-badge-empty">Vide</span>
+                            {% else %}
+                                <span class="classe-badge classe-badge-active">Active</span>
+                            {% endif %}  
+                        </div>
+
+                        {# aprçu des étudiants => max 3 #}
+                        {% if classe.students is not empty %}
+                            <div class="classe-card-students">
+                                {% for student in classe.students|slice(0, 3) %}
+                                    <span class="student-chip">
+                                        {{ student.user.firstname }} {{ student.user.lastname }}
+                                    </span>
+                                {% endfor %}
+
+                                {% if classe.students|length > 3 %}
+                                    <span class="student-chip-more">
+                                        + {{ classe.students|length - 3 }} autres
+                                    </span>
+                                {% endif %}
+                            </div>
+                        {% endif %}
+
+                        {# actions #}
+                        <div class="classe-card-actions d-flex gap-2">
+                            {# tâche 6: voir le détail #}
+                            <a href="{{ path('app_admin_classe_show', {id: classe.id}) }}" class="btn-action-secondary flex-fill text-center text-decoration-none d-inline">Voir le détail</a>
+                        
+                            {# Tâche 8+1 => modifier le nom de la classe #}
+                            <a href="{{ path('app_admin_classe_edit', {id: classe.id}) }}" class="btn-action-primary text-decoration-none d-inline">Modifier</a>
+
+
+                            {# tâche 8: supprimer seulement si elle est vide #}
+                            {% if classe.students is empty %}
+                                {# <a href="#" class="btn-action-danger flex-fill text-center">🗑 Supprimer</a> #}
+                                {{ include('partials/_delete_classe.html.twig', { classe: classe }) }}
+                            {% else %}
+                                <span class="btn-action-disabled" title="Classe non vide">🗑 Supprimer</span>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                
+            {% endfor %}
+        </div>
+    {% endif %}
+<div>
+
+{% endblock %}
