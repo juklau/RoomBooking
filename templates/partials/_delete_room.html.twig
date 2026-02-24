@@ -1,0 +1,17 @@
+{#
+    Bouton supprimer une salle — à inclure dans show.html.twig et index.html.twig
+    Usage : {{ include('partials/_delete_room.html.twig', { room: room }) }}
+#}
+
+
+<form method="post" action="{{ path('app_admin_room_delete', {id: room.id}) }}"
+      onsubmit="return confirm('Supprimer la salle « {{ room.name }} » ? Cette action est irréversible.')">
+
+    {# csrf_token('delete_room_' ~ room.id) => génère le tokent unique pour la salle #}
+    <input type="hidden" name="_token" value="{{ csrf_token('delete_room_' ~ room.id) }}">
+
+    <button type="submit" class="btn-action-danger">
+        🗑 Supprimer
+    </button>
+
+</form>

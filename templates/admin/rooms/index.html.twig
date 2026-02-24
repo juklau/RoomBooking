@@ -1,0 +1,79 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Salles — Admin RoomBooking{% endblock %}
+
+{% block stylesheets %}
+    <link rel="stylesheet" href="{{ asset('styles/admin.css')}}">
+    <link rel="stylesheet" href="{{ asset('styles/rooms.css')}}">
+{% endblock %}
+
+{% block body %}
+<div class="container-fluid px-4 py-3 mt-3">
+    <div class="d-flex align-items-center justify-content-between">
+        <div>
+            <div class="d-flex align-items-center gap-2 mb-1">
+                <a href="{{ path('app_admin_dashboard') }}" class="breadcrumb-link">Dashboard</a>
+                <span class="breadcrumb-sep">›</span>
+                <span class="breadcrumb-current">Salles</span>
+            </div>
+            <h1>Gestion des salles</h1>
+            <p>{{ rooms|length }} salle{{ rooms|length > 1 ? 's' : '' }} enregistrée{{ rooms|length > 1 ? 's' : '' }}</p>
+        </div>
+        <div>
+            {# Tâche 3 : bouton vers Créer une salle #}
+            <a href="{{ path('app_admin_room_new') }}" class="btn-action-primary text-decoration-none d-inline">+ Créer une salle</a>
+        </div>
+    </div>
+</div>
+
+{# ---- Liste des salles ---- #}
+{% if rooms is empty %}
+    <div class="empty-state">
+        <div class="empty-icon">🏫</div>
+        <p>Aucune salle enregistrée.</p>
+        <a href="#" class="btn-action-primary text-decoration-none d-inline">Créer la première salle</a>
+    </div>
+{% else %}
+    <div class="row g-3">
+        {% for room in rooms %}
+            <div class="col-md-6 col-lg-4">
+                <div class="room-card-full shadow">
+
+                    {# Nom + capacité #}
+                    <div class="room-card-header d-flex align-items-start justify-content-between">
+                        <div>
+                            <div class="room-card-name"> {{ room.name }}</div>
+                            <div class="room-card-capacity">👥 {{ room.capacity }} places</div>
+                        </div>
+                        <span class="room-card-badge">Salle</span>
+                    </div>
+
+                    {# Équipements #}
+                    <div class="room-card-equip">
+                        {% if room.equipments is not empty %}
+                            {% for equip in room.equipments %}
+                                <span class="equipment-tag">{{ equip.name }}</span> 
+                            {% endfor %}
+                        {% else %}
+                            <span class="equipment-tag muted">Aucun équipement</span> 
+                        {% endif %}   
+                    </div>
+
+                    {# Actions #}
+                    <div class="room-card-actions d-flex gap-2 mt-3">
+                        {# Tâche 2 : voir les détails #}
+                        <a href="{{ path('app_admin_room_show', {id: room.id}) }}" class="btn-action-secondary text-decoration-none d-inline flex-fill text-center">Voir le détail</a>
+                        
+                        {# Tâche 4+1: Modifier les données d'une salle #}
+                        <a href="{{ path('app_admin_room_edit', {id: room.id}) }}" class="btn-action-secondary text-decoration-none d-inline flex-fill text-center my-auto">Modifier</a>
+
+                        {# Tâche 4 : supprimer #}
+                        {# <a href="#" class="btn-action-danger text-decoration-none d-inline">🗑</a> => à éviter à cause de la sécurité#} 
+                        {{ include('partials/_delete_room.html.twig', { room: room }) }}
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+{% endif %}
+{% endblock %}

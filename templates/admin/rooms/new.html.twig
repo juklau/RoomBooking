@@ -1,0 +1,74 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Créer une salle — Admin RoomBooking{% endblock %}
+
+{% block stylesheets %}
+    <link rel="stylesheet" href="{{ asset('styles/admin.css') }}">
+    <link rel="stylesheet" href="{{ asset('styles/rooms.css') }}">
+{% endblock %}
+
+{% block body %}
+<div class="container-fluid px-4 mt-3">
+
+    {# ---- Header ---- #}
+    <div class="dashboard-header">
+        <div class="d-flex align-items-center justify-content-between">
+            <div>
+                <div class="d-flex align-items-center gap-2 mb-1">
+                    <a href="{{ path('app_admin_dashboard') }}" class="breadcrumb-link">Dashboard</a>
+                    <span class="breadcrumb-sep">›</span>
+
+                    <a href="{{ path('app_admin_rooms') }}" class="breadcrumb-link">Salles</a>
+                    <span class="breadcrumb-sep">›</span>
+
+                    <span class="breadcrumb-current">Nouvelle salle</span>
+                </div>
+                <h1>Créer une salle</h1>
+                <p>Remplissez les informations de la nouvelle salle</p>
+            </div>
+        </div>
+    </div>
+
+    {# ---- Formulaire ---- #}
+    <div class="row justify-content-center">
+        <div class="col-lg-6">
+            <div class="form-card shadow">
+
+                {{ form_start(form) }}
+
+                    {# Nom #}
+                    <div class="form-field">
+                        {{ form_label(form.name) }}
+                        {{ form_widget(form.name) }}
+                        {{ form_errors(form.name) }}
+                    </div>
+
+                    {# Capacité #}
+                    <div class="form-field">
+                        {{ form_label(form.capacity) }}
+                        {{ form_widget(form.capacity) }}
+                        {{ form_errors(form.capacity) }}
+                    </div>
+
+                    {# Bouton #}
+                    <div class="d-flex gap-2 mt-4">
+                            <button type="submit" class="btn-action-primary flex-fill text-center">
+                            ✓ Créer la salle
+                        </button>
+                        <a href="{{ path('app_admin_rooms') }}" class="btn-action-secondary flex-fill text-center d-inline text-decoration-none">
+                            Annuler
+                        </a>
+                    </div>
+
+                {{ form_end(form) }}
+            </div>
+
+            {# Note sur les équipements #}
+            <div class="form-note mt-5">
+                Les équipements pourront être ajoutés après la création de la salle.
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

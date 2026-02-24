@@ -16,7 +16,7 @@ body {
     font-size: 1.6rem;
     font-weight: 700;
     color: #000000;
-    margin-bottom: 0.25rem;
+    margin-bottom: 0.25rem; 
 }
 
 .dashboard-header p {
@@ -28,7 +28,7 @@ body {
 /* Badge admin */
 .badge-admin {
     background: rgba(248, 81, 73, 0.3);
-    color: #f85149;
+    color: #d43f37;
     border: 1px solid rgba(248, 81, 73, 0.45);
     border-radius: 20px;
     padding: 0.25rem 0.75rem;

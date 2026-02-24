@@ -23,7 +23,7 @@
                 <p>Voici un aperçu global de RoomBooking - {{ 'now'|date("d/m/Y","Europe/Paris") }}</p>
             </div>
         </div>
-    </div>
+    </div> 
 
     {# ---- Stats ---- #}
 
@@ -123,20 +123,24 @@
                 <div class="row g-3">
                     {% for room in rooms %}
                         <div class="col-md-6 ">
-                            <div class="room-card shadow">
-                                <div class="room-name">{{ room.name }}</div>
-                                <div class="room-capacity">
-                                    👥 {{ room.capacity }} places
-                                </div>
-                                {% if room.equipments is not empty %}
-                                    <div>
-                                        {% for equip in room.equipments %}
-                                            <span class="equipment-tag d-inline">{{ equip.name }}</span>
-                                        {% endfor %}
+                            <div class="room-card shadow d-flex align-items-center justify-content-between">
+                                <div>
+                                    <div class="room-name">{{ room.name }}</div>
+                                    <div class="room-capacity">
+                                        👥 {{ room.capacity }} places
                                     </div>
-                                {% else %}
-                                    <span class="equipment-tag d-inline">Aucun équipement</span>
-                                {% endif %}
+                                    {% if room.equipments is not empty %}
+                                        <div>
+                                            {% for equip in room.equipments %}
+                                                <span class="equipment-tag d-inline">{{ equip.name }}</span>
+                                            {% endfor %}
+                                        </div>
+                                    {% else %}
+                                        <span class="equipment-tag d-inline">Aucun équipement</span>
+                                    {% endif %}
+                                </div>
+                                                        
+                                <a href="{{ path('app_admin_rooms') }}" class="btn btn-sm btn-outline-secondary" id="btn-details">Voir →</a>
                             </div>
                         </div>
                     {% else %}
@@ -153,9 +157,9 @@
             <div class="mb-4">
                 <div class="section-title d-flex align-items-center">⚡ Actions rapides</div>
                 <div class="d-flex flex-column gap-2">
-                    <a href="#" class="action-btn text-decoration-none d-flex align-items-center">
+                    <a href="{{ path('app_admin_rooms') }}" class="action-btn text-decoration-none d-flex align-items-center">
                         <span class="action-icon d-flex align-items-center justify-content-center" id="action-icon-rooms">🏫</span>
-                        Créer une salle
+                        Gérer les salles
                     </a>
                     <a href="#" class="action-btn text-decoration-none d-flex align-items-center">
                         <span class="action-icon d-flex align-items-center justify-content-centern" id="action-icon-students">👨‍🎓</span>

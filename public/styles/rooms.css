@@ -1,0 +1,294 @@
+
+/* RoomBooking — Admin Rooms CSS */
+   
+
+
+/* ---- Breadcrumb ---- */
+.breadcrumb-link {
+    color: #4a5270;
+    text-decoration: none;
+    font-size: 0.95rem;
+    transition: color 0.2s;
+}
+
+.breadcrumb-link:hover { color: #f85149; }
+
+.breadcrumb-sep {
+    color: #4a5270;
+    font-size: 0.95rem;
+}
+
+.breadcrumb-current {
+    color: #4a5270;
+    text-decoration: underline;
+    font-size: 0.95rem;
+    font-weight: 500;
+}
+
+/* ---- Boutons d'action ---- */
+.btn-action-primary {
+    background: rgba(248, 81, 73, 0.3);
+    color: black;
+    border: 1px solid rgba(248, 81, 73, 0.65);
+    border-radius: 8px;
+    padding: 0.55rem 1.1rem;
+    font-size: 0.85rem;
+    font-weight: 600;
+    /* text-decoration: none;
+    display: inline-block; */
+    transition: all 0.2s;
+}
+
+.btn-action-primary:hover {
+    background: #f85149;
+    color: #fff;
+}
+
+.btn-action-secondary {
+    background: #272d35;
+    color: #e6edf3;
+    border: 1px solid #21262d;
+    border-radius: 8px;
+    padding: 0.45rem 0.9rem;
+    font-size: 0.82rem;
+    font-weight: 500;
+    transition: all 0.2s;
+}
+
+.btn-action-secondary:hover {
+    border-color: #f85149;
+    color: #f85149;
+}
+
+.btn-action-danger {
+    background: rgba(248, 81, 73, 0.1);
+    /* color: #f85149; */
+    color: black;
+    border: 1px solid rgba(248, 81, 73, 0.2);
+    border-radius: 8px;
+    font-weight: 600;
+    padding: 0.45rem 0.7rem;
+    font-size: 0.85rem;
+    transition: all 0.2s;
+}
+
+.btn-action-danger:hover {
+    background: #f85149;
+    color: #fff;
+}
+
+/* ---- Room card full (page liste) ---- */
+.room-card-full {
+    background: #5f6265;
+    border: 1px solid #21262d;
+    border-radius: 12px;
+    padding: 1.3rem;
+    height: 100%;
+    transition: border-color 0.2s, transform 0.2s;
+}
+
+.room-card-full:hover {
+    border-color: #f85149;
+    transform: translateY(-2px);
+}
+
+.room-card-header { margin-bottom: 0.9rem; }
+
+.room-card-name {
+    font-weight: 700;
+    font-size: 1rem;
+    color: #ffffff;
+    margin-bottom: 0.25rem;
+}
+
+.room-card-capacity {
+    font-size: 0.8rem;
+    color: #adb0b4;
+}
+
+.room-card-badge {
+    background: rgba(56, 139, 253, 0.3);
+    /* color: #1b54a4; */
+    color: white;
+    border: 1px solid rgba(56, 139, 253, 0.55);
+    border-radius: 20px;
+    padding: 0.15rem 0.6rem;
+    font-size: 0.7rem;
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+.room-card-equip { min-height: 30px; }
+
+.equipment-tag {
+    display: inline-block;
+    background: #21262d;
+    color: #adb0b4;
+    border-radius: 6px;
+    padding: 0.2rem 0.55rem;
+    font-size: 0.72rem;
+    margin: 0.1rem;
+}
+
+.equipment-tag.muted { color: #adb0b4; }
+
+.room-card-actions { border-top: 1px solid #21262d; padding-top: 0.9rem; }
+
+/* ---- Empty state ---- */
+.empty-state {
+    text-align: center;
+    padding: 4rem 2rem;
+    color: #adb0b4;
+}
+
+.empty-state .empty-icon {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+}
+
+.empty-state p {
+    margin-bottom: 1.5rem;
+    font-size: 0.95rem;
+}
+
+
+/* ---- Detail card ---- */
+.detail-card {
+    background: #74777a;
+    border: 1px solid #21262d;
+    border-radius: 12px;
+    padding: 1.4rem;
+    height: 100%;
+}
+
+.detail-card-title {
+    font-size: 0.88rem;
+    font-weight: 600;
+    color: #e6edf3;
+    text-transform: uppercase;
+    letter-spacing: 0.07em;
+    margin-bottom: 1rem;
+    padding-bottom: 0.75rem;
+    border-bottom: 1px solid #21262d;
+}
+
+.detail-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.6rem 0;
+    border-bottom: 1px solid #21262d;
+}
+
+.detail-row:last-child { border-bottom: none; }
+
+.detail-label {
+    font-size: 0.82rem;
+    color: #e6edf3;
+}
+
+.detail-value {
+    font-size: 0.88rem;
+    font-weight: 600;
+    color: #e6edf3;
+}
+
+.equipment-tag-lg {
+    display: inline-block;
+    background: #21262d;
+    color: #e6edf3;
+    border: 1px solid #2d3440;
+    border-radius: 8px;
+    padding: 0.35rem 0.8rem;
+    font-size: 0.82rem;
+    font-weight: 500;
+}
+
+.text-muted{
+    color: #e6edf3 !important;
+}
+
+.mini-resa {
+    background: #272d35;
+    border: 1px solid #21262d;
+    border-radius: 8px;
+    padding: 0.6rem 0.9rem;
+}
+
+.mini-resa-user {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: #e6edf3;
+}
+
+.mini-resa-date {
+    font-size: 0.75rem;
+    color: #e6edf3;
+    margin-top: 0.15rem;
+}
+
+
+/* ---- Formulaire ---- */
+.form-card {
+    background: #7c8083;
+    border: 1px solid #21262d;
+    border-radius: 12px;
+    padding: 2rem;
+}
+
+.form-field {
+    margin-bottom: 1.3rem;
+}
+
+.form-field label {
+    display: block;
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: #e6edf3;
+    text-transform: uppercase;
+    letter-spacing: 0.07em;
+    margin-bottom: 0.45rem;
+}
+
+.form-field .form-control {
+    background: #e6edf3;
+    border: 1px solid #21262d;
+    border-radius: 8px;
+    padding: 0.72rem 1rem;
+    color: #4a5270;
+    font-size: 0.92rem;
+    width: 100%;
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.form-field .form-control:focus {
+    background: #e6edf3;
+    border-color: #f85149;
+    box-shadow: 0 0 0 3px rgba(248, 81, 73, 0.15);
+    color: #4a5270;
+    outline: none;
+}
+
+.form-field .form-control::placeholder {
+    color: #4a5270;
+}
+
+/* Erreurs de validation */
+.form-field .invalid-feedback,
+.form-field ul.errors {
+    color: #f85149;
+    font-size: 0.78rem;
+    margin-top: 0.3rem;
+    list-style: none;
+    padding: 0;
+}
+
+/* Note bas de formulaire */
+.form-note {
+    background: rgba(56, 139, 253, 0.08);
+    border: 1px solid rgba(56, 139, 253, 0.2);
+    border-radius: 8px;
+    padding: 0.75rem 1rem;
+    font-size: 0.82rem;
+    color: #5b80af;
+}

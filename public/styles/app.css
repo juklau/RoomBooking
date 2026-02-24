@@ -1,0 +1,17 @@
+.flash-success {
+    background: rgba(63, 185, 80, 0.15);
+    border: 1px solid rgba(63, 185, 80, 0.3);
+    color: #34803e;
+    padding: 0.75rem 1.5rem;
+    font-size: 0.88rem;
+    text-align: center;
+}
+
+.flash-error {
+    background: rgba(248, 81, 73, 0.15);
+    border: 1px solid rgba(248, 81, 73, 0.3);
+    color: #912923;
+    padding: 0.75rem 1.5rem;
+    font-size: 0.88rem;
+    text-align: center;
+}
