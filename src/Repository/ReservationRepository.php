@@ -3,6 +3,7 @@
 namespace App\Repository;
 
 use App\Entity\Reservation;
+use App\Entity\User;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
@@ -49,6 +50,64 @@ class ReservationRepository extends ServiceEntityRepository
             //retourner un tableau d'objets Reservation
             ->getResult();
     }
+
+    /**
+     * retourne les prochaines réservations d'un user spécifique
+     */
+    public function findUpcomingByUser(User $user, int $limit = 5): array
+    {
+        // SELECT * FROM reservation r
+        return $this->createQueryBuilder('r')
+
+            // LEFT JOIN room ON r.room_id = room.id
+            ->leftJoin('r.room', 'room')
+
+            //charger les données de room 
+            ->addSelect('room')
+
+            ->where('r.reservationStart >= :now')
+            ->andWhere('r.user = :user')
+
+            //now est remplacé par date/heure actuelle => sécurisation contre injection SQL
+            ->setParameter('now', new \DateTime())
+            ->setParameter('user', $user)
+
+            //plus proches en premier
+            ->orderBy('r.reservationStart', 'ASC')
+
+            ->setMaxResults($limit)
+
+            //exécution de la requête
+            ->getQuery()
+
+            //retourner un tableau d'objets Reservation
+            ->getResult();
+    }
+
+    public function countByUser(User $user): int
+    {
+        return (int) $this->createQueryBuilder('r')
+
+            ->select('COUNT(r.id)')
+            ->where('r.user = :user')
+            ->setParameter('user', $user)
+            ->getQuery()
+            ->getSingleScalarResult();
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     //    /**
     //     * @return Reservation[] Returns an array of Reservation objects

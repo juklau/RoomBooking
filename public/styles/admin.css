@@ -1,9 +1,11 @@
+/* Admin Dashboard */
 
 body {
     background-color: #cbcbcb;
     color: #070707;
 }
 
+/* ---- Header ---- */
 .dashboard-header {
     padding: 2rem 0 1.5rem;
     border-bottom: 1px solid #21262d;
@@ -184,10 +186,6 @@ body {
     margin-top: 0.2rem;
 }
 
-#btn-details{
-    color: #adb0b4 !important;
-}
-
 /* Reservations table */
 .reservations-table {
     background: #5f6265;
@@ -263,3 +261,13 @@ body {
 
 .status-upcoming { background: #3fb950; }
 .status-today    { background: #f0883e; }
+
+
+/* ---- Bootstrap overrides ---- */
+.btn-outline-secondary {
+    --bs-btn-color: #7d8590;
+    --bs-btn-border-color: #21262d;
+    --bs-btn-hover-bg: #21262d;
+    --bs-btn-hover-color: #e6edf3;
+    --bs-btn-hover-border-color: #7d8590;
+}

@@ -1,0 +1,170 @@
+/* Coordinator Dashboard */
+
+
+/* Badge coordinateur — accent vert */
+.badge-coordinator {
+    background: rgba(63, 185, 80, 0.3);
+    color: #27a137;
+    border: 1px solid rgba(63, 185, 80, 0.65);
+    border-radius: 20px;
+    padding: 0.25rem 0.75rem;
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+}
+
+
+/* ---- Class block ---- */
+.class-block {
+    background: #2f3640;
+    border: 1px solid #21262d;
+    border-radius: 12px;
+    overflow: hidden;
+    transition: border-color 0.2s;
+}
+
+.class-block:hover { border-color: #3fb950; }
+
+.class-block-header {
+    padding: 1rem 1.2rem;
+    border-bottom: 1px solid #21262d;
+}
+
+.class-block-name {
+    font-weight: 600;
+    font-size: 0.95rem;
+    color: #e6edf3;
+}
+
+.class-block-count {
+    font-size: 0.78rem;
+    color: #7d8590;
+}
+
+.class-block-students {
+    padding: 0.75rem 1.2rem 1rem;
+}
+
+/* ---- Student row ---- */
+.student-row {
+    background: #0d1117;
+    border: 1px solid #21262d;
+    border-radius: 8px;
+    padding: 0.6rem 0.9rem;
+    transition: border-color 0.2s;
+}
+
+.student-row:hover { border-color: #3fb950; }
+
+.student-avatar {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: rgba(63,185,80,0.15);
+    color: #3fb950;
+    font-size: 0.72rem;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.student-name {
+    font-size: 0.85rem;
+    font-weight: 500;
+    color: #e6edf3;
+}
+
+.student-email {
+    font-size: 0.72rem;
+    color: #a9b1bc;
+}
+
+/* ---- Room row ---- */
+.room-row {
+    background: #2f3640;
+    border: 1px solid #21262d;
+    border-radius: 10px;
+    padding: 0.9rem 1rem;
+    transition: border-color 0.2s;
+}
+
+.room-row:hover { border-color: #3fb950; }
+
+.room-row-name {
+    font-weight: 600;
+    font-size: 0.88rem;
+    color: #e6edf3;
+}
+
+.room-row-capacity {
+    font-size: 0.75rem;
+    color: #a9b1bc;
+}
+
+/* ---- Action buttons ---- */
+.action-btn {
+    background: #2f3640;
+    border: 1px solid #21262d;
+    border-radius: 10px;
+    padding: 1rem 1.2rem;
+    color: #e6edf3;
+    font-size: 0.88rem;
+    font-weight: 500;
+    transition: all 0.2s;
+    gap: 0.75rem;
+}
+
+.action-btn:hover {
+    background: #1c2128;
+    border-color: #3fb950;
+    color: #3fb950;
+    transform: translateY(-1px);
+}
+
+.action-icon {
+    width: 36px;
+    height: 36px;
+    border-radius: 8px;
+    font-size: 1rem;
+    flex-shrink: 0;
+    background: rgba(63,185,80,0.1);
+}
+
+/* ---- Bouton accent coordinateur ---- */
+.btn-coordinator {
+    background: rgba(63,185,80,0.15);
+    color: #3fb950;
+    border: 1px solid rgba(63,185,80,0.3);
+    font-size: 0.8rem;
+    font-weight: 500;
+    transition: all 0.2s;
+}
+
+.btn-coordinator:hover {
+    background: #3fb950;
+    color: #0d1117;
+    border-color: #3fb950;
+}
+
+/* ---- Bootstrap overrides ---- */
+.btn-outline-danger {
+    --bs-btn-color: #f85149;
+    --bs-btn-border-color: rgba(248,81,73,0.3);
+    --bs-btn-hover-bg: rgba(248,81,73,0.15);
+    --bs-btn-hover-color: #f85149;
+    --bs-btn-hover-border-color: #f85149;
+}
+
+.btn-outline-secondary {
+    --bs-btn-color: #7d8590;
+    --bs-btn-border-color: #21262d;
+    --bs-btn-hover-bg: #21262d;
+    --bs-btn-hover-color: #e6edf3;
+    --bs-btn-hover-border-color: #7d8590;
+}
+
+
+
