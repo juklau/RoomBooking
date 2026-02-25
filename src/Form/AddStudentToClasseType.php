@@ -32,8 +32,8 @@ class AddStudentToClasseType extends AbstractType
                 'query_builder' => fn(StudentRepository $repo) => $repo->createQueryBuilder('s')
                     ->leftJoin('s.classe', 'c')
                     ->where('s.classe IS NULL OR c.id != :classeId')        //=> ('s.classe IS NULL OR c.id != :classeId') => qui ont pas de classe ou sont dans une autre classe
-                    ->setParameter('classeId', $classeId) //function contre injection SQL
-                    ->leftJoin('s.user', 'u')  // => pour pouvoir trier par lastname
+                    ->setParameter('classeId', $classeId)                   //function contre injection SQL
+                    ->leftJoin('s.user', 'u')                               // => pour pouvoir trier par lastname
                     ->orderBy('u.lastname', 'ASC'),
                 'attr' => ['class' => 'form-select']
             ]);

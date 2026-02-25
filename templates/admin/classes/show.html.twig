@@ -35,6 +35,11 @@
                 {# Tâche 9 : ajouter un étudiant à cette classe #}
                 <a href="{{ path('app_admin_classe_add_student', {id: classe.id}) }}" class="btn-action-primary text-decoration-none d-inline">+ Ajouter un étudiant</a>
                 
+                {# Tâche 14: ajouter un coordinateur à une classe #}
+                <a href="{{ path('app_admin_classe_add_coordinator', {id: classe.id}) }}" class="btn-action-primary text-decoration-none d-inline">
+                    + Ajouter un coordinateur
+                </a>
+
                 {# Tâche 8+1 => modifier le nom de la classe #}
                 <a href="{{ path('app_admin_classe_edit', {id: classe.id}) }}" class="btn-action-primary text-decoration-none d-inline">Modifier</a>
 
@@ -79,8 +84,10 @@
             </div>
         </div>
 
-        {# ---- Liste des étudiants ---- #}
-        <div class="col-lg-8">
+        {# ---- colonne droite: liste des étudiants et liste de coordinateurs ---- #}
+        <div class="col-lg-8 d-flex flex-column gap-4">
+
+            {#  Liste des étudiants #}
             <div class="detail-card shadow">
                 <div class="detail-card-title d-flex align-items-center justify-content-between">
                     <span>👨‍🎓 Étudiants</span>
@@ -124,6 +131,52 @@
                     </div>
                 {% endif %}
             </div>
+
+            {# liste des coordinateurs #}
+            <div class="detail-card shadow">
+                <div class="detail-card-title d-flex align-items-center justify-content-between">
+                    <span>👨‍🏫 Coordinateurs</span>
+                    <span class="detail-count">{{ classe.coordinators|length }}</span>
+                </div>
+
+                {% if classe.coordinators is empty %}
+                    <div class="empty-state-sm">
+                        <p>Aucun coordinateur assigné à cette classe.</p>
+                        <a href="{{ path('app_admin_classe_add_coordinator', {id: classe.id}) }}" class="btn-action-primary text-decoration-none d-inline">+ Ajouter un coordinateur</a>
+                    </div>
+                {% else %}
+                    <div class="coordinators-list">
+                        {% for coordinator in classe.coordinators %}
+                            <div class="coordinator-list-row d-flex align-items-center justify-content-between px-3">
+                                <div class="d-flex align-items-center gap-3">
+
+                                    {# Avatar avec initiales #}
+                                    <div class="coordinator-avatar-lg">
+                                        {{ coordinator.user.firstname|first|upper }} {{ coordinator.user.lastname|first|upper }}
+                                    </div>
+                                    <div>
+                                        <div class="coordinator-fullname">
+                                            {{ coordinator.user.firstname }} {{ coordinator.user.lastname }}
+                                        </div>
+                                        <div class="coordinator-email">{{ coordinator.user.email }}</div>
+                                    </div>
+                                </div>
+                                <div class="d-flex gap-4">
+                                    {# Tâche 15 : réinitialiser mot de passe #}
+                                    <a href="{{ path('app_admin_coordinator_reset_password', {id: coordinator.id}) }}" class="btn-action-secondary btn-sm-action"
+                                       title="Réinitialiser le mot de passe">
+                                        🔑
+                                    </a>
+                                    {# Tâche 16 : supprimer le coordinateur #} 
+                                    {# <a href="#" class="btn-action-danger btn-sm-action" title="Supprimer le cordinateur"> 🗑</a> #}
+                                    {{ include('partials/_delete_coordinator.html.twig', { coordinator: coordinator }) }}
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            </div>
+
         </div>
 
     </div>

@@ -1,4 +1,7 @@
-
+{#
+    Bouton supprimer une salle
+    Usage : {{ include('partials/_delete_room.html.twig', { room: room }) }}
+#}
 
 <form method="post" action="{{ path('app_admin_room_delete', {id: room.id}) }}"
       onsubmit="return confirm('Supprimer la salle « {{ room.name }} » ? Cette action est irréversible.')">

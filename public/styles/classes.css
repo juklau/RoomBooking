@@ -122,14 +122,16 @@
 }
 
 /* --------------------------------- Liste étudiants (page show) ---------------------------------- */
-.students-list {
+.students-list,
+.coordinators-list {
     display: flex;
     flex-direction: column;
     gap: 0.5rem;
     margin-top: 0.5rem;
 }
 
-.student-list-row {
+.student-list-row,
+.coordinator-list-row {
     background: #272d35;
     border: 1px solid #21262d;
     border-radius: 8px;
@@ -137,9 +139,11 @@
     transition: border-color 0.2s;
 }
 
-.student-list-row:hover { border-color: #3fb950; }
+.student-list-row:hover,
+.coordinator-list-row:hover { border-color: #3fb950; }
 
-.student-avatar-lg {
+.student-avatar-lg,
+.coordinator-avatar-lg {
     width: 38px;
     height: 38px;
     border-radius: 50%;
@@ -153,13 +157,15 @@
     flex-shrink: 0;
 }
 
-.student-fullname {
+.student-fullname,
+.coordinator-fullname {
     font-size: 0.88rem;
     font-weight: 600;
     color: #e6edf3;
 }
 
-.student-email {
+.student-email,
+.coordinator-email {
     font-size: 0.75rem;
     color: #b0b7c2;
     margin-top: 0.1rem;

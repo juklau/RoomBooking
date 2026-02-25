@@ -13,11 +13,14 @@ use App\Entity\Room;
 use App\Entity\Classe;
 use App\Entity\Student;
 use App\Entity\User;
+use App\Entity\Coordinator;
 
 use App\Form\ClasseType;
 use App\Form\CreateStudentType;
+use App\Form\CreateCoordinatorType;
 use App\Form\RoomType;
 use App\Form\AddStudentToClasseType;
+use App\Form\AddCoordinatorToClasseType;
 use App\Form\ResetPasswordType;
 
 use Doctrine\ORM\EntityManagerInterface;
@@ -134,8 +137,8 @@ final class AdminController extends AbstractController
     */
     #[Route('/rooms/{id}/edit', name: 'app_admin_room_edit', requirements: ['id' => '\d+'])]
     public function roomEdit(
-        Room $room,
-        Request $request,
+        Room                   $room,
+        Request                $request,
         EntityManagerInterface $em
     ): Response {
 
@@ -170,8 +173,8 @@ final class AdminController extends AbstractController
      */
     #[Route('/rooms/{id}/delete', name: 'app_admin_room_delete', requirements: ['id' => '\d+'], methods: ['POST'])]
     public function roomDelete(
-        Room $room,
-        Request $request,
+        Room                   $room,
+        Request                $request,
         EntityManagerInterface $em
     ): Response {
 
@@ -301,8 +304,8 @@ final class AdminController extends AbstractController
      */
     #[Route('/classes/{id}/delete', name: 'app_admin_classe_delete', requirements: ['id' => '\d+'], methods: ['POST'])]
     public function classeDelete(
-        Classe $classe,
-        Request $request,
+        Classe                 $classe,
+        Request                $request,
         EntityManagerInterface $em
     ): Response {
 
@@ -362,6 +365,47 @@ final class AdminController extends AbstractController
         }
 
         return $this->render('admin/classes/add_student.html.twig', [
+            'form'   => $form,
+            'classe' => $classe,
+        ]);
+    }
+
+
+     /**
+     * ajouter une classe au coordinateur 
+     */
+    #[Route('/classes/{id}/add-coordinator', name: 'app_admin_classe_add_coordinator', requirements: ['id' => '\d+'])]
+    public function classAddCoordinator(
+        Classe                 $classe,
+        Request                $request,
+        EntityManagerInterface $em
+    ): Response {
+
+        // passer l'id de la classe au formulaire pour filtrer les étudiants qui ne sont pas déjà dans cette classe
+        $form = $this->createForm(AddCoordinatorToClasseType::class, null, [
+            'classe_id' => $classe->getId(),
+        ]);
+
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+
+            /** @var Coordinator $coordinator */
+            $coordinator = $form->get('coordinator')->getData();
+
+            //ajoute la classe au coordinateur => ManyToMany
+            $coordinator->addClasse($classe);
+            $em->flush();
+
+            $this->addFlash('success',
+                $coordinator->getUser()->getFirstname() . ' ' . $coordinator->getUser()->getLastname()
+                . ' ajouté(e) à la classe "' . $classe->getName() . '".'
+            );
+
+            return $this->redirectToRoute('app_admin_classe_show', ['id' => $classe->getId()]);
+        }
+
+        return $this->render('admin/classes/add_coordinator.html.twig', [
             'form'   => $form,
             'classe' => $classe,
         ]);
@@ -429,8 +473,8 @@ final class AdminController extends AbstractController
      */
     #[Route('/students/{id}/reset-password', name: 'app_admin_student_reset_password', requirements: ['id' => '\d+'])]
     public function studentResetPassword(
-        Student $student,
-        Request $request,
+        Student                     $student,
+        Request                     $request,
         EntityManagerInterface      $em,
         UserPasswordHasherInterface $hasher
     ): Response {
@@ -464,19 +508,19 @@ final class AdminController extends AbstractController
     }
 
     /**
-     * supprimer un user
+     * supprimer un étudiant
      */
     #[Route('/students/{id}/delete', name: 'app_admin_student_delete', requirements: ['id' => '\d+'], methods: ['POST'])]
     public function studentDelete(
-        Student $student,
-        Request $request,
+        Student                $student,
+        Request                $request,
         EntityManagerInterface $em
     ): Response {
 
         //vérif le token CSRF => évite la suppression malveillant
         if(!$this->isCsrfTokenValid('delete_student_' . $student->getId(), $request->request->get('_token'))){
             $this->addFlash('error', 'Token invalide.');
-            return $this->redirectToRoute('app_admin_dashboard');
+            return $this->redirectToRoute('app_admin_users');
         }
 
         //garder id de la classe pour la redirection AVANT suppression
@@ -486,6 +530,17 @@ final class AdminController extends AbstractController
 
         //supprimer User => supprime également Student en cascade
         $user = $student->getUser();
+
+        //il faut vérifier si l'étudiant a des réservations
+        if(!$user->getReservations()->isEmpty()){
+            $this->addFlash('error', 'Impossible de supprimer "' . $name . '" : il a des réservations enregistrées.');
+
+            if($classeId){
+                return $this->redirectToRoute('app_admin_classe_show', ['id' => $classeId]);
+            }
+            return $this->redirectToRoute('app_admin_users');
+        }
+
         $em->remove($user);
         $em->flush();
 
@@ -496,10 +551,10 @@ final class AdminController extends AbstractController
             return $this->redirectToRoute('app_admin_classe_show', ['id' => $classeId]);
         }
 
-        return $this->redirectToRoute('app_admin_dashboard');
+        return $this->redirectToRoute('app_admin_users');
     }
 
-     /************************************ Users ********************************************/
+     /********************************************* Users ****************************************************/
 
      /**
       * lister tous les users
@@ -513,5 +568,136 @@ final class AdminController extends AbstractController
             'users' => $users,
         ]);
     }
+
+
+
+    /************************************ Coordinators ********************************************/
+
+     /**
+     * créer nouveau coordinateur (prof)
+     */
+    #[Route('/coordinators/new', name: 'app_admin_coordinator_new')]
+    public function coordinatorNew(
+        Request                     $request,
+        EntityManagerInterface      $em,
+        UserPasswordHasherInterface $hasher,
+        UserRepository              $userRepo
+    ): Response {
+
+        // u.a. ClasseType que la création => formulaire pré-rempli automatiquement
+        $form = $this->createForm(CreateCoordinatorType::class);
+        $form->handleRequest($request);
+
+        if( $form->isSubmitted() && $form->isValid()){
+            $data = $form->getData();
+
+            //vérifier que l'email n'existe pas déjà
+            if($userRepo->findOneBy(['email' => $data['email']])){ 
+                $this->addFlash('error', 'Un utilisateur avec cet email existe déjà.');
+                return $this->render('admin/coordinators/new.html.twig', ['form' => $form]);
+            }
+
+            //Création User
+            $user = new User();
+            $user->setFirstname($data['firstname']);
+            $user->setLastname($data['lastname']);
+            $user->setEmail($data['email']);
+            $user->setPassword($hasher->hashPassword($user, $data['password']));
+
+            //Créer le Coordinator lié au User
+            $coordinator = new Coordinator();
+            $coordinator->setUser($user);
+            $user->setCoordinator($coordinator);
+
+            //Assigner la classe =>ManyToMany
+            foreach($data['classes'] as $classe){
+                $coordinator->addClasse($classe);
+            }
+            
+            $em->persist($user);
+            $em->persist($coordinator);
+            $em->flush();
+
+            $this->addFlash('success', 'Coordinateur ' . $user->getFirstname() . ' ' . $user->getLastname() . ' créé avec succès.');
+
+            // Redirige vers dashboard d'admin
+            return $this->redirectToRoute('app_admin_dashboard');
+        }
+
+        return $this->render('admin/coordinators/new.html.twig', [
+            'form' => $form,
+        ]);
+    }
+
+    /**
+     * réinitialiser le MDP d'un coordinateur
+     */
+    #[Route('/coordinators/{id}/reset-password', name: 'app_admin_coordinator_reset_password', requirements: ['id' => '\d+'])]
+    public function coordinatorResetPassword(
+        Coordinator                 $coordinator,
+        Request                     $request,
+        EntityManagerInterface      $em,
+        UserPasswordHasherInterface $hasher
+    ): Response {
+
+        $form = $this->createForm(ResetPasswordType::class);
+        $form->handleRequest($request);
+
+        if($form->isSubmitted() && $form->isValid()){
+
+            $newPassword = $form->get('password')->getData();
+
+            //hash et sauvegarde le nouveau MDP sur le User lié
+            $user = $coordinator->getUser();
+            $user->setPassword($hasher->hashPassword($user, $newPassword));
+            $em->flush();
+
+            $this->addFlash('success', 'Mot de passe de ' . $user->getFirstname() . ' ' . $user->getLastname() . ' réinitialisé avec succès.');
+
+            return $this->redirectToRoute('app_admin_dashboard');
+        }
+
+        return $this->render('admin/coordinators/reset_password.html.twig', [
+            'form'        => $form,
+            'coordinator' => $coordinator,
+        ]);
+    }
+
+    /**
+     * supprimer un coordinateur
+     */
+    #[Route('/coordinators/{id}/delete', name: 'app_admin_coordinator_delete', requirements: ['id' => '\d+'], methods: ['POST'])]
+    public function coordinatorDelete(
+        Coordinator            $coordinator,
+        Request                $request,
+        EntityManagerInterface $em
+    ): Response {
+
+        //vérif le token CSRF => évite la suppression malveillant
+        if(!$this->isCsrfTokenValid('delete_coordinator_' . $coordinator->getId(), $request->request->get('_token'))){
+            $this->addFlash('error', 'Token invalide.');
+            return $this->redirectToRoute('app_admin_users');
+        }
+
+        $name = $coordinator->getUser()->getFirstname() . ' ' . $coordinator->getUser()->getLastname();
+
+        //supprimer User => supprime également Coordinator en cascade
+        $user = $coordinator->getUser();
+
+        //il faut vérifier si le coordinateur a des réservations
+        if(!$user->getReservations()->isEmpty()){
+            $this->addFlash('error', 'Impossible de supprimer "' . $name . '" : il a des réservations enregistrées.');
+
+            return $this->redirectToRoute('app_admin_users');
+        }
+
+        $em->remove($user);
+        $em->flush();
+
+        $this->addFlash('success', 'Coordinateur "' . $name . '" supprimé avec succès.');
+
+        return $this->redirectToRoute('app_admin_users');
+    }
+
 
 }

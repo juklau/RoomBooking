@@ -54,7 +54,7 @@ class Coordinator
         return $this->classes;
     }
 
-    public function addClass(Classe $class): static
+    public function addClasse(Classe $class): static
     {
         if (!$this->classes->contains($class)) {
             $this->classes->add($class);

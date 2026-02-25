@@ -1,0 +1,15 @@
+{#
+    Bouton supprimer un coordinateur
+    Usage : {{ include('partials/_delete_coordinator.html.twig', { coordinator: coordinator }) }}
+#}
+<form method="post"
+      action="{{ path('app_admin_coordinator_delete', {id: coordinator.id}) }}"
+      onsubmit="return confirm('Supprimer {{ coordinator.user.firstname }} {{ coordinator.user.lastname }} ? Cette action est irréversible.')">
+
+    <input type="hidden" name="_token" value="{{ csrf_token('delete_coordinator_' ~ coordinator.id) }}">
+
+    <button type="submit" class="btn-action-danger btn-sm-action" title="Supprimer le coordinateur">
+        🗑
+    </button>
+
+</form>

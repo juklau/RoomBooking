@@ -1,3 +1,7 @@
+{#
+    Bouton supprimer un étudiant
+    Usage : {{ include('partials/_delete_student.html.twig', { student: student }) }}
+#}
 
 <form method="post"
       action="{{ path('app_admin_student_delete', {id: student.id}) }}"

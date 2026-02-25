@@ -28,6 +28,15 @@
                 <h1>Tous les utilisateurs</h1>
                 <p>{{ users|length }} utilisateur{{ users|length > 1 ? 's' : '' }} enregistré{{ users|length > 1 ? 's' : '' }}</p>
             </div>
+            <div class="d-flex gap-2">
+                <a href="{{ path('app_admin_student_new') }}" class="btn-action-primary text-decoration-none d-inline">
+                    + Créer un étudiant
+                </a>
+
+                <a href="{{ path('app_admin_coordinator_new') }}" class="btn-action-primary text-decoration-none d-inline">
+                    + Créer un coordinateur
+                </a>
+            </div>
         </div>
     </div>
 
@@ -40,6 +49,7 @@
                     <th>Email</th>
                     <th>Rôle</th>
                     <th>Classe / Info</th>
+                    <th>Actions</th>
                 </tr>
             </thead>
             <tbody>
@@ -96,6 +106,38 @@
                                 {% elseif user.administrator %}
                                     Administrateur
                                 {% endif %}
+                            </td>
+
+                            {# actions #}
+                            <td>
+                                <div class="d-flex align-items-center gap-2">
+                                    <div >
+                                         {# btn pour réinitialiser le mdp #}
+                                        {% if user.student %}
+                                            <a href="{{ path('app_admin_student_reset_password', {id: user.student.id}) }}" class="btn-action-secondary btn-sm-action"
+                                            title="Réinitialiser le mot de passe">
+                                                🔑
+                                            </a>
+                                        {% elseif user.coordinator %}
+                                            <a href="{{ path('app_admin_coordinator_reset_password', {id: user.coordinator.id}) }}" class="btn-action-secondary btn-sm-action"
+                                            title="Réinitialiser le mot de passe">
+                                                🔑
+                                            </a>
+                                        {% endif %}
+                                    </div>
+
+                                    <div>
+                                        {# btn pour supprimer user #}
+                                        {% if user.student %}
+                                            {{ include('partials/_delete_student.html.twig', { student: user.student }) }}
+                                        {% elseif user.coordinator %}
+                                            {{ include('partials/_delete_coordinator.html.twig', { coordinator: user.coordinator }) }}
+                                        {% endif %}
+                                    </div>
+                                </div>
+                               
+
+                    
                             </td>
                         </tr>
                     {% endfor %}

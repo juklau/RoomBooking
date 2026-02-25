@@ -1,6 +1,11 @@
 {# classe vide => afficher btn rouge #}
 {# classe pas vide => btn désactivé #}
 
+{#
+    Bouton supprimer un coordinateur
+    Usage : {{ include('partials/_delete_classe.html.twig', { classe: classe }) }}
+#}
+
 {% if classe.students is empty %}
     <form method="post"
           action="{{ path('app_admin_classe_delete', {id: classe.id}) }}"

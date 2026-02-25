@@ -78,17 +78,16 @@ class CreateCoordinatorType extends AbstractType
                     ),
                 ],
             ])
-            ->add('classe', EntityType::class, [//??????????
+            ->add('classes', EntityType::class, [
                 'class'        => Classe::class,
                 'choice_label' => 'name',
-                'label'        => 'Classe (obligatoire)',
-                'required'     => true,
-                'placeholder'  => '-- Choisir une classe --',
-                'constraints'  => [
-                    new NotBlank(message: "La classe est obligatoire."),
-                ],
+                'label'        => 'Classes assignées (optionnel)',
+                'required'     => false,
+                'multiple'     => true,     //coordinateur peut gérer plusieurs classes
+                'expanded'     => false,   // affiche un <select multiple>
                 'attr'         => [
-                    'class' => 'form-select'
+                    'class' => 'form-select',
+                    'size'  => 5,
                 ],
             ]);
     }
