@@ -29,7 +29,11 @@
                 <h1>{{ room.name }}</h1>
                 <p>Détail de la salle</p>
             </div>
-            <div class="d-flex gap-2">
+            <div class="d-flex gap-3">
+                <a href="{{ path('app_admin_room_equipments', {id: room.id}) }}"
+                            class="btn-action-secondary text-decoration-none d-inline">
+                    Gérer les équipements
+                </a>
 
                 {# Tâche 4+1: Modifier les données d'une salle #}
                 <a href="{{ path('app_admin_room_edit', {id: room.id}) }}" class="btn-action-secondary text-decoration-none d-inline flex-fill text-center my-auto">Modifier</a>
@@ -86,20 +90,26 @@
             <div class="detail-card shadow">
                 <div class="detail-card-title">📅 Prochaines réservations</div>
 
-                {% set roomReservations = room.reservations|filter(r => r.reservationStart >= date()) %}
+                {% set roomReservations = room.reservations|filter(r => r.reservationStart >= date() and r.status != 'canceled')  %}
 
                 {% if roomReservations is empty %}
                     <p class="text-muted small mt-2">Aucune réservation à venir.</p>
                 {% else %}
                     <div class="d-flex flex-column gap-2 mt-2">
                         {% for res in roomReservations %}
-                            <div class="mini-resa">
-                                <div class="mini-resa-user">
-                                    {{ res.user.firstname }} {{ res.user.lastname }}
+                            <div class="mini-resa d-flex justify-content-between align-items-center">
+                                <div>
+                                    <div class="mini-resa-user">
+                                        {{ res.user.firstname }} {{ res.user.lastname }} 
+                                    </div>
+                                    <div class="mini-resa-date">
+                                        {{ res.reservationStart|date('d/m/Y H:i') }}
+                                        → {{ res.reservationEnd|date('H:i') }}
+                                    </div>
+            
                                 </div>
-                                <div class="mini-resa-date">
-                                    {{ res.reservationStart|date('d/m/Y H:i') }}
-                                    → {{ res.reservationEnd|date('H:i') }}
+                                <div>
+                                    {{ include('partials/_cancel_reservation.html.twig', { reservation: res }) }}
                                 </div>
                             </div>
                         {% endfor %}

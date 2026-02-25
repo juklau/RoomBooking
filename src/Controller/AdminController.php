@@ -14,15 +14,16 @@ use App\Entity\Classe;
 use App\Entity\Student;
 use App\Entity\User;
 use App\Entity\Coordinator;
-
+use App\Entity\Reservation;
 use App\Form\ClasseType;
 use App\Form\CreateStudentType;
 use App\Form\CreateCoordinatorType;
 use App\Form\RoomType;
 use App\Form\AddStudentToClasseType;
 use App\Form\AddCoordinatorToClasseType;
+use App\Form\CreateReservationType;
 use App\Form\ResetPasswordType;
-
+use App\Form\RoomEquipmentType;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -75,13 +76,68 @@ final class AdminController extends AbstractController
      * lister les salles
      */
     #[Route('/rooms', name: 'app_admin_rooms')]
-    public function rooms(RoomRepository $roomRepo): Response
+    // public function rooms(RoomRepository $roomRepo): Response =>ancien version
+    // {
+    //     //récup toutes les salles avec leur équipements
+    //     $rooms = $roomRepo->findAll();
+
+    //     return $this->render('admin/rooms/index_sans_filtre.html.twig', [ 
+    //         'rooms' => $rooms,
+    //     ]);
+    // }
+
+    public function rooms(Request $request, RoomRepository $roomRepo): Response
     {
-        //récup toutes les salles avec leur équipements
-        $rooms = $roomRepo->findAll();
+        //filtrer par créneau => paramètres GET
+        $filterStart = null;
+        $filterEnd = null;
+        $filteredRooms = null;
+
+        $dateParam = $request->query->get('date');
+        $startTimeParam = $request->query->get('startTime');
+        $endTimeParam = $request->query->get('endTime');
+
+        if($dateParam && $startTimeParam && $endTimeParam){
+            try{
+
+                $filterStart     = new \DateTime($dateParam . ' ' . $startTimeParam);    // "2026-03-10 09:30"
+                $filterEnd       = new \DateTime($dateParam . ' ' . $endTimeParam);      // "2026-03-10 11:00"
+
+                if($filterEnd <= $filterStart){
+                    $this->addFlash('error', 'L\'heure de fin doit être après l\'heure de début.');
+                    $filterStart = $filterEnd = null;
+                }else{
+                    $filteredRooms = $roomRepo->findAvailableForPeriod($filterStart, $filterEnd);
+                }
+
+            }catch(\Exception $e){
+                $this->addFlash('error', 'Format de date invalide.');
+            }
+        }
+
+        //comme CreateReservationType.php
+        $timeSlots = [];
+        for ($hour = 8; $hour <= 20; $hour++) {
+            foreach ([0, 30] as $min) {
+
+                if ($hour === 20 && $min === 30) break;             // => pas de 20:30
+
+                $label = sprintf('%02d:%02d', $hour, $min);
+                $timeSlots[$label] = $label;
+            }
+        }
+
+        $roomsWithStats = $roomRepo->findAllWithStats();
 
         return $this->render('admin/rooms/index.html.twig', [
-            'rooms' => $rooms,
+            'roomsWithStats' => $roomsWithStats,
+            'filteredRooms'  => $filteredRooms,
+            'filterStart'    => $filterStart,
+            'filterEnd'      => $filterEnd,
+            'timeSlots'       => $timeSlots,
+            'filterDate'      => $dateParam,
+            'filterStartTime' => $startTimeParam,
+            'filterEndTime'   => $endTimeParam,
         ]);
     }
 
@@ -698,6 +754,248 @@ final class AdminController extends AbstractController
 
         return $this->redirectToRoute('app_admin_users');
     }
+
+
+     /************************************ Réservations ********************************************/
+
+     /**
+      * créer new reservation
+      */
+    #[Route('/reservations/new', name: 'app_admin_reservation_new')]
+    public function reservationNew(
+        Request                     $request,
+        EntityManagerInterface      $em,
+        RoomRepository              $roomRepo
+    ):Response {
+
+        //préselectionner la salle => si passée en GET (?room=4)
+        $preselectedRoom = null;
+        $roomId = $request->query->get('room');
+        if($roomId){
+            $preselectedRoom = $roomRepo->find($roomId);
+        }
+
+        //créer un formulaire lié à l'entité CreateReservation
+        $form = $this->createForm(CreateReservationType::class, null, [
+            'preselected_room' => $preselectedRoom,
+        ]); 
+
+        // analyse la requête HTTP => POST (formulaire)
+        $form->handleRequest($request);
+
+        //si le formulaire est soumise et valide
+        if($form->isSubmitted() && $form->isValid()){
+            $data = $form->getData();
+            $room = $data['room'];
+
+            // reconstituer les DateTime depuis date + heure choisie:
+                    // $data['date'] = objet DateTimeInterface (DateType renvoie un DateTime) => 2026-03-10
+                    // $data['startTime'] = string '09:30' -> $data['endTime']   = string "11:00"
+            $dateStr   = $data['date']->format('Y-m-d');
+            $start     = new \DateTime($dateStr . ' ' . $data['startTime']);    // "2026-03-10 09:30"
+            $end       = new \DateTime($dateStr . ' ' . $data['endTime']);      // "2026-03-10 11:00"
+            $now       = new \DateTime();
+
+            $now = new \DateTime();
+
+            // date de début dans le passé
+            if($start <= $now){
+                $this->addFlash('error', 'La date de début doit être dans le futur.');
+                return $this->render('admin/reservations/new.html.twig', [
+                    'form' => $form
+                ]);
+            }
+
+            // date fin avant ou égal au début
+            if($end <= $start){
+                $this->addFlash('error', 'La date de fin doit être après la date de début.');
+                return $this->render('admin/reservations/new.html.twig', [
+                    'form' => $form
+                ]);
+            }
+
+            // salle est déjà réservé pour ce créneau
+            if(!$roomRepo->isAvailable($room, $start, $end)){
+                $this->addFlash('error', 'La salle "' . $room->getName() . '" n\'est pas disponible sur ce créneau.');
+                return $this->render('admin/reservations/new.html.twig', [
+                    'form' => $form
+                ]);
+            }
+
+            //déterminer le bénéficiaire=> si rempli ? user choisi : admin (lui même)
+
+            /** @var User $currentAdmin */
+            $currentAdmin = $this->getUser();
+
+            $beneficiary = $data['beneficiary'] ?? $currentAdmin;
+            if(!$beneficiary){
+                $beneficiary = $currentAdmin;
+            }
+
+            $reservation = new Reservation();
+            $reservation->setRoom($room);
+            $reservation->setUser($beneficiary);
+            $reservation->setReservationStart($start);
+            $reservation->setReservationEnd($end);
+
+            $em->persist($reservation);
+            $em->flush();
+
+            $isSelf = ($beneficiary->getId() === $currentAdmin->getId());
+
+            $this->addFlash('success', 
+                'Réservation créé : ' . $room->getName() . '"le '
+                . $start->format('d/m/Y') . ' de '
+                . $start->format('H:i') . ' à ' . $end->format('H:i')
+                . ($isSelf ? '' : ' pour ' .$beneficiary->getFirstname() . ' ' . $beneficiary->getLastname())
+                . '.'
+            );
+
+            return $this->redirectToRoute('app_admin_rooms');
+        }
+
+        return $this->render('admin/reservations/new.html.twig', [
+            'form' => $form
+        ]);
+    }
+
+    /**
+     * annuler une réservation
+     */
+    #[Route('/reservations/{id}/cancel', name: 'app_admin_reservation_cancel', requirements: ['id' => '\d+'], methods: ['POST'])]
+    public function reservationCancel(
+        Reservation            $reservation,
+        Request                $request,
+        EntityManagerInterface $em
+    ): Response {
+
+        if (!$this->isCsrfTokenValid('cancel_reservation_' . $reservation->getId(), $request->request->get('_token'))) {
+            $this->addFlash('error', 'Token invalide.');
+            return $this->redirectToRoute('app_admin_rooms');
+        }
+
+        // vérif si la réservation n'est pas déjà annulée
+        if ($reservation->getStatus() === 'canceled') {
+            $this->addFlash('error', 'Cette réservation est déjà annulée.');
+            return $this->redirectToRoute('app_admin_rooms');
+        }
+
+        // vérif si la réservation n'a pas encore commencé
+        if ($reservation->getReservationStart() <= new \DateTime()) {
+            $this->addFlash('error', 'Impossible d\'annuler une réservation déjà commencée ou passée.');
+            return $this->redirectToRoute('app_admin_rooms');
+        }
+
+        // marquer comme annulée — ne pas supprimer pour historique
+        $reservation->setStatus('canceled');
+        $em->flush();
+
+        $this->addFlash('success',
+            'Réservation de "' . $reservation->getRoom()->getName() . '" du '
+            . $reservation->getReservationStart()->format('d/m/Y H:i')
+            . ' annulée avec succès.'
+        );
+
+        return $this->redirectToRoute('app_admin_rooms');
+    }
+
+    /************************************ équipements ********************************************/
+
+    /**
+     * ajouter l'équipement à la salle
+     */
+    #[Route('/rooms/{id}/equipments', name: 'app_admin_room_equipments', requirements: ['id' => '\d+'])]
+    public function roomEquipement(
+        Room                   $room,
+        Request                $request,
+        EntityManagerInterface $em
+    ):Response {
+
+        $form = $this->createForm(RoomEquipmentType::class, null, [
+            'room_id' => $room->getId()
+        ]);
+
+        $form->handleRequest($request);
+
+        //si le formulaire est soumise et valide
+        if($form->isSubmitted() && $form->isValid()){
+            $data = $form->getData();
+            $existingEquipment = $data['existingEquipment'];
+            $newEquipmentName = trim($data['newEquipment']);
+
+            //cas 1 => équipement existant séléctionné
+            if($existingEquipment){
+                $room->addEquipment($existingEquipment);
+                $em->flush();
+
+                $this->addFlash('success', '"' . $existingEquipment->getName() . '" ajouté à la salle.');
+            }
+
+            //cas 2 => nouvel équipement à créer
+            elseif($newEquipmentName !== ''){
+                $equipment = new \App\Entity\Equipment();
+                $equipment->setName($newEquipmentName);
+                $room->addEquipment($equipment);
+                
+                $em->persist($equipment);
+                $em->flush();
+
+                $this->addFlash('success', 'Équipement "' . $newEquipmentName . '" créé et ajouté à la salle.');
+            }
+            //cas 3 =>rien rempli
+            else{
+                 $this->addFlash('error', 'Veuillez choisir un équipement existant ou saisir un nouveau nom.');
+            }
+
+            return $this->redirectToRoute('app_admin_room_equipments', ['id' => $room->getId()]);
+        }
+
+        return $this->render('admin/rooms/equipments.html.twig', [
+            'room' => $room,
+            'form' => $form,
+        ]);
+    }
+
+    /**
+     * 
+     */
+    #[Route('/rooms/{id}/equipments/{equipmentId}/remove', name: 'app_admin_room_equipment_remove', requirements: ['id' => '\d+', 'equipmentId' => '\d+'], methods: ['POST'])]
+    public function roomEquipmentRemove(
+        Room                   $room,
+        int                    $equipmentId,
+        Request                $request,
+        EntityManagerInterface $em
+    ):Response {
+        if (!$this->isCsrfTokenValid('remove_equipment_' . $equipmentId, $request->request->get('_token'))) {
+            $this->addFlash('error', 'Token invalide.');
+            return $this->redirectToRoute('app_admin_room_equipments', ['id' => $room->getId()]);
+        }
+
+        //trouver l'équipement dans la collection de la salle
+        $equipment = null;
+        foreach($room->getEquipments() as $eq){
+            if($eq->getId() === $equipmentId){
+                $equipment = $eq;
+                break;
+            }
+        }
+
+        if(!$equipment){
+            $this->addFlash('error', 'Équipement introuvable.');
+            return $this->redirectToRoute('app_admin_room_equipments', ['id' => $room->getId()]);
+        }
+
+        $name = $equipment->getName();
+        $room->removeEquipment($equipment);
+
+        $em->flush();
+
+        $this->addFlash('success', '"' . $name . '" retiré de la salle.');
+
+        return $this->redirectToRoute('app_admin_room_equipments', ['id' => $room->getId()]);
+
+    }
+
 
 
 }

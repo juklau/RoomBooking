@@ -4,6 +4,8 @@ namespace App\Entity;
 
 use App\Repository\EquipmentRepository;
 use Doctrine\ORM\Mapping as ORM;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 
 #[ORM\Entity(repositoryClass: EquipmentRepository::class)]
 class Equipment
@@ -16,9 +18,17 @@ class Equipment
     #[ORM\Column(length: 150)]
     private ?string $name = null;
 
-    #[ORM\ManyToOne(inversedBy: 'equipments')]
-    #[ORM\JoinColumn(nullable: false)]
-    private ?Room $room = null;
+    // #[ORM\ManyToOne(inversedBy: 'equipments')]
+    // #[ORM\JoinColumn(nullable: false)]
+    // private ?Room $room = null;
+
+    #[ORM\ManyToMany(targetEntity: Room::class, mappedBy: 'equipments')]
+    private Collection $rooms;
+
+    public function __construct()
+    {
+        $this->rooms = new ArrayCollection();  //=> initialisation de la collection
+    }
 
     public function getId(): ?int
     {
@@ -33,19 +43,37 @@ class Equipment
     public function setName(string $name): static
     {
         $this->name = $name;
-
         return $this;
     }
 
-    public function getRoom(): ?Room
+    public function getRooms(): Collection
     {
-        return $this->room;
+        return $this->rooms;
     }
 
-    public function setRoom(?Room $room): static
+    public function addRoom(Room $room): static
     {
-        $this->room = $room;
-
+        if (!$this->rooms->contains($room)) {
+            $this->rooms->add($room);
+        }
         return $this;
     }
+
+    public function removeEquipment(Room $room): static
+    {
+        $this->rooms->removeElement($room);
+        return $this;
+    }
+
+    // public function getRoom(): ?Room
+    // {
+    //     return $this->room;
+    // }
+
+    // public function setRoom(?Room $room): static
+    // {
+    //     $this->room = $room;
+
+    //     return $this;
+    // }
 }

@@ -27,6 +27,9 @@ class Reservation
     #[ORM\JoinColumn(nullable: false)]
     private ?User $user = null;
 
+    #[ORM\Column(length: 20)]
+    private string $status = 'reserved';  // valeur par défaut
+
     public function getId(): ?int
     {
         return $this->id;
@@ -40,7 +43,6 @@ class Reservation
     public function setReservationStart(\DateTime $reservationStart): static
     {
         $this->reservationStart = $reservationStart;
-
         return $this;
     }
 
@@ -52,7 +54,6 @@ class Reservation
     public function setReservationEnd(\DateTime $reservationEnd): static
     {
         $this->reservationEnd = $reservationEnd;
-
         return $this;
     }
 
@@ -64,7 +65,6 @@ class Reservation
     public function setRoom(?Room $room): static
     {
         $this->room = $room;
-
         return $this;
     }
 
@@ -76,7 +76,17 @@ class Reservation
     public function setUser(?User $user): static
     {
         $this->user = $user;
+        return $this;
+    }
 
+    public function getStatus(): string
+    {
+        return $this->status;
+    }
+
+    public function setStatus(string $status): static
+    {
+        $this->status = $status;
         return $this;
     }
 }

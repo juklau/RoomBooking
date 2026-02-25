@@ -122,8 +122,8 @@
 
 .equipment-tag {
     display: inline-block;
-    background: #21262d;
-    color: #adb0b4;
+    background: #2e343c;
+    color: #f3f4f8;
     border-radius: 6px;
     padding: 0.2rem 0.55rem;
     font-size: 0.72rem;
@@ -253,7 +253,7 @@
 
 .form-field .form-control {
     background: #e6edf3;
-    border: 1px solid #21262d;
+    border: 1px solid #21262d; 
     border-radius: 8px;
     padding: 0.72rem 1rem;
     color: #4a5270;
@@ -296,26 +296,210 @@
 
 /* ------------------------------ Select (dropdown classe -créer user) --------------------- */
 .form-field .form-select {
-    background-color: #414f62;
+    background-color: #e6edf3; 
     /* background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%237d8590' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='m2 5 6 6 6-6'/%3e%3c/svg%3e"); */
     border: 1px solid #21262d;
     border-radius: 8px;
     padding: 0.72rem 1rem;
-    color: #e6edf3;
+    color: #363738;
     font-size: 0.92rem;
     width: 100%;
     transition: border-color 0.2s, box-shadow 0.2s; 
 }
 
 .form-field .form-select:focus {
-    background-color: #414f62;
+    background-color: #e6edf3;
     border-color: #f85149;
     box-shadow: 0 0 0 3px rgba(248, 81, 73, 0.15);
-    color: #e6edf3;
+    color: #363738;
     outline: none;
 }
 
 .form-field .form-select option {
-    background: #414f62;
-    color: #e6edf3;
+    background: #e6edf3;
+    color: #363738;
+}
+
+/* -------------------------------------- Filtre créneau ---------------------------------- */
+.filter-card {
+    background: #8f949b;
+    border: 1px solid #21262d;
+    border-radius: 12px;
+    padding: 1.25rem 1.5rem;
+}
+
+.filter-card-title {
+    font-size: 0.88rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 1rem;
+}
+
+.filter-field {
+    /* display: flex;
+    flex-direction: column; */
+    gap: 0.35rem;
+}
+
+.filter-field label {
+    font-size: 0.8rem;
+    color: black;
+    font-weight: 500;
+}
+
+.filter-field .form-control {
+    background: #fdfdfd;
+    border: 1px solid #21262d;
+    border-radius: 8px;
+    color: #a6a8a9;
+    padding: 0.5rem 0.85rem;
+    font-size: 0.88rem;
+    min-width: 200px;
+}
+
+.filter-field .form-control:focus {
+    border-color: #f85149;
+    box-shadow: 0 0 0 3px rgba(248,81,73,0.15);
+    outline: none;
+    background: #fdfdfd;
+    color: #a6a8a9;
+}
+
+.filter-result {
+    font-size: 0.88rem;
+    padding: 0.6rem 0.85rem;
+    border-radius: 8px;
+}
+
+.filter-result-ok {
+    color: #21682a;
+    background: rgba(157, 255, 169, 0.872);
+    border: 1px solid rgba(63,185,80,0.2);
+    padding: 0.5rem 0.85rem;
+    border-radius: 8px;
+    display: block;
+}
+
+.filter-result-empty {
+    color: #811c16;
+    background: rgba(248, 147, 142, 0.97);
+    border: 1px solid rgba(248,81,73,0.2);
+    padding: 0.5rem 0.85rem;
+    border-radius: 8px;
+    display: block;
+}
+
+/* ----------------------------------- Tableau salles ---------------------------------------- */
+.room-row-name {
+    font-weight: 600;
+    font-size: 0.92rem;
+}
+
+.room-row-equip {
+    margin-top: 0.25rem;
+}
+
+.room-capacity-badge {
+    background: rgba(88,166,255,0.1);
+    color: #58a6ff;
+    border-radius: 20px;
+    padding: 0.2rem 0.65rem;
+    font-size: 0.78rem;
+    font-weight: 600;
+}
+
+.status-badge {
+    border-radius: 20px;
+    padding: 0.2rem 0.65rem;
+    font-size: 0.78rem;
+    font-weight: 600;
+}
+
+.status-available {
+    background: rgba(63,185,80,0.12);
+    color: #3fb950;
+    border: 1px solid rgba(63,185,80,0.25);
+}
+
+.status-occupied {
+    background: rgba(248,81,73,0.12);
+    color: #f85149;
+    border: 1px solid rgba(248,81,73,0.25);
+}
+
+.status-detail {
+    font-size: 0.72rem;
+    color: #7d8590;
+    margin-top: 0.25rem;
+}
+
+.next-res-date,
+.text-muted-next-res {
+    font-weight: 600;
+    /* color: #e6edf3; */
+    font-size: 0.85rem;
+}
+
+.next-res-time {
+    font-size: 0.78rem;
+    color: #58a6ff;
+}
+
+.next-res-user {
+    font-size: 0.72rem;
+    color: #686f78;
+}
+
+.total-res-badge {
+    background: rgba(125,133,144,0.15);
+    color: #7d8590;
+    border-radius: 20px;
+    padding: 0.2rem 0.75rem;
+    font-size: 0.82rem;
+    font-weight: 600;
+}
+
+.row-available-highlight {
+    background: rgba(63,185,80,0.05) !important;
+    border-left: 3px solid #3fb950;
+}
+
+.btn-sm-action {
+    padding: 0.3rem 0.6rem;
+    font-size: 0.82rem;
+}
+
+.action-icon-dispo{
+    font-size: 1.0rem;
+}
+
+/* -------------------------------------- Équipements page ---------------------------------- */
+.form-card-title {
+    font-size: 0.88rem;
+    font-weight: 600;
+    color: #ffffff;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.separator-or {
+    text-align: center;
+    color: #ffffff;
+    font-size: 0.82rem;
+    margin: 1rem 0;
+    position: relative;
+    text-transform: uppercase;
+}
+
+.equipment-avatar {
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    background: rgba(125,133,144,0.12);
+    /* display: flex;
+    align-items: center;
+    justify-content: center; */
+    font-size: 1rem;
+    flex-shrink: 0;
 }

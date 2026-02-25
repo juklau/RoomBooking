@@ -1,0 +1,133 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Équipements — {{ room.name }}{% endblock %}
+
+{% block stylesheets %}
+    <link rel="stylesheet" href="{{ asset('styles/admin.css') }}">
+    <link rel="stylesheet" href="{{ asset('styles/rooms.css') }}">
+    <link rel="stylesheet" href="{{ asset('styles/classes.css') }}">
+{% endblock %}
+
+{% block body %}
+<div class="container-fluid px-4 py-3 mt-3">
+
+    {# ---- Header ---- #}
+    <div class="dashboard-header">
+        <div class="d-flex align-items-center justify-content-between">
+            <div>
+                <div class="d-flex align-items-center gap-2 mb-2">
+                    <span class="badge-admin">Administrateur</span>
+                </div>
+                <div class="d-flex align-items-center gap-2 mb-1">
+                    <a href="{{ path('app_admin_dashboard') }}" class="breadcrumb-link">Dashboard</a>
+                    <span class="breadcrumb-sep">›</span>
+
+                    <a href="{{ path('app_admin_rooms') }}" class="breadcrumb-link">Salles</a>
+                    <span class="breadcrumb-sep">›</span>
+
+                    <a href="{{ path('app_admin_room_show', {id: room.id}) }}" class="breadcrumb-link">{{ room.name }}</a>
+                    <span class="breadcrumb-sep">›</span>
+
+                    <span class="breadcrumb-current">Équipements</span>
+                </div>
+                <h1>Équipements — {{ room.name }}</h1>
+                <p>{{ room.equipments|length }} équipement{{ room.equipments|length > 1 ? 's' : '' }} assigné{{ room.equipments|length > 1 ? 's' : '' }}</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-4">
+
+        {# ---- Formulaire d'ajout ---- #}
+        <div class="col-lg-5">
+            <div class="form-card shadow">
+                <div class="form-card-title mb-5">Ajouter un équipement</div>
+
+                {{ form_start(form) }}
+
+                    {# Équipement existant #}
+                    <div class="form-field">
+                        {{ form_label(form.existingEquipment) }}
+                        {{ form_widget(form.existingEquipment) }}
+                        {{ form_errors(form.existingEquipment) }}
+                    </div>
+
+                    <div class="separator-or">— ou —</div>
+
+                    {# Nouvel équipement #}
+                    <div class="form-field">
+                        {{ form_label(form.newEquipment) }}
+                        {{ form_widget(form.newEquipment) }}
+                        {{ form_errors(form.newEquipment) }}
+                    </div>
+
+                    <button type="submit" class="btn-action-primary w-100 mt-3">
+                        ✓ Ajouter
+                    </button>
+
+                {{ form_end(form) }}
+            </div>
+
+            <div class="form-note mt-3">
+                Vous pouvez sélectionner un équipement déjà existant (partagé avec d'autres salles)
+                OU en créer un nouveau.
+            </div>
+        </div>
+
+        {# ---- Liste des équipements actuels ---- #}
+        <div class="col-lg-7">
+            <div class="detail-card shadow">
+                <div class="detail-card-title d-flex align-items-center justify-content-between">
+                    <span>🖥 Équipements de {{ room.name }}</span>
+                    <span class="detail-count">{{ room.equipments|length }}</span>
+                </div>
+
+                {% if room.equipments is empty %}
+                    <div class="empty-state-sm">
+                        <p>Aucun équipement assigné à cette salle.</p>
+                    </div>
+                {% else %}
+                    <div class="students-list">
+                        {% for equipment in room.equipments %}
+                            <div class="student-list-row d-flex align-items-center justify-content-between px-3">
+                                <div class="d-flex align-items-center gap-3">
+                                    <div class="equipment-avatar d-flex align-items-center justify-content-center">
+                                        🖥
+                                    </div>
+                                    <div>
+                                        <div class="student-fullname">{{ equipment.name }}</div>
+                                        <div class="student-email">
+                                            Utilisé dans {{ equipment.rooms|length }} salle{{ equipment.rooms|length > 1 ? 's' : '' }}
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {# Bouton retirer #}
+                                <form method="post"
+                                      action="{{ path('app_admin_room_equipment_remove', {id: room.id, equipmentId: equipment.id}) }}"
+                                      onsubmit="return confirm('Retirer « {{ equipment.name }} » de cette salle ?')">
+                                    <input type="hidden" name="_token"
+                                           value="{{ csrf_token('remove_equipment_' ~ equipment.id) }}">
+                                    <button type="submit" class="btn-action-danger btn-sm-action" title="Retirer de la salle">
+                                        ✕
+                                    </button>
+                                </form>
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+
+    </div>
+
+    {# ---- Retour ---- #}
+    <div class="mt-5">
+        <a href="{{ path('app_admin_room_show', {id: room.id}) }}"
+           class="btn-action-secondary text-decoration-none d-inline">
+            ← Retour à la salle
+        </a>
+    </div>
+
+</div>
+{% endblock %}

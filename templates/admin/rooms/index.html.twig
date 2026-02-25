@@ -1,18 +1,17 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Salles — Admin RoomBooking{% endblock %}
+{% block title %}Salles & Disponibilités — Admin RoomBooking{% endblock %}
 
 {% block stylesheets %}
-    <link rel="stylesheet" href="{{ asset('styles/admin.css')}}">
-    <link rel="stylesheet" href="{{ asset('styles/rooms.css')}}">
+    <link rel="stylesheet" href="{{ asset('styles/admin.css') }}">
+    <link rel="stylesheet" href="{{ asset('styles/rooms.css') }}">
 {% endblock %}
 
 {% block body %}
-    
 <div class="container-fluid px-4 py-3 mt-3">
 
     {# ---- Header ---- #}
-    <div class="dashboard-header"> 
+    <div class="dashboard-header">
         <div class="d-flex align-items-center justify-content-between">
             <div>
                 <div class="d-flex align-items-center gap-2 mb-2">
@@ -21,68 +20,135 @@
                 <div class="d-flex align-items-center gap-2 mb-1">
                     <a href="{{ path('app_admin_dashboard') }}" class="breadcrumb-link">Dashboard</a>
                     <span class="breadcrumb-sep">›</span>
-                    
                     <span class="breadcrumb-current">Salles</span>
                 </div>
-                <h1>Gestion des salles</h1>
-                <p>{{ rooms|length }} salle{{ rooms|length > 1 ? 's' : '' }} enregistrée{{ rooms|length > 1 ? 's' : '' }}</p>
+                <h1>Salles & Disponibilités</h1>
+                <p>{{ roomsWithStats|length }} salle{{ roomsWithStats|length > 1 ? 's' : '' }} enregistrée{{ roomsWithStats|length > 1 ? 's' : '' }}</p>
             </div>
-            <div>
-                {# Tâche 3 : bouton vers Créer une salle #}
-                <a href="{{ path('app_admin_room_new') }}" class="btn-action-primary text-decoration-none d-inline">+ Créer une salle</a>
+            <div class="d-flex gap-2">
+                <a href="{{ path('app_admin_room_new') }}" class="btn-action-primary text-decoration-none d-inline">
+                    + Créer une salle
+                </a>
             </div>
         </div>
     </div>
 
-    {# ---- Liste des salles ---- #}
-    {% if rooms is empty %}
-        <div class="empty-state">
-            <div class="empty-icon">🏫</div>
-            <p>Aucune salle enregistrée.</p>
-            <a href="#" class="btn-action-primary text-decoration-none d-inline">Créer la première salle</a>
-        </div>
-    {% else %}
-        <div class="row g-3">
-            {% for room in rooms %}
-                <div class="col-md-6 col-lg-4">
-                    <div class="room-card-full shadow">
+    {{ include('admin/rooms/_filter_rooms.html.twig')}}
 
-                        {# Nom + capacité #}
-                        <div class="room-card-header d-flex align-items-start justify-content-between">
-                            <div>
-                                <div class="room-card-name"> {{ room.name }}</div>
-                                <div class="room-card-capacity">👥 {{ room.capacity }} places</div>
-                            </div>
-                            <span class="room-card-badge">Salle</span>
-                        </div>
+    {# ---- Tableau des salles ---- #}
+    <div class="reservations-table details shadow">
+        <table class="table table-borderless mb-0">
+            <thead>
+                <tr>
+                    <th>Salle</th>
+                    <th>Capacité</th>
+                    <th>Statut actuel</th>
+                    <th>Prochaine réservation</th>
+                    <th>Total réservations</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% if roomsWithStats is empty %}
+                    <tr>
+                        <td colspan="6" class="text-center text-muted py-4">
+                            Aucune salle enregistrée.
+                        </td>
+                    </tr>
+                {% else %}
+                    {% for item in roomsWithStats %}
+                        {% set isFiltered = filterStart and filteredRooms is not null and item.room in filteredRooms %}
+                        <tr class="{{ isFiltered ? 'row-available-highlight' : '' }}">
 
-                        {# Équipements #}
-                        <div class="room-card-equip">
-                            {% if room.equipments is not empty %}
-                                {% for equip in room.equipments %}
-                                    <span class="equipment-tag">{{ equip.name }}</span> 
-                                {% endfor %}
-                            {% else %}
-                                <span class="equipment-tag muted">Aucun équipement</span> 
-                            {% endif %}   
-                        </div>
+                            {# Nom + équipements #}
+                            <td>
+                                <div class="room-row-name">{{ item.room.name }}</div>
 
-                        {# Actions #}
-                        <div class="room-card-actions d-flex gap-2 mt-3">
-                            {# Tâche 2 : voir les détails #}
-                            <a href="{{ path('app_admin_room_show', {id: room.id}) }}" class="btn-action-secondary text-decoration-none d-inline flex-fill text-center">Voir le détail</a>
-                            
-                            {# Tâche 4+1: Modifier les données d'une salle #}
-                            <a href="{{ path('app_admin_room_edit', {id: room.id}) }}" class="btn-action-secondary text-decoration-none d-inline flex-fill text-center my-auto">Modifier</a>
+                                {% if item.room.equipments is not empty %}
+                                    <div class="room-row-equip">
 
-                            {# Tâche 4 : supprimer #}
-                            {# <a href="#" class="btn-action-danger text-decoration-none d-inline">🗑</a> => à éviter à cause de la sécurité#} 
-                            {{ include('partials/_delete_room.html.twig', { room: room }) }}
-                        </div>
-                    </div>
-                </div>
-            {% endfor %}
-        </div>
-    {% endif %}
- </div>
+                                        {% for equip in item.room.equipments %}
+                                            <span class="equipment-tag">{{ equip.name }}</span>
+                                        {% endfor %}
+                                    </div>
+                                {% endif %}
+                            </td>
+
+                            {# Capacité #}
+                            <td>
+                                <span class="room-capacity-badge">👥 {{ item.room.capacity }}</span>
+                            </td>
+
+                            {# Statut actuel #}
+                            <td>
+                                {% if item.status == 'occupied' %}
+
+                                    <span class="status-badge d-inline status-occupied">🔴 Occupée</span>
+                                    
+                                    {% if item.currentReservation %}
+
+                                        <div class="status-detail">
+                                            jusqu'à {{ item.currentReservation.reservationEnd|date('H:i') }}
+                                            — {{ item.currentReservation.user.firstname }} {{ item.currentReservation.user.lastname }}
+                                        </div>
+                                    {% endif %}
+
+                                {% else %}
+                                    <span class="status-badge status-available">🟢 Disponible</span>
+                                {% endif %}
+                            </td>
+
+                            {# Prochaine réservation #}
+                            <td class="text-center">
+                                {% if item.nextReservation %}
+
+                                    <div class="next-res-date">{{ item.nextReservation.reservationStart|date('d/m/Y') }}</div>
+                                    <div class="next-res-time">
+                                        {{ item.nextReservation.reservationStart|date('H:i') }}
+                                        → {{ item.nextReservation.reservationEnd|date('H:i') }}
+                                    </div>
+                                    <div class="next-res-user">
+                                        {{ item.nextReservation.user.firstname }} {{ item.nextReservation.user.lastname }}
+                                    </div>
+                                {% else %}
+                                    <span class="text-muted-next-res small">Aucune</span>
+                                {% endif %}
+                            </td>
+
+                            {# Total réservations #}
+                            <td class="text-center">
+                                <span class="total-res-badge">{{ item.totalReservations }}</span>
+                            </td>
+
+                            {# Actions #}
+                            <td>
+                                <div class="d-flex gap-2 flex-wrap">
+                                    <a href="{{ path('app_admin_room_show', {id: item.room.id}) }}"
+                                       class="btn-action-secondary btn-sm-action text-decoration-none" title="Voir le détail">
+                                        <span class="action-icon-dispo d-flex align-items-center justify-content-center">👁</span>
+                                    </a>
+
+                                    <a href="{{ path('app_admin_room_edit', {id: item.room.id}) }}"
+                                       class="btn-action-secondary btn-sm-action text-decoration-none" title="Modifier">
+                                        <span class="action-icon-dispo d-flex align-items-center justify-content-center">✏️</span>
+                                    </a>
+
+                                    {# Tâche 18 : réserver — href à brancher #}
+                                    <a href="{{ path('app_admin_reservation_new') }}"
+                                       class="btn-action-primary btn-sm-action text-decoration-none" title="Réserver cette salle">
+                                        <span class="action-icon-dispo d-flex align-items-center justify-content-center">📅</span>
+                                    </a>
+
+                                    {{ include('partials/_delete_room.html.twig', { room: item.room }) }}
+                                </div>
+                            </td>
+
+                        </tr>
+                    {% endfor %}
+                {% endif %}
+            </tbody>
+        </table>
+    </div>
+
+</div>
 {% endblock %}

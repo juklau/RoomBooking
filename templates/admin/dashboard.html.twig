@@ -72,11 +72,11 @@
         {# ---- Colonne gauche ---- #}
         <div class="col-lg-8">
 
-            {# Prochaines réservations #}
+            {# Prochaines réservations #} 
             <div class="mb-4">
                 <div class="section-title d-flex align-items-center">📅 Prochaines réservations</div>
                 <div class="reservations-table shadow">
-                    <table class="table table-borderless mb-0 text-center ">
+                    <table class="table table-borderless mb-0 text-center">
                         <thead>
                             <tr>
                                 <th>Salle</th>
@@ -94,7 +94,7 @@
                                 </tr>
                             {% else %}
                                 {% for res in upcomingReservations %}
-                                    <tr>
+                                    <tr onclick="window.location='{{ path('app_admin_rooms') }}'" class="rows-res-dashboard">
                                         <td>
                                             <strong> {{ res.room.name }}</strong>
                                         </td>
@@ -138,7 +138,7 @@
                                     {% endif %}
                                 </div>
                                                         
-                                <a href="{{ path('app_admin_rooms') }}" class="btn btn-sm btn-outline-secondary" id="btn-details">Voir →</a>
+                                <a href="{{ path('app_admin_room_show', {id: room.id}) }}" class="btn btn-sm btn-outline-secondary" id="btn-details">Voir →</a>
                             </div>
                         </div>
                     {% else %}
@@ -171,7 +171,7 @@
                         <span class="action-icon d-flex align-items-center justify-content-center" id="action-icon-classes">🎓</span>
                         Créer une classe
                     </a>
-                    <a href="#" class="action-btn text-decoration-none d-flex align-items-center">
+                    <a href="{{ path('app_admin_reservation_new') }}" class="action-btn text-decoration-none d-flex align-items-center">
                         <span class="action-icon d-flex align-items-center justify-content-center" id="action-icon-reservations">📅</span>
                         Réserver une salle
                     </a>

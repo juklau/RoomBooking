@@ -1,0 +1,111 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Créer une réservation — Admin RoomBooking{% endblock %}
+
+{% block stylesheets %}
+    <link rel="stylesheet" href="{{ asset('styles/admin.css') }}">
+    <link rel="stylesheet" href="{{ asset('styles/rooms.css') }}">
+    <link rel="stylesheet" href="{{ asset('styles/classes.css') }}">
+{% endblock %}
+
+{% block body %}
+<div class="container-fluid px-4 py-3 mt-3">
+
+    {# ---- Header ---- #}
+    <div class="dashboard-header">
+        <div class="d-flex align-items-center justify-content-between">
+            <div>
+                <div class="d-flex align-items-center gap-2 mb-2">
+                    <span class="badge-admin">Administrateur</span>
+                </div>
+                <div class="d-flex align-items-center gap-2 mb-1">
+                    <a href="{{ path('app_admin_dashboard') }}" class="breadcrumb-link">Dashboard</a>
+                    <span class="breadcrumb-sep">›</span>
+
+                    <a href="{{ path('app_admin_rooms') }}" class="breadcrumb-link">Salles</a>
+                    <span class="breadcrumb-sep">›</span>
+
+                    <span class="breadcrumb-current">Nouvelle réservation</span>
+                </div>
+                <h1>Créer une réservation</h1>
+                <p>Réservez une salle pour vous-même ou pour un autre utilisateur</p>
+            </div>
+        </div>
+    </div>
+
+    {# ---- Formulaire ---- #}
+    <div class="row justify-content-center">
+        <div class="col-lg-6 mt-3">
+            <div class="form-card shadow">
+
+                {{ form_start(form) }}
+
+                    {# Salle #}
+                    <div class="form-field">
+                        {{ form_label(form.room) }}
+                        {{ form_widget(form.room) }}
+                        {{ form_errors(form.room) }}
+                    </div>
+
+                    {# Date #}
+                    <div class="form-field">
+                        {{ form_label(form.date) }}
+                        {{ form_widget(form.date) }}
+                        {{ form_errors(form.date) }}
+                    </div>
+
+                    {# Heures de début et fin #}
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <div class="form-field">
+                                {{ form_label(form.startTime) }}
+                                {{ form_widget(form.startTime) }}
+                                {{ form_errors(form.startTime) }}
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-field">
+                                {{ form_label(form.endTime) }}
+                                {{ form_widget(form.endTime) }}
+                                {{ form_errors(form.endTime) }}
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="field-hint mb-4">
+                        🕐 Créneaux disponibles de 08:00 à 20:00, par intervalles de 30 minutes.
+                    </div>
+
+                    {# Bénéficiaire #}
+                    <div class="form-field">
+                        {{ form_label(form.beneficiary) }}
+                        {{ form_widget(form.beneficiary) }}
+                        {{ form_errors(form.beneficiary) }}
+                        <div class="field-hint">Laissez vide pour réserver en votre propre nom.</div>
+                    </div>
+
+                    {# Boutons #}
+                    <div class="d-flex gap-2 mt-4">
+                        <button type="submit" class="btn-action-primary flex-fill text-center">
+                            📅 Créer la réservation
+                        </button>
+                        <a href="{{ path('app_admin_rooms') }}"
+                           class="btn-action-secondary flex-fill text-center text-decoration-none">
+                            Annuler
+                        </a>
+                    </div>
+
+                {{ form_end(form) }}
+
+            </div>
+
+            <div class="form-note mt-4">
+                Trois vérifications sont effectuées automatiquement :
+                la date doit être dans le futur, l'heure de fin doit être après l'heure de début,
+                et la salle doit être libre sur ce créneau.
+            </div>
+        </div>
+    </div>
+
+</div>
+{% endblock %}

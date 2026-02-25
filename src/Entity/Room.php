@@ -24,7 +24,8 @@ class Room
     /**
      * @var Collection<int, Equipment>
      */
-    #[ORM\OneToMany(targetEntity: Equipment::class, mappedBy: 'room', orphanRemoval: true)]
+    // #[ORM\OneToMany(targetEntity: Equipment::class, mappedBy: 'room', orphanRemoval: true)]
+    #[ORM\ManyToMany(targetEntity: Equipment::class, inversedBy: 'rooms')]
     private Collection $equipments;
 
     /**
@@ -52,7 +53,6 @@ class Room
     public function setName(string $name): static
     {
         $this->name = $name;
-
         return $this;
     }
 
@@ -76,25 +76,18 @@ class Room
         return $this->equipments;
     }
 
+    //si manytomany => plus de setRoom()
     public function addEquipment(Equipment $equipment): static
     {
         if (!$this->equipments->contains($equipment)) {
             $this->equipments->add($equipment);
-            $equipment->setRoom($this);
         }
-
         return $this;
     }
 
     public function removeEquipment(Equipment $equipment): static
     {
-        if ($this->equipments->removeElement($equipment)) {
-            // set the owning side to null (unless already changed)
-            if ($equipment->getRoom() === $this) {
-                $equipment->setRoom(null);
-            }
-        }
-
+        $this->equipments->removeElement($equipment);
         return $this;
     }
 
@@ -112,7 +105,6 @@ class Room
             $this->reservations->add($reservation);
             $reservation->setRoom($this);
         }
-
         return $this;
     }
 
@@ -124,7 +116,6 @@ class Room
                 $reservation->setRoom(null);
             }
         }
-
         return $this;
     }
 }

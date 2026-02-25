@@ -225,8 +225,17 @@ body {
 }
 
 .reservations-table tbody tr:hover td {
-    background: rgba(248,81,73,0.15);
+    background: rgba(213, 132, 128, 0.443);
     color: #e6edf3;
+}
+
+.reservations-table.details tbody tr:hover td{
+     background: rgba(239, 238, 238, 0.966);
+     color: black;
+}
+
+.rows-res-dashboard{
+    cursor: pointer;
 }
 
 /*------------------------------------------------- Quick actions -----------------------------------*/
@@ -246,7 +255,7 @@ body {
     background: #1c2128;
     border-color: #f85149;
     color: #f85149;
-    transform: translateY(-1px);
+    transform: translateY(-1px); 
 }
 
 .action-btn .action-icon {
