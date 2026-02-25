@@ -1,0 +1,107 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Créer un étudiant — Admin RoomBooking{% endblock %}
+
+{% block stylesheets %}
+    <link rel="stylesheet" href="{{ asset('styles/admin.css') }}">
+    <link rel="stylesheet" href="{{ asset('styles/rooms.css') }}">
+    <link rel="stylesheet" href="{{ asset('styles/classes.css') }}">
+{% endblock %}
+
+{% block body %}
+<div class="container-fluid px-4 py-3 mt-3">
+
+    {# ---- Header ---- #}
+    <div class="dashboard-header">
+        <div class="d-flex align-items-center justify-content-between">
+            <div>
+                <div class="d-flex align-items-center gap-2 mb-2">
+                    <span class="badge-admin">Administrateur</span>
+                </div>
+                <div class="d-flex align-items-center gap-2 mb-1">
+                    <a href="{{ path('app_admin_dashboard') }}" class="breadcrumb-link">Dashboard</a>
+                    <span class="breadcrumb-sep">›</span>
+                    
+                    <span class="breadcrumb-current">Nouvel étudiant</span>
+                </div>
+                <h1>Créer un étudiant</h1>
+                <p>Remplissez les informations du nouvel étudiant</p>
+            </div>
+        </div>
+    </div>
+
+    {# ---- Formulaire ---- #}
+    <div class="row justify-content-center">
+        <div class="col-lg-6">
+            <div class="form-card shadow">
+
+                {{ form_start(form) }}
+
+                    {# Ligne prénom / nom #}
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <div class="form-field">
+                                {{ form_label(form.firstname) }}
+                                {{ form_widget(form.firstname) }}
+                                {{ form_errors(form.firstname) }}
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-field">
+                                {{ form_label(form.lastname) }}
+                                {{ form_widget(form.lastname) }}
+                                {{ form_errors(form.lastname) }}
+                            </div>
+                        </div>
+                    </div>
+
+                    {# Email #}
+                    <div class="form-field">
+                        {{ form_label(form.email) }}
+                        {{ form_widget(form.email) }}
+                        {{ form_errors(form.email) }}
+                    </div>
+
+                    {# Mot de passe #}
+                    <div class="form-field">
+                        {{ form_label(form.password.first) }}
+                        {{ form_widget(form.password.first) }}
+                        {{ form_errors(form.password.first) }}
+                    </div>
+
+                    <div class="form-field">
+                        {{ form_label(form.password.second) }}
+                        {{ form_widget(form.password.second) }}
+                        {{ form_errors(form.password.second) }}
+                    </div>
+
+                    {# Classe #}
+                    <div class="form-field">
+                        {{ form_label(form.classe) }}
+                        {{ form_widget(form.classe) }}
+                        {{ form_errors(form.classe) }}
+                    </div>
+
+                    {# Boutons #}
+                    <div class="d-flex gap-2 mt-4">
+                        <button type="submit" class="btn-action-primary flex-fill text-center">
+                            ✓ Créer l'étudiant
+                        </button>
+                        <a href="{{ path('app_admin_dashboard') }}"
+                           class="btn-action-secondary flex-fill text-center text-decoration-none">
+                            Annuler
+                        </a>
+                    </div>
+
+                {{ form_end(form) }}
+
+            </div>
+
+            <div class="form-note mt-5">
+                Le mot de passe pourra être réinitialisé à tout moment depuis le détail de la classe.
+            </div>
+        </div>
+    </div>
+
+</div>
+{% endblock %}

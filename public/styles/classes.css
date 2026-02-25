@@ -165,3 +165,84 @@
     margin-top: 0.1rem;
 }
 
+/* --------------------------------------- Empty state small -------------------------- */
+.empty-state-sm {
+    text-align: center;
+    padding: 2rem 1rem;
+    color: #7d8590;
+    font-size: 0.88rem;
+}
+
+.empty-state-sm p { margin-bottom: 1rem; }
+
+/* ----------------------------------- Lien dans form-note ---------------------------------- */
+.note-link {
+    color: #388bfd;
+    text-decoration: none;
+}
+
+.note-link:hover {
+    text-decoration: underline;
+}
+
+
+/* ---------------------------------------- Users list ---------------------------------------- */
+.user-avatar {
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    background: rgba(181, 45, 38, 0.20);
+    color: #f85149;
+    font-size: 0.72rem;
+    font-weight: 700;
+    /* display: flex;
+    align-items: center;
+    justify-content: center; */
+    flex-shrink: 0;
+}
+
+.user-fullname, 
+.text-muted-users {
+    font-size: 0.88rem;
+    font-weight: 600;
+    color: #666a6e;
+}
+
+.badge-coordinator {
+    background: rgba(63, 185, 80, 0.15);
+    color: #3fb950;
+    border: 1px solid rgba(63, 185, 80, 0.3);
+    border-radius: 20px;
+    padding: 0.2rem 0.7rem;
+    font-size: 0.72rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.badge-student {
+    background: rgba(88, 166, 255, 0.15);
+    color: #58a6ff;
+    border: 1px solid rgba(88, 166, 255, 0.3);
+    border-radius: 20px;
+    padding: 0.2rem 0.7rem;
+    font-size: 0.72rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.badge-unknown {
+    background: rgba(125, 133, 144, 0.15);
+    color: #7d8590;
+    border: 1px solid rgba(125, 133, 144, 0.3);
+    border-radius: 20px;
+    padding: 0.2rem 0.7rem;
+    font-size: 0.72rem;
+    font-weight: 600;
+}
+
+.reservations-table.users tbody tr:hover td {
+    background: rgba(236, 233, 233, 0.863);
+    color: #666a6e;
+}

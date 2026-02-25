@@ -21,8 +21,10 @@
                 <div class="d-flex align-items-center gap-2 mb-1">
                     <a href="{{ path('app_admin_dashboard') }}" class="breadcrumb-link">Dashboard</a>
                     <span class="breadcrumb-sep">›</span>
+
                     <a href="{{ path('app_admin_classes') }}" class="breadcrumb-link">Classes</a>
                     <span class="breadcrumb-sep">›</span>
+                    
                     <span class="breadcrumb-current">{{ classe.name }}</span>
                 </div>
                 <h1>{{ classe.name }}</h1>
@@ -31,7 +33,7 @@
             <div class="d-flex gap-2">
 
                 {# Tâche 9 : ajouter un étudiant à cette classe #}
-                <a href="#" class="btn-action-primary text-decoration-none d-inline">+ Ajouter un étudiant</a>
+                <a href="{{ path('app_admin_classe_add_student', {id: classe.id}) }}" class="btn-action-primary text-decoration-none d-inline">+ Ajouter un étudiant</a>
                 
                 {# Tâche 8+1 => modifier le nom de la classe #}
                 <a href="{{ path('app_admin_classe_edit', {id: classe.id}) }}" class="btn-action-primary text-decoration-none d-inline">Modifier</a>
@@ -88,7 +90,7 @@
                 {% if classe.students is empty %}
                     <div class="empty-state-sm">
                         <p>Aucun étudiant dans cette classe.</p>
-                        <a href="#" class="btn-action-primary text-decoration-none d-inline">+ Ajouter un étudiant</a>
+                        <a href="{{ path('app_admin_classe_add_student', {id: classe.id}) }}" class="btn-action-primary text-decoration-none d-inline">+ Ajouter un étudiant</a>
                     </div>
                 {% else %}
                     <div class="students-list">
@@ -109,15 +111,13 @@
                                 </div>
                                 <div class="d-flex gap-4">
                                     {# Tâche 11 : réinitialiser mot de passe #}
-                                    <a href="#" class="btn-action-secondary btn-sm-action"
+                                    <a href="{{ path('app_admin_student_reset_password', {id: student.id}) }}" class="btn-action-secondary btn-sm-action"
                                        title="Réinitialiser le mot de passe">
                                         🔑
                                     </a>
                                     {# Tâche 12 : supprimer l'étudiant #}
-                                    <a href="#" class="btn-action-danger btn-sm-action"
-                                       title="Supprimer l'étudiant">
-                                        🗑
-                                    </a>
+                                    {# <a href="#" class="btn-action-danger btn-sm-action" title="Supprimer l'étudiant"> 🗑</a> #}
+                                    {{ include('partials/_delete_student.html.twig', { student: student }) }}
                                 </div>
                             </div>
                         {% endfor %}

@@ -225,11 +225,11 @@
 .mini-resa-date {
     font-size: 0.75rem;
     color: #e6edf3;
-    margin-top: 0.15rem;
+    margin-top: 0.15rem; 
 }
 
 
-/* ------------------------------------------ Formulaire ----------------------------------------- */
+/* ------------------------------------------ Formulaires ----------------------------------------- */
 .form-card {
     background: #7c8083;
     border: 1px solid #21262d;
@@ -292,4 +292,30 @@
     padding: 0.75rem 1rem;
     font-size: 0.82rem;
     color: #5b80af;
+}
+
+/* ------------------------------ Select (dropdown classe -créer user) --------------------- */
+.form-field .form-select {
+    background-color: #414f62;
+    /* background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%237d8590' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='m2 5 6 6 6-6'/%3e%3c/svg%3e"); */
+    border: 1px solid #21262d;
+    border-radius: 8px;
+    padding: 0.72rem 1rem;
+    color: #e6edf3;
+    font-size: 0.92rem;
+    width: 100%;
+    transition: border-color 0.2s, box-shadow 0.2s; 
+}
+
+.form-field .form-select:focus {
+    background-color: #414f62;
+    border-color: #f85149;
+    box-shadow: 0 0 0 3px rgba(248, 81, 73, 0.15);
+    color: #e6edf3;
+    outline: none;
+}
+
+.form-field .form-select option {
+    background: #414f62;
+    color: #e6edf3;
 }

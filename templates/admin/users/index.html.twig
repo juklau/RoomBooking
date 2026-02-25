@@ -1,0 +1,107 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Utilisateurs — Admin RoomBooking{% endblock %}
+
+{% block stylesheets %}
+    <link rel="stylesheet" href="{{ asset('styles/admin.css') }}">
+    <link rel="stylesheet" href="{{ asset('styles/rooms.css') }}">
+    <link rel="stylesheet" href="{{ asset('styles/classes.css') }}">
+{% endblock %}
+
+{% block body %}
+
+<div class="container-fluid px-4 py-3 pt-3">
+
+    {# ---- Header ---- #}
+    <div class="dashboard-header">
+        <div class="d-flex align-items-center justify-content-between">
+            <div>
+                <div class="d-flex align-items-center gap-2 mb-2">
+                    <span class="badge-admin">Administrateur</span>
+                </div>
+                <div class="d-flex align-items-center gap-2 mb-1">
+                    <a href="{{ path('app_admin_dashboard') }}" class="breadcrumb-link">Dashboard</a>
+                    <span class="breadcrumb-sep">›</span>
+
+                    <span class="breadcrumb-current">Utilisateurs</span>
+                </div>
+                <h1>Tous les utilisateurs</h1>
+                <p>{{ users|length }} utilisateur{{ users|length > 1 ? 's' : '' }} enregistré{{ users|length > 1 ? 's' : '' }}</p>
+            </div>
+        </div>
+    </div>
+
+    {# ---- Tableau ---- #}
+    <div class="reservations-table users shadow">
+        <table class="table table-borderless mb-0">
+            <thead>
+                <tr>
+                    <th>Utilisateur</th>
+                    <th>Email</th>
+                    <th>Rôle</th>
+                    <th>Classe / Info</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% if users is empty %}
+                    <tr>
+                        <td colspan="4" class="text-center text-muted py-4">
+                            Aucun utilisateur enregistré.
+                        </td>
+                    </tr>
+                {% else %}
+                    {% for user in users %}
+                        <tr>
+
+                            {# Avatar + nom #}
+                            <td>
+                                <div class="d-flex align-items-center gap-2">
+                                    <div class="user-avatar d-flex align-items-center justify-content-center">
+                                        {{ user.firstname|first|upper}} {{ user.lastname|first|upper}}
+                                    </div>
+                                    <div>
+                                        <div class="user-fullname ps-3">
+                                            {{ user.firstname}} {{ user.lastname}}
+                                        </div>
+                                    </div>
+                                </div>
+                            </td>
+
+                            {# Email #}
+                            <td class="text-muted-users">{{ user.email }}</td>
+
+                            {# Rôle #}
+                            <td>
+                                {% if user.administrator %}
+                                    <span class="badge-admin">Admin</span>
+                                {% elseif user.coordinator %}
+                                    <span class="badge-coordinator">Coordinateur</span>
+                                {% elseif user.student %}
+                                    <span class="badge-student">Étudiant</span>
+                                {% else %}
+                                    <span class="badge-unknown">Inconnu</span>
+                                {% endif %}
+                            </td>
+
+                            {# classe ou info supp #}
+                            <td class="text-muted-users">
+                                {% if user.student and user.student.classe %}
+                                    <a href="{{ path('app_admin_classe_show', {id: user.student.classe.id}) }}" class="note-link">
+                                        {{ user.student.classe.name }}
+                                    </a>
+                                {% elseif user.student %}
+                                    <span class="text-muted">Sans classe</span>
+                                {% elseif user.coordinator %}
+                                    Coordinateur
+                                {% elseif user.administrator %}
+                                    Administrateur
+                                {% endif %}
+                            </td>
+                        </tr>
+                    {% endfor %}
+                {% endif %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

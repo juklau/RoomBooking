@@ -1,6 +1,6 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Créer une classe — Admin RoomBooking{% endblock %}
+{% block title %}Ajouter un étudiant — {{ classe.name }}{% endblock %}
 
 {% block stylesheets %}
     <link rel="stylesheet" href="{{ asset('styles/admin.css') }}">
@@ -24,33 +24,36 @@
 
                     <a href="{{ path('app_admin_classes') }}" class="breadcrumb-link">Classes</a>
                     <span class="breadcrumb-sep">›</span>
-                    
-                    <span class="breadcrumb-current">Nouvelle classe</span>
+
+                    <a href="{{ path('app_admin_classe_show', {id: classe.id}) }}" class="breadcrumb-link">{{ classe.name }}</a>
+                    <span class="breadcrumb-sep">›</span>
+
+                    <span class="breadcrumb-current">Ajouter un étudiant</span>
                 </div>
-                <h1>Créer une classe</h1>
-                <p>Remplissez le nom de la nouvelle promotion</p>
+                <h1>Ajouter un étudiant à {{ classe.name }}</h1>
+                <p>Sélectionnez un étudiant existant à assigner à cette classe</p>
             </div>
         </div>
     </div>
 
     {# ---- Formulaire ---- #}
-    <div class="row justify-content-center">
-        <div class="col-lg-6">
+    <div class="row justify-content-center ">
+        <div class="col-lg-5 mt-4">
             <div class="form-card shadow">
 
                 {{ form_start(form) }}
 
                     <div class="form-field">
-                        {{ form_label(form.name) }}
-                        {{ form_widget(form.name) }}
-                        {{ form_errors(form.name) }}
+                        {{ form_label(form.student) }}
+                        {{ form_widget(form.student) }}
+                        {{ form_errors(form.student) }}
                     </div>
 
                     <div class="d-flex gap-2 mt-4">
                         <button type="submit" class="btn-action-primary flex-fill text-center">
-                            ✓ Créer la classe
+                            ✓ Ajouter à la classe
                         </button>
-                        <a href="{{ path('app_admin_classes') }}"
+                        <a href="{{ path('app_admin_classe_show', {id: classe.id}) }}"
                            class="btn-action-secondary flex-fill text-center text-decoration-none">
                             Annuler
                         </a>
@@ -61,7 +64,9 @@
             </div>
 
             <div class="form-note mt-5">
-                 Les étudiants et coordinateurs pourront être ajoutés après la création.
+                Seuls les étudiants n'appartenant pas encore à cette classe sont affichés.
+                Pour créer un nouvel étudiant,
+                <a href="{{ path('app_admin_student_new') }}" class="note-link">cliquez ici</a>.
             </div>
         </div>
     </div>

@@ -7,17 +7,26 @@ use App\Repository\ReservationRepository;
 use App\Repository\RoomRepository;
 use App\Repository\StudentRepository;
 use App\Repository\CoordinatorRepository;
+use App\Repository\UserRepository;
 
 use App\Entity\Room;
 use App\Entity\Classe;
+use App\Entity\Student;
+use App\Entity\User;
+
 use App\Form\ClasseType;
+use App\Form\CreateStudentType;
 use App\Form\RoomType;
+use App\Form\AddStudentToClasseType;
+use App\Form\ResetPasswordType;
 
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
+
+use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
 #[Route('/admin')]
 final class AdminController extends AbstractController
@@ -318,18 +327,191 @@ final class AdminController extends AbstractController
 
     }
 
+    /**
+     * ajouter une classe au étudiant 
+     */
+    #[Route('/classes/{id}/add-student', name: 'app_admin_classe_add_student', requirements: ['id' => '\d+'])]
+    public function classAddStudent(
+        Classe                 $classe,
+        Request                $request,
+        EntityManagerInterface $em
+    ): Response {
 
+        // passer l'id de la classe au formulaire pour filtrer les étudiants qui ne sont pas déjà dans cette classe
+        $form = $this->createForm(AddStudentToClasseType::class, null, [
+            'classe_id' => $classe->getId(),
+        ]);
 
+        $form->handleRequest($request);
 
+        if ($form->isSubmitted() && $form->isValid()) {
 
-   
+            /** @var Student $student */
+            $student = $form->get('student')->getData();
+
+            // assigner la nouvelle classe à l'étudiant
+            $student->setClasse($classe);
+            $em->flush();
+
+            $this->addFlash('success',
+                $student->getUser()->getFirstname() . ' ' . $student->getUser()->getLastname()
+                . ' ajouté(e) à la classe "' . $classe->getName() . '".'
+            );
+
+            return $this->redirectToRoute('app_admin_classe_show', ['id' => $classe->getId()]);
+        }
+
+        return $this->render('admin/classes/add_student.html.twig', [
+            'form'   => $form,
+            'classe' => $classe,
+        ]);
+    }
+
     
+     /************************************ Students ********************************************/
 
+    /**
+     * créer nouvel étudiant
+     */
+    #[Route('/students/new', name: 'app_admin_student_new')]
+    public function studentNew(
+        Request                     $request,
+        EntityManagerInterface      $em,
+        UserPasswordHasherInterface $hasher,
+        UserRepository              $userRepo
+    ): Response {
 
+        // u.a. ClasseType que la création => formulaire pré-rempli automatiquement
+        $form = $this->createForm(CreateStudentType::class);
+        $form->handleRequest($request);
 
+        if( $form->isSubmitted() && $form->isValid()){
+            $data = $form->getData();
 
+            //vérifier que l'email n'existe pas déjà
+            if($userRepo->findOneBy(['email' => $data['email']])){ 
+                $this->addFlash('error', 'Un utilisateur avec cet email existe déjà.');
+                return $this->render('admin/students/new.html.twig', ['form' => $form]);
+            }
 
+            //Création User
+            $user = new User();
+            $user->setFirstname($data['firstname']);
+            $user->setLastname($data['lastname']);
+            $user->setEmail($data['email']);
+            $user->setPassword($hasher->hashPassword($user, $data['password']));
 
+            //Créer le Student lié au User
+            $student = new Student();
+            $student->setUser($user);
+            $user->setStudent($student);
 
+            //Assigner la classe
+            $student->setClasse($data['classe']);
+            
+            $em->persist($user);
+            $em->persist($student);
+            $em->flush();
+
+            $this->addFlash('success', 'Étudiant ' . $user->getFirstname() . ' ' . $user->getLastname() . ' créé avec succès.');
+
+            // Redirige vers la classe 
+            return $this->redirectToRoute('app_admin_classe_show', ['id' => $data['classe']->getId()]);
+        }
+
+        return $this->render('admin/students/new.html.twig', [
+            'form' => $form,
+        ]);
+    }
+
+    /**
+     * réinitialiser le MDP d'un étudiant
+     */
+    #[Route('/students/{id}/reset-password', name: 'app_admin_student_reset_password', requirements: ['id' => '\d+'])]
+    public function studentResetPassword(
+        Student $student,
+        Request $request,
+        EntityManagerInterface      $em,
+        UserPasswordHasherInterface $hasher
+    ): Response {
+
+        $form = $this->createForm(ResetPasswordType::class);
+        $form->handleRequest($request);
+
+        if($form->isSubmitted() && $form->isValid()){
+
+            $newPassword = $form->get('password')->getData();
+
+            //hash et sauvegarde le nouveau MDP sur le User lié
+            $user = $student->getUser();
+            $user->setPassword($hasher->hashPassword($user, $newPassword));
+            $em->flush();
+
+            $this->addFlash('success', 'Mot de passe de ' . $user->getFirstname() . ' ' . $user->getLastname() . ' réinitialisé avec succès.');
+
+            //rediriger vers la classe de l'étudiant => s'il existe
+            if($student->getClasse()){
+                return $this->redirectToRoute('app_admin_classe_show', ['id' => $student->getClasse()->getId()]);
+            }
+
+            return $this->redirectToRoute('app_admin_dashboard');
+        }
+
+        return $this->render('admin/students/reset_password.html.twig', [
+            'form'    => $form,
+            'student' => $student,
+        ]);
+    }
+
+    /**
+     * supprimer un user
+     */
+    #[Route('/students/{id}/delete', name: 'app_admin_student_delete', requirements: ['id' => '\d+'], methods: ['POST'])]
+    public function studentDelete(
+        Student $student,
+        Request $request,
+        EntityManagerInterface $em
+    ): Response {
+
+        //vérif le token CSRF => évite la suppression malveillant
+        if(!$this->isCsrfTokenValid('delete_student_' . $student->getId(), $request->request->get('_token'))){
+            $this->addFlash('error', 'Token invalide.');
+            return $this->redirectToRoute('app_admin_dashboard');
+        }
+
+        //garder id de la classe pour la redirection AVANT suppression
+        $classeId = $student->getClasse()?->getId();
+
+        $name = $student->getUser()->getFirstname() . ' ' . $student->getUser()->getLastname();
+
+        //supprimer User => supprime également Student en cascade
+        $user = $student->getUser();
+        $em->remove($user);
+        $em->flush();
+
+        $this->addFlash('success', 'Étudiant "' . $name . '" supprimé avec succès.');
+
+        // redirige vers la classe si elle existait
+        if ($classeId) {
+            return $this->redirectToRoute('app_admin_classe_show', ['id' => $classeId]);
+        }
+
+        return $this->redirectToRoute('app_admin_dashboard');
+    }
+
+     /************************************ Users ********************************************/
+
+     /**
+      * lister tous les users
+      */
+    #[Route('/users', name: 'app_admin_users')]
+    public function users(UserRepository $userRepo): Response
+    {
+        $users = $userRepo->findAll();
+
+        return $this->render('admin/users/index.html.twig', [
+            'users' => $users,
+        ]);
+    }
 
 }

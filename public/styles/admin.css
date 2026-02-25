@@ -101,8 +101,13 @@ body {
 
 #stat-icon-reservations,
 #action-icon-reservations{
-    background: rgba(248,81,73,0.15); 
+    background: rgba(248,81,73,0.15);  
     color: #f85149;
+}
+
+#action-icon-all-users{
+    background: rgb(223, 214, 214);  
+    color: #d2caca;
 }
 
 

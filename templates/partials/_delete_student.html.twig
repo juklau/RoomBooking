@@ -1,0 +1,12 @@
+
+<form method="post"
+      action="{{ path('app_admin_student_delete', {id: student.id}) }}"
+      onsubmit="return confirm('Supprimer {{ student.user.firstname }} {{ student.user.lastname }} ? Cette action est irréversible.')">
+
+    <input type="hidden" name="_token" value="{{ csrf_token('delete_student_' ~ student.id) }}">
+
+    <button type="submit" class="btn-action-danger btn-sm-action" title="Supprimer l'étudiant">
+        🗑
+    </button>
+
+</form>
