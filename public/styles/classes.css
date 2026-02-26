@@ -1,4 +1,4 @@
-/* RoomBooking — Admin Rooms CSS */
+/* RoomBooking — Admin classes CSS */
 
 .classe-card {
     background: #5f6265;
@@ -115,7 +115,7 @@
 /* --------------------------- Detail card + rooms.css => page show ------------------------- */
 .detail-count {
     background: #272d35;
-    color: #7d8590;
+    color: #bebfc1;
     border-radius: 20px;
     padding: 0.1rem 0.6rem;
     font-size: 0.75rem;
@@ -248,7 +248,8 @@
     font-weight: 600;
 }
 
-.reservations-table.users tbody tr:hover td {
+.reservations-table.users tbody tr:hover td,
+.reservations-table.students tbody tr:hover td{  /* => dans coordinator/classes/show  */
     background: rgba(236, 233, 233, 0.863);
     color: #666a6e;
 }

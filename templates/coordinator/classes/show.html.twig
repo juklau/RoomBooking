@@ -1,0 +1,161 @@
+{% extends 'base.html.twig' %} 
+
+{% block title %}Mes Classes — Coordinateur RoomBooking{% endblock %}
+
+{% block stylesheets %}
+    <link rel="stylesheet" href="{{ asset('styles/admin.css') }}">
+    <link rel="stylesheet" href="{{ asset('styles/classes.css') }}">
+    <link rel="stylesheet" href="{{ asset('styles/coordinator.css') }}">
+{% endblock %}
+
+{% block body %}
+<div class="container-fluid px-4 py-3 mt-3">
+
+    {# ---- Header ---- #}
+    <div class="dashboard-header">
+        <div class="d-flex align-items-center justify-content-between">
+            <div>
+                <div class="d-flex align-items-center gap-2 mb-1">
+                    <span class="badge-coordinator">Coordinateur</span>
+                </div>
+                <div class="d-flex align-items-center gap-2 mb-1">
+                    <a href="{{ path('app_coordinator_dashboard') }}" class="breadcrumb-link-coordinator">Dashboard</a>
+                    <span class="breadcrumb-sep">›</span>
+
+                    <a href="{{ path('app_coordinator_classes') }}" class="breadcrumb-link-coordinator">Mes Classes</a>
+                    <span class="breadcrumb-sep">›</span>
+
+                    <span class="breadcrumb-current">{{ classe.name }}</span>
+
+                </div>
+                <h1>{{ classe.name }}</h1>
+                <p>{{ classe.students|length }} étudiant{{ classe.students|length > 1 ? 's' : '' }}</p>
+            </div>
+            <div class="d-flex gap-2">
+                <a href="{{ path('app_coordinator_student_add', {id: classe.id}) }}"
+                   class="btn-coordinator-outline text-decoration-none d-inline">
+                    + Ajouter un étudiant
+                </a>
+            </div>
+        </div>
+    </div>
+
+    {# ---- infos de la classe ---- #}
+    <div class="row g-4 mb-4">
+        <div class="col-md-4">
+            <div class="detail-card shadow">
+                <div class="detail-card-title">📋 Informations</div>
+
+                <div class="detail-row">
+                    <span class="detail-label">Nom</span>
+                    <span class="detail-value">{{ classe.name }}</span>
+                </div>
+
+                <div class="detail-row">
+                    <span class="detail-label">Étudiants</span>
+                    <span class="detail-value">
+                        <span class="badge-count"><span class="detail-icon">👨‍🎓</span> {{ classe.students|length }}</span>
+                    </span>
+                </div>
+
+                <div class="detail-row">
+                    <span class="detail-label">Coordinateurs</span>
+                    <span class="detail-value">
+                        <span class="badge-count"><span class="detail-icon">👨‍🏫</span> {{ classe.coordinators|length }}</span>
+                    </span>
+                </div>
+            </div>
+        </div>
+
+        {# ---- Coordinateurs de la classe ---- #}
+        <div class="col-md-8">
+            <div class="detail-card shadow">
+                <div class="detail-card-title"> Coordinateurs de la classe</div>
+                {% if classe.coordinators is empty %}
+                    <p class="text-muted small mt-2">Aucun coordinateur assigné.</p>
+                {% else %}
+                    <div class="d-flex flex-wrap gap-2 mt-2">
+                        {% for coord in classe.coordinators %}
+                            <div class="coordinator-chip d-flex align-items-center">
+                                <div class="coordinator-chip-avatar">
+                                    {{ coord.user.firstname|first|upper }}{{ coord.user.lastname|first|upper }}
+                                </div>
+                                <div>
+                                    <div class="coordinator-chip-name">
+                                        {{ coord.user.firstname }} {{ coord.user.lastname }}
+                                    </div>
+                                    <div class="coordinator-chip-email">{{ coord.user.email }}</div>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    {# ---- Étudiants de la classe ---- #}
+    <div class="reservations-table students shadow">
+        <div class="table-header-bar d-flex align-items-center justify-content-between px-3 py-2">
+            <span class="table-header-title">
+                    👨‍🎓 Étudiants
+                <span class="detail-count ms-2">{{ classe.students|length }}</span>
+            </span>
+            <a href="{{ path('app_coordinator_student_add', {id: classe.id}) }}" class="btn-coordinator-outline text-decoration-none">
+                + Ajouter
+            </a>
+        </div>
+
+        <table class="table table-borderless mb-0">
+            <thead>
+                <tr>
+                    <th>Étudiants</th>
+                    <th>Email</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% if classe.students is empty %}
+                    <tr>
+                        <td colspan="4" class="text-center text-muted py-4">
+                            Aucune étudinat dans cette classse.
+                        </td>
+                    </tr>
+                {% else %}
+                    {% for student in classe.students %}
+                        <tr>
+                            <td>
+                                <div class="d-flex align-items-center gap-3">
+                                    <div class="student-avatar-sm">
+                                        {{ student.user.firstname|first|upper }}{{ student.user.lastname|first|upper }}
+                                    </div>
+                                    <div>
+                                        <div class="student-fullname">
+                                            {{ student.user.firstname }} {{ student.user.lastname }}
+                                        </div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>
+                                <span class="student-email-text">{{ student.user.email }}</span>
+                            </td>
+                            <td>
+                                {# — retirer l'étudiant de la classe #}
+                                 {{ include('partials/_remove_student_classe.html.twig', { student: student, classe: classe }) }}
+                            </td>
+                        </tr>
+                    {% endfor %}
+                {% endif %}
+            </tbody>
+        </table>
+    </div>
+
+    {# ---- Retour ---- #}
+    <div class="mt-5">
+        <a href="{{ path('app_coordinator_classes') }}" class="btn-action-secondary text-decoration-none d-inline">
+            ← Retour à mes classes
+        </a>
+    </div>
+</div>
+
+{% endblock %}

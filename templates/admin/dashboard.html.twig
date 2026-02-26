@@ -94,7 +94,7 @@
                                 </tr>
                             {% else %}
                                 {% for res in upcomingReservations %}
-                                    <tr onclick="window.location='{{ path('app_admin_rooms') }}'" class="rows-res-dashboard">
+                                    <tr onclick="window.location='{{ path('app_admin_rooms') }}'" class="rows-onclick">
                                         <td>
                                             <strong> {{ res.room.name }}</strong>
                                         </td>

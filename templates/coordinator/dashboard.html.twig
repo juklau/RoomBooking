@@ -122,8 +122,8 @@
                                     </span>
                                 </div>
                                 <div class="d-flex gap-2">
-                                    <a href="#" class="btn btn-sm btn-outline-secondary">Voir détail →</a>
-                                    <a href="#" class="btn btn-sm btn-coordinator">+ Étudiant</a>
+                                    <a href="{{ path('app_coordinator_classe_show', {id: classe.id}) }}" class="btn btn-sm btn-outline-secondary">Voir détail →</a>
+                                    <a href="{{ path('app_coordinator_student_add', {id: classe.id}) }}" class="btn btn-sm btn-coordinator">+ Étudiant</a>
                                 </div>
                             </div>
 
@@ -169,11 +169,13 @@
                         <span class="action-icon d-flex align-items-center justify-content-center" id="action-icon-rooms">🏫</span>
                         Réserver une salle
                     </a>
-                    <a href="#" class="action-btn text-decoration-none d-flex align-items-center">
+
+                    {# redirection vers la liste des classes => pour choisir sa classe, car il n'y a pas classe.id ici !!! #}
+                    <a href="{{ path('app_coordinator_classes') }}" class="action-btn text-decoration-none d-flex align-items-center">
                         <span class="action-icon d-flex align-items-center justify-content-center" id="action-icon-students">👨‍🎓</span>
-                        Créer un étudiant
+                        Ajouter un étudiant
                     </a>
-                    <a href="#" class="action-btn text-decoration-none d-flex align-items-center">
+                    <a href="{{ path('app_coordinator_classes') }}" class="action-btn text-decoration-none d-flex align-items-center">
                         <span class="action-icon d-flex align-items-center justify-content-center" id="action-icon-classes">🎓</span>
                         Consulter mes classes
                     </a>

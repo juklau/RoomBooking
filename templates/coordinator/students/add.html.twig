@@ -1,0 +1,78 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Ajouter un étudiant — {{ classe.name }}{% endblock %}
+
+{% block stylesheets %}
+    <link rel="stylesheet" href="{{ asset('styles/admin.css') }}">
+    <link rel="stylesheet" href="{{ asset('styles/classes.css') }}">
+    <link rel="stylesheet" href="{{ asset('styles/coordinator.css') }}">
+{% endblock %}
+
+{% block body %}
+<div class="container-fluid px-4 py-3 mt-3">
+
+    {# ---- Header ---- #}
+    <div class="dashboard-header">
+        <div class="d-flex align-items-center justify-content-between">
+            <div>
+                <div class="d-flex align-items-center gap-2 mb-1">
+                    <span class="badge-coordinator">Coordinateur</span>
+                </div>
+
+                <div class="d-flex align-items-center gap-2 mb-1">
+                    <a href="{{ path('app_coordinator_dashboard') }}" class="breadcrumb-link-coordinator">Dashboard</a>
+                    <span class="breadcrumb-sep">›</span>
+
+                    <a href="{{ path('app_coordinator_classes') }}" class="breadcrumb-link-coordinator">Mes Classes</a>
+                    <span class="breadcrumb-sep">›</span>
+
+                    <a href="{{ path('app_coordinator_classe_show', {id: classe.id}) }}" class="breadcrumb-link-coordinator">{{ classe.name }}</a>
+                    <span class="breadcrumb-sep">›</span>
+
+                    <span class="breadcrumb-current">Ajouter un étudiant</span>
+                </div>
+                <h1>Ajouter un étudiant</h1>
+                <p>Classe : <strong>{{ classe.name }}</strong></p>
+            </div>
+        </div>
+    </div>
+
+    {# ---- Formulaire ---- #}
+    <div class="row justify-content-center ">
+        <div class="col-md-8 col-lg-6 mt-4">
+            <div class="form-card shadow">
+
+                {{ form_start(form) }}
+
+                    <div class="form-field">
+                        {{ form_label(form.student) }}
+                        {{ form_widget(form.student) }}
+                        {{ form_errors(form.student) }}
+
+                    </div>
+                        <small class="field-hint mt-4 text-white">
+                            Seuls les étudiants sans classe ou d'une autre classe sont affichés.
+                        </small>
+
+                    <div class="d-flex gap-2 mt-4">
+                        <button type="submit" class="btn-coordinator-details flex-fill text-center">
+                            ✓ Ajouter à la classe
+                        </button>
+                        <a href="{{ path('app_coordinator_classe_show', {id: classe.id}) }}"
+                           class="btn-action-secondary flex-fill text-center text-decoration-none">
+                            Annuler
+                        </a>
+                    </div>
+
+                {{ form_end(form) }}
+
+            </div>
+
+            <div class="form-note my-5">
+                Pour créer un nouveau compte étudiant, contactez un administrateur.
+            </div>
+        </div>
+    </div>
+
+</div>
+{% endblock %}

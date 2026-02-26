@@ -18,7 +18,7 @@ class Student
     private ?User $user = null;
 
     #[ORM\ManyToOne(inversedBy: 'students')]
-    #[ORM\JoinColumn(nullable: false)]
+    #[ORM\JoinColumn(nullable: true)]
     private ?Classe $classe = null;
 
     public function getId(): ?int

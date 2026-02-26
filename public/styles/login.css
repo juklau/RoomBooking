@@ -58,16 +58,16 @@ label.form-label {
     border: 1px solid #21262d;
     border-radius: 8px;
     padding: 0.72rem 1rem;
-    color: #e6edf3;
+    color: #323334;
     font-size: 0.92rem;
     transition: border-color 0.2s, box-shadow 0.2s;
 }
 
 .form-control:focus {
-    background: #272d35;
+    /* background: #272d35; */
     border-color: #f85149;
     box-shadow: 0 0 0 3px rgba(248, 81, 73, 0.15);
-    color: #e6edf3;
+    /* color: #e6edf3; */
 }
 
 .form-control::placeholder {

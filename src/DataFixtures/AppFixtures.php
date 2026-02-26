@@ -56,22 +56,22 @@ class AppFixtures extends Fixture
         // -------------------------------------------------------
         $eq1 = new Equipment();
         $eq1->setName('Projecteur');
-        $eq1->setRoom($room1);
+        $eq1->addRoom($room1);
         $manager->persist($eq1);
 
         $eq2 = new Equipment();
         $eq2->setName('Tableau blanc');
-        $eq2->setRoom($room1);
+        $eq2->addRoom($room1);
         $manager->persist($eq2);
 
         $eq3 = new Equipment();
         $eq3->setName('PC x20');
-        $eq3->setRoom($room2);
+        $eq3->addRoom($room2);
         $manager->persist($eq3);
 
         $eq4 = new Equipment();
         $eq4->setName('Écran TV');
-        $eq4->setRoom($room3);
+        $eq4->addRoom($room3);
         $manager->persist($eq4);
 
         // -------------------------------------------------------
@@ -100,11 +100,11 @@ class AppFixtures extends Fixture
 
         $coord1 = new Coordinator();
         $coord1->setUser($userCoord1);
-        $coord1->addClass($classeB1);
+        $coord1->addClasse($classeB1);
         $manager->persist($coord1);
 
         $userCoord2 = new User();
-        $userCoord2->setEmail('coord2@roombooking.fr');
+        $userCoord2->setEmail('coord2@roombooking.fr'); 
         $userCoord2->setFirstname('Marie');
         $userCoord2->setLastname('Leblanc');
         $userCoord2->setPassword($this->hasher->hashPassword($userCoord2, 'Coord1234!'));
@@ -112,7 +112,7 @@ class AppFixtures extends Fixture
 
         $coord2 = new Coordinator();
         $coord2->setUser($userCoord2);
-        $coord2->addClass($classeB2);
+        $coord2->addClasse($classeB2);
         $manager->persist($coord2);
 
         // -------------------------------------------------------

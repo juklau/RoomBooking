@@ -314,7 +314,7 @@ final class AdminController extends AbstractController
 
     /**
      * voir les détails d'une classe
-     */
+     */ 
     #[Route('/classes/{id}', name: 'app_admin_classe_show', requirements: ['id' => '\d+'])]
     public function classeShow(Classe $classe): Response
     {

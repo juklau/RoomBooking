@@ -1,0 +1,99 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Mes Classes — Coordinateur RoomBooking{% endblock %}
+
+{% block stylesheets %}
+    <link rel="stylesheet" href="{{ asset('styles/admin.css') }}">
+    <link rel="stylesheet" href="{{ asset('styles/classes.css') }}">
+    <link rel="stylesheet" href="{{ asset('styles/coordinator.css') }}">
+{% endblock %}
+
+{% block body %}
+<div class="container-fluid px-4 py-3 mt-3">
+
+    {# ---- Header ---- #}
+    <div class="dashboard-header">
+        <div class="d-flex align-items-center justify-content-between">
+            <div>
+                <div class="d-flex align-items-center gap-2 mb-1">
+                    <span class="badge-coordinator">Coordinateur</span>
+                </div>
+                <div class="d-flex align-items-center gap-2 mb-1">
+                    <a href="{{ path('app_coordinator_dashboard') }}" class="breadcrumb-link-coordinator">Dashboard</a>
+                    <span class="breadcrumb-sep">›</span>
+
+                    <span class="breadcrumb-current">Mes Classes</span>
+                </div>
+                <h1>Mes Classes</h1>
+                <p>{{ myClasses|length }} classe{{ myClasses|length > 1 ? 's' : '' }} assignée{{ myClasses|length > 1 ? 's' : '' }}</p>
+            </div>
+        </div>
+    </div>
+
+    {# ---- Tableau ---- #}
+    <div class="reservations-table details shadow">
+        <table class="table table-borderless mb-0 mt-4">
+            <thead>
+                <tr>
+                    <th>Classe</th>
+                    <th>Étudiants</th>
+                    <th>Coordinateurs</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% if myClasses is empty %}
+                    <tr>
+                        <td colspan="4" class="text-center text-muted py-4">
+                            Aucune classe assignée.
+                        </td>
+                    </tr>
+                {% else %}
+                    {% for classe in myClasses %}
+
+                        {#  la ligne entière est cliquable #}
+                        <tr onclick="window.location='{{ path('app_coordinator_classe_show', {id: classe.id}) }}'" class="rows-onclick"> 
+
+                            {# Nom de la classe #}
+                            <td>
+                                <div class="class-row-name">{{ classe.name }}</div>
+                            </td>
+
+                            {# Étudiants #}
+                            <td>
+                                <span class="badge-count">
+                                    👨‍🎓 {{ classe.students|length }} étudiant{{ classe.students|length > 1 ? 's' : ''}}
+                                </span>
+                            </td>
+
+                            {# Coordinateurs #}
+                            <td>
+                                <span class="badge-count-green">
+                                    ‍🏫 {{ classe.coordinators|length }} coordinateur{{ classe.coordinators|length > 1 ? 's' : ''}}
+                                </span>
+                            </td>
+
+                            {# Actions #}
+                            {# cellule Actions stoppe la propagation => pour que les boutons fonctionnent indépendamment #}
+                            <td onclick="event.stopPropagation()"> 
+                                <div class="d-flex gap-2">
+                                
+                                    <a href="{{ path('app_coordinator_classe_show', {id: classe.id}) }} "
+                                        class="btn-coordinator-details btn-sm-action text-decoration-none align-items-center" title="Voir le détail">
+                                        <span class="action-icon">👁</span>
+                                    </a>
+                                   
+                                    <a href="{{ path('app_coordinator_student_add', {id: classe.id}) }}"
+                                            class="btn-coordinator-details btn-sm-action text-decoration-none"
+                                       title="Ajouter un étudiant"><span class="action-icon">+👨‍🎓</span> 
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                {% endif %}              
+            </tbody>       
+        </table>
+    </div>
+</div>
+{% endblock %}

@@ -35,9 +35,11 @@ class ReservationRepository extends ServiceEntityRepository
             ->addSelect('room', 'user')
 
             ->where('r.reservationStart >= :now')
+            ->andWhere('r.status != :canceled')
 
             //now est remplacé par date/heure actuelle => sécurisation contre injection SQL
             ->setParameter('now', new \DateTime())
+            ->setParameter('canceled', 'canceled')
 
             //plus proches en premier
             ->orderBy('r.reservationStart', 'ASC')
@@ -67,10 +69,12 @@ class ReservationRepository extends ServiceEntityRepository
 
             ->where('r.reservationStart >= :now')
             ->andWhere('r.user = :user')
+            ->andWhere('r.status != :canceled')
 
             //now est remplacé par date/heure actuelle => sécurisation contre injection SQL
             ->setParameter('now', new \DateTime())
             ->setParameter('user', $user)
+            ->setParameter('canceled', 'canceled')
 
             //plus proches en premier
             ->orderBy('r.reservationStart', 'ASC')
@@ -90,7 +94,9 @@ class ReservationRepository extends ServiceEntityRepository
 
             ->select('COUNT(r.id)')
             ->where('r.user = :user')
+            ->andWhere('r.status != :canceled')
             ->setParameter('user', $user)
+            ->setParameter('canceled', 'canceled')
             ->getQuery()
             ->getSingleScalarResult();
     }

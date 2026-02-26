@@ -117,7 +117,7 @@ class RoomRepository extends ServiceEntityRepository
             ->where('NOT EXISTS (
                 SELECT 1 FROM App\Entity\Reservation res
                 WHERE res.room = r
-                AND res.reservationStart < :end
+                AND res.reservationStart < :end 
                 AND res.reservationEnd > :start
                 AND res.status != :canceled
             )')

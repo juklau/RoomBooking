@@ -65,7 +65,7 @@ class Classe
     {
         if (!$this->coordinators->contains($coordinator)) {
             $this->coordinators->add($coordinator);
-            $coordinator->addClass($this);
+            $coordinator->addClasse($this);
         }
 
         return $this;
