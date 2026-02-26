@@ -3,6 +3,8 @@
 namespace App\Repository;
 
 use App\Entity\Room;
+use App\Entity\User;
+
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
@@ -17,7 +19,7 @@ class RoomRepository extends ServiceEntityRepository
     }
 
 
-    public function findAllWithStats(): array
+    public function findAllWithStats(?User $user = null): array
     {
         $now = new \DateTime();
 
@@ -59,7 +61,11 @@ class RoomRepository extends ServiceEntityRepository
             foreach ($reservations as $res){
                 if($res->getReservationStart() > $now){
                     if($res->getStatus() === 'canceled') continue;
+                    if($res->getReservationStart() <= $now) continue;
                     
+                    //filtrer par user si passé en paramètre
+                    if($user !== null && $res->getUser()->getId() !== $user->getId()) continue;
+
                     $diff = $res->getReservationStart()->getTimestamp() - $now->getTimestamp();
 
                     if($minDiff === null || $diff < $minDiff){

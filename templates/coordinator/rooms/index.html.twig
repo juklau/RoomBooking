@@ -1,9 +1,11 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Salles & Disponibilités — Admin RoomBooking{% endblock %}
+{% block title %}Salles & Disponibilités — Coordinateur RoomBooking{% endblock %}
 
 {% block stylesheets %}
     <link rel="stylesheet" href="{{ asset('styles/admin.css') }}">
+    <link rel="stylesheet" href="{{ asset('styles/classes.css') }}">
+    <link rel="stylesheet" href="{{ asset('styles/coordinator.css') }}">
     <link rel="stylesheet" href="{{ asset('styles/rooms.css') }}">
 {% endblock %}
 
@@ -14,26 +16,27 @@
     <div class="dashboard-header">
         <div class="d-flex align-items-center justify-content-between">
             <div>
-                <div class="d-flex align-items-center gap-2 mb-2">
-                    <span class="badge-admin">Administrateur</span>
+                <div class="d-flex align-items-center gap-2 mb-1">
+                    <span class="badge-coordinator">Coordinateur</span>
                 </div>
                 <div class="d-flex align-items-center gap-2 mb-1">
-                    <a href="{{ path('app_admin_dashboard') }}" class="breadcrumb-link">Dashboard</a>
+                    <a href="{{ path('app_coordinator_dashboard') }}" class="breadcrumb-link-coordinator">Dashboard</a>
                     <span class="breadcrumb-sep">›</span>
+
                     <span class="breadcrumb-current">Salles</span>
                 </div>
                 <h1>Salles & Disponibilités</h1>
                 <p>{{ roomsWithStats|length }} salle{{ roomsWithStats|length > 1 ? 's' : '' }} enregistrée{{ roomsWithStats|length > 1 ? 's' : '' }}</p>
             </div>
             <div class="d-flex gap-2">
-                <a href="{{ path('app_admin_room_new') }}" class="btn-action-primary text-decoration-none d-inline">
-                    + Créer une salle
+                <a href="{{ path('app_coordinator_reservation_new') }}" class="btn-coordinator-outline text-decoration-none d-inline">
+                    Réserver une salle
                 </a>
             </div>
         </div>
     </div>
 
-    {{ include('admin/rooms/_filter_rooms.html.twig')}}
+    {{ include('coordinator/rooms/_filter_rooms.html.twig')}}
 
     {# ---- Tableau des salles ---- #}
     <div class="reservations-table details shadow">
@@ -43,8 +46,7 @@
                     <th>Salle</th>
                     <th>Capacité</th>
                     <th>Statut actuel</th>
-                    <th>Prochaine réservation</th>
-                    <th>Total réservations</th>
+                    <th>Ma prochaine réservation</th>
                     <th>Actions</th>
                 </tr>
             </thead>
@@ -59,10 +61,12 @@
                     {% for item in roomsWithStats %}
                         {% set isFiltered = filterStart and filteredRooms is not null and item.room in filteredRooms %}
                         <tr class="{{ isFiltered ? 'row-available-highlight' : '' }}">
+                        {# onclick="window.location='{{ path('app_coordinator_room_show', {id: item.room.id}) }}'" #}
+                            {# style="cursor: pointer;" #}
 
                             {# Nom + équipements #}
                             <td>
-                                <div class="room-row-name">{{ item.room.name }}</div>
+                                <div class="room-row-name text-black">{{ item.room.name }}</div>
 
                                 {% if item.room.equipments is not empty %}
                                     <div class="room-row-equip">
@@ -89,7 +93,6 @@
 
                                         <div class="status-detail">
                                             jusqu'à {{ item.currentReservation.reservationEnd|date('H:i') }}
-                                            — {{ item.currentReservation.user.firstname }} {{ item.currentReservation.user.lastname }}
                                         </div>
                                     {% endif %}
 
@@ -107,42 +110,27 @@
                                         {{ item.nextReservation.reservationStart|date('H:i') }}
                                         → {{ item.nextReservation.reservationEnd|date('H:i') }}
                                     </div>
-                                    <div class="next-res-user">
-                                        {{ item.nextReservation.user.firstname }} {{ item.nextReservation.user.lastname }}
-                                    </div>
                                 {% else %}
                                     <span class="text-muted-next-res small">Aucune</span>
                                 {% endif %}
                             </td>
 
-                            {# Total réservations #} 
-                            <td class="text-center">
-                                <span class="total-res-badge">{{ item.totalReservations }}</span>
-                            </td>
-
                             {# Actions #}
                             <td onclick="event.stopPropagation()">
-                                <div class="d-flex gap-2 flex-wrap">
-                                    <a href="{{ path('app_admin_room_show', {id: item.room.id}) }}"
-                                       class="btn-action-secondary btn-sm-action text-decoration-none" title="Voir le détail">
+                                <div class="d-flex gap-4">
+                                    {#  #}
+                                    <a href="{{ path('app_coordinator_room_show', {id: item.room.id}) }}"
+                                       class="btn-action-secondary coordinator btn-sm-action text-decoration-none" title="Voir le détail">
                                         <span class="action-icon-dispo d-flex align-items-center justify-content-center">👁</span>
                                     </a>
 
-                                    <a href="{{ path('app_admin_room_edit', {id: item.room.id}) }}"
-                                       class="btn-action-secondary btn-sm-action text-decoration-none" title="Modifier">
-                                        <span class="action-icon-dispo d-flex align-items-center justify-content-center">✏️</span>
-                                    </a>
-
-                                    {# Tâche 18 : réserver #}
-                                    <a href="{{ path('app_admin_reservation_new') }}"
-                                       class="btn-action-primary btn-sm-action text-decoration-none" title="Réserver cette salle">
+                                    {# réserver #}
+                                    <a href="{{ path('app_coordinator_reservation_new', {room: item.room.id}) }}"
+                                       class="btn-coordinator btn-sm-action text-decoration-none" title="Réserver cette salle">
                                         <span class="action-icon-dispo d-flex align-items-center justify-content-center">📅</span>
                                     </a>
-
-                                    {{ include('partials/_delete_room.html.twig', { room: item.room }) }}
                                 </div>
                             </td>
-
                         </tr>
                     {% endfor %}
                 {% endif %}

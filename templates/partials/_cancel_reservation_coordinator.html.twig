@@ -1,0 +1,17 @@
+{#
+    Bouton annuler une réservation — version coordinateur
+    Uniquement pour ses propres réservations
+    Usage : {{ include('partials/_cancel_reservation_coordinator.html.twig', { reservation: res }) }}
+#}
+<form method="post"
+      action="{{ path('app_coordinator_reservation_cancel', {id: reservation.id}) }}"
+      onsubmit="return confirm('Annuler la réservation de {{ reservation.room.name }} du {{ reservation.reservationStart|date(\'d/m/Y\') }} à {{ reservation.reservationStart|date(\'H:i\') }} ?')">
+
+    <input type="hidden" name="_token"
+           value="{{ csrf_token('cancel_reservation_' ~ reservation.id) }}">
+
+    <button type="submit" class="btn-action-danger btn-sm-action" title="Annuler la réservation">
+        ✕
+    </button>
+
+</form>

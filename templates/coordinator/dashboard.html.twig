@@ -144,7 +144,8 @@
                                                             <div class="student-email">{{ student.user.email }}</div>
                                                         </div>
                                                     </div>
-                                                    <a href="#" class="btn btn-sm btn-outline-danger btn-xs">✕</a>
+                                                    {# <a href="#" class="btn btn-sm btn-outline-danger btn-xs">✕</a> #}
+                                                    {{ include('partials/_remove_student_classe.html.twig', { student: student, classe: classe }) }}
                                                 </div>
                                             </div>
                                         {% endfor %}
@@ -165,7 +166,7 @@
             <div class="mb-4">
                 <div class="section-title d-flex align-items-center">⚡ Actions rapides</div>
                 <div class="d-flex flex-column gap-2">
-                    <a href="#" class="action-btn text-decoration-none d-flex align-items-center">
+                    <a href="{{ path('app_coordinator_rooms') }}" class="action-btn text-decoration-none d-flex align-items-center">
                         <span class="action-icon d-flex align-items-center justify-content-center" id="action-icon-rooms">🏫</span>
                         Réserver une salle
                     </a>
@@ -192,7 +193,7 @@
                                 <div class="room-row-name">{{ room.name }}</div>
                                 <div class="room-row-capacity">👥 {{ room.capacity }} places</div>
                             </div>
-                            <a href="#" class="btn btn-sm btn-coordinator">Réserver</a>
+                            <a href="{{ path('app_coordinator_reservation_new', {room: room.id}) }}" class="btn btn-sm btn-coordinator">Réserver</a>
                         </div>
                     {% else %}
                         <p class="text-muted small">Aucune salle disponible.</p>

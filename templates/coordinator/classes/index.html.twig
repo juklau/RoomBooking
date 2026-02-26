@@ -73,14 +73,14 @@
                                 </span>
                             </td>
 
-                            {# Actions #}
+                            {# Actions #} 
                             {# cellule Actions stoppe la propagation => pour que les boutons fonctionnent indépendamment #}
                             <td onclick="event.stopPropagation()"> 
                                 <div class="d-flex gap-2">
                                 
                                     <a href="{{ path('app_coordinator_classe_show', {id: classe.id}) }} "
-                                        class="btn-coordinator-details btn-sm-action text-decoration-none align-items-center" title="Voir le détail">
-                                        <span class="action-icon">👁</span>
+                                        class="btn-action-secondary coordinator btn-sm-action text-decoration-none" title="Voir le détail">
+                                        <span class="action-icon-dispo d-flex align-items-center justify-content-center">👁</span>
                                     </a>
                                    
                                     <a href="{{ path('app_coordinator_student_add', {id: classe.id}) }}"

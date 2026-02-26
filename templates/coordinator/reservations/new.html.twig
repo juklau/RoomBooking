@@ -1,11 +1,12 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Créer une réservation — Admin RoomBooking{% endblock %}
+{% block title %}Créer une réservation — Coordinator RoomBooking{% endblock %}
 
 {% block stylesheets %}
     <link rel="stylesheet" href="{{ asset('styles/admin.css') }}">
     <link rel="stylesheet" href="{{ asset('styles/rooms.css') }}">
     <link rel="stylesheet" href="{{ asset('styles/classes.css') }}">
+    <link rel="stylesheet" href="{{ asset('styles/coordinator.css') }}">
 {% endblock %}
 
 {% block body %}
@@ -15,20 +16,20 @@
     <div class="dashboard-header">
         <div class="d-flex align-items-center justify-content-between">
             <div>
-                <div class="d-flex align-items-center gap-2 mb-2">
-                    <span class="badge-admin">Administrateur</span>
+                 <div class="d-flex align-items-center gap-2 mb-1">
+                    <span class="badge-coordinator">Coordinateur</span>
                 </div>
                 <div class="d-flex align-items-center gap-2 mb-1">
-                    <a href="{{ path('app_admin_dashboard') }}" class="breadcrumb-link">Dashboard</a>
+                    <a href="{{ path('app_coordinator_dashboard') }}" class="breadcrumb-link-coordinator">Dashboard</a>
                     <span class="breadcrumb-sep">›</span>
 
-                    <a href="{{ path('app_admin_rooms') }}" class="breadcrumb-link">Salles</a>
+                    <a href="{{ path('app_coordinator_rooms') }}" class="breadcrumb-link-coordinator">Salles</a>
                     <span class="breadcrumb-sep">›</span>
 
                     <span class="breadcrumb-current">Nouvelle réservation</span>
                 </div>
                 <h1>Créer une réservation</h1>
-                <p>Réservez une salle pour vous-même ou pour un autre utilisateur</p>
+                <p>Réservez une salle pour vous-même ou pour un de vos étudiants</p>
             </div>
         </div>
     </div>
@@ -76,20 +77,23 @@
                         🕐 Créneaux disponibles de 08:00 à 20:00, par intervalles de 30 minutes.
                     </div>
 
-                    {# Bénéficiaire #}
+                    {# Bénéficiaire => uniquement les étudiants #}
                     <div class="form-field">
                         {{ form_label(form.beneficiary) }}
                         {{ form_widget(form.beneficiary) }}
                         {{ form_errors(form.beneficiary) }}
-                        <div class="field-hint">Laissez vide pour réserver en votre propre nom.</div>
+                        <div class="field-hint mt-3">
+                            Laissez vide pour réserver en votre propre nom.
+                            Seuls vos étudiants sont disponibles.
+                        </div>
                     </div>
 
                     {# Boutons #}
                     <div class="d-flex gap-2 mt-4">
-                        <button type="submit" class="btn-action-primary flex-fill text-center">
+                        <button type="submit" class="btn-coordinator-details flex-fill text-center">
                              Créer la réservation
                         </button>
-                        <a href="{{ path('app_admin_rooms') }}"
+                        <a href="{{ path('app_coordinator_rooms') }}"
                            class="btn-action-secondary flex-fill text-center text-decoration-none">
                             Annuler
                         </a>

@@ -127,6 +127,7 @@ final class AdminController extends AbstractController
             }
         }
 
+        // sans user => tous les réservations !!
         $roomsWithStats = $roomRepo->findAllWithStats();
 
         return $this->render('admin/rooms/index.html.twig', [
@@ -756,7 +757,7 @@ final class AdminController extends AbstractController
     }
 
 
-     /************************************ Réservations ********************************************/
+    /************************************ Réservations ********************************************/
 
      /**
       * créer new reservation
@@ -886,7 +887,7 @@ final class AdminController extends AbstractController
             return $this->redirectToRoute('app_admin_rooms');
         }
 
-        // marquer comme annulée — ne pas supprimer pour historique
+        // marquer comme annulée — ne pas supprimer pour historique => soft delete
         $reservation->setStatus('canceled');
         $em->flush();
 

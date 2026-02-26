@@ -1,0 +1,153 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ room.name }} — Coordinateur RoomBooking{% endblock %}
+
+{% block stylesheets %}
+    <link rel="stylesheet" href="{{ asset('styles/admin.css') }}">
+    <link rel="stylesheet" href="{{ asset('styles/coordinator.css') }}">
+    <link rel="stylesheet" href="{{ asset('styles/rooms.css') }}">
+{% endblock %}
+
+{% block body %}
+<div class="container-fluid px-4 py-3 mt-3">
+
+    {# ---- Header ---- #}
+    <div class="dashboard-header">
+        <div class="d-flex align-items-center justify-content-between">
+            <div>
+                <div class="d-flex align-items-center gap-2 mb-1">
+                    <span class="badge-coordinator">Coordinateur</span>
+                </div>
+                <div class="d-flex align-items-center gap-2 mb-1">
+                    <a href="{{ path('app_coordinator_dashboard') }}" class="breadcrumb-link-coordinator">Dashboard</a>
+                    <span class="breadcrumb-sep">›</span>
+
+                    <a href="{{ path('app_coordinator_rooms') }}" class="breadcrumb-link-coordinator">Salles</a>
+                    <span class="breadcrumb-sep">›</span>
+
+                    <span class="breadcrumb-current">{{ room.name }}</span>
+                </div>
+                <h1>{{ room.name }}</h1>
+                <p>Détail de la salle</p>
+            </div>
+            <div>
+                <a href="{{ path('app_coordinator_reservation_new') }}"
+                   class="btn-coordinator-outline text-decoration-none d-inline">
+                    Réserver cette salle
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-4 d-flex justify-content-center">
+
+        {# ---- Infos principales ---- #}
+        <div class="col-md-6 col-lg-3 ">
+            <div class="detail-card shadow">
+                <div class="detail-card-title">📋 Informations</div>
+
+                <div class="detail-row">
+                    <span class="detail-label">Nom</span>
+                    <span class="detail-value">{{ room.name }}</span>
+                </div>
+
+                <div class="detail-row">
+                    <span class="detail-label">Capacité</span>
+                    <span class="detail-value">👥 {{ room.capacity }} places</span>
+                </div>
+
+                <div class="detail-row">
+                    <span class="detail-label">Équipements</span>
+                    <span class="detail-value">{{ room.equipments|length }}</span>
+                </div>
+            </div>
+        </div>
+
+        {# ---- Équipements ---- #}
+        <div class="col-md-6 col-lg-4">
+            <div class="detail-card shadow">
+                <div class="detail-card-title">🖥 Équipements</div>
+
+                {% if room.equipments is empty %}
+                    <p class="text-muted small mt-2">Aucun équipement enregistré.</p>
+                {% else %}
+                    <div class="d-flex flex-wrap gap-2 mt-2">
+                        {% for equip in room.equipments %}
+                            <span class="equipment-tag-lg">{{ equip.name }}</span>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+
+        {# ---- Réservations à venir pour cette salle ---- #}
+        <div class="col-md-6 col-lg-5">
+            <div class="detail-card shadow">
+                <div class="detail-card-title">📅 Prochaines réservations</div>
+
+                {# toutes les réservations à venir #}
+                {% set upcoming = room.reservations|filter(r => r.reservationStart >= date() and r.status != 'canceled')  %}
+
+                {% if upcoming is empty %}
+                    <p class="text-muted small mt-2">Aucune réservation à venir pour cette salle.</p>
+                {% else %}
+                    <div class="reservations-table mt-3">
+                        <table class="table table-borderless mb-0">
+                            <thead>
+                                <tr>
+                                    <th>Date</th>
+                                    <th>Créneau</th>
+                                    <th>Réservé par</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+
+                            <tbody>
+                                {% for res in upcoming %}
+                                    {% set isMine = res.user.id == user.id %}
+                                    <tr class="{{ isMine ? 'row-mine' : '' }}">
+                                        <td>
+                                            <div class="next-res-date">
+                                                {{ res.reservationStart|date('d/m/Y') }}
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <div class="next-res-time">
+                                                {{ res.reservationStart|date('H:i') }}
+                                                → {{ res.reservationEnd|date('H:i') }}
+                                            </div>
+                                        </td>
+                                        <td>
+                                            {% if isMine %}
+                                                <span class="badge-mine">👤 Moi</span>
+                                            {% else %}
+                                                <span class="text-muted-detail-rooms small">Autre utilisateur</span>
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            {% if isMine %}
+                                                {# annuler sa propre réservation #}
+                                                {# {{ include('partials/_cancel_reservation.html.twig', { reservation: res }) }} #}
+                                            {% else %}
+                                                <span class="text-muted-detail-rooms small">—</span>
+                                            {% endif %}
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    {# ---- Retour ---- #}
+    <div class="mt-5">
+        <a href="{{ path('app_coordinator_rooms') }}" class="btn-action-secondary text-decoration-none d-inline">
+            ← Retour aux salles
+        </a>
+    </div>
+
+</div>
+{% endblock %}

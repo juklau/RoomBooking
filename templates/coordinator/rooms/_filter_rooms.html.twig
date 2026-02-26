@@ -1,0 +1,72 @@
+{# ---- Filtre par créneau ---- #}
+<div class="filter-card shadow mb-4">
+    <div class="filter-card-title text-black">🔍 Rechercher les salles disponibles sur un créneau</div>
+
+    <form method="get" action="{{ path('app_coordinator_rooms') }}" class="d-flex align-items-end gap-3 flex-wrap">
+        {# Date #}
+        <div class="filter-field">
+            <label for="filter-date">Date</label>
+            <input type="date"
+                   id="filter-date"
+                   name="date"
+                   class="form-control mt-1"
+                   min="{{ 'tomorrow'|date('Y-m-d') }}"
+                   value="{{ filterDate ?? '' }}">
+        </div>
+
+        {# Heure de début #}
+        <div class="filter-field">
+            <label for="filter-start">Début</label>
+            <select id="filter-start" name="startTime" class="form-select mt-1">
+                <option value="">-- Début --</option>
+                {% for label, value in timeSlots %}
+                    <option value="{{ value }}" {{ filterStartTime == value ? 'selected' : '' }}>
+                        {{ label }}
+                    </option>
+                {% endfor %}
+            </select>
+        </div>
+
+        {# Heure de fin #}
+        <div class="filter-field">
+            <label for="filter-end">Fin</label>
+            <select id="filter-end" name="endTime" class="form-select mt-1">
+                <option value="">-- Fin --</option>
+                {% for label, value in timeSlots %}
+                    <option value="{{ value }}" {{ filterEndTime == value ? 'selected' : '' }}>
+                        {{ label }}
+                    </option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div class="d-flex gap-2">
+            <button type="submit" class="btn-coordinator-outline filtrer">Filtrer</button>
+            {% if filterDate %}
+                <a href="{{ path('app_coordinator_rooms') }}" class="btn-action-secondary text-decoration-none">
+                    Réinitialiser
+                </a>
+            {% endif %}
+        </div>
+    </form>
+
+    {# Résultat du filtre #}
+    {% if filterStart and filterEnd %}
+        <div class="filter-result mt-3">
+            {% if filteredRooms is empty %}
+                <span class="filter-result-empty">
+                    <strong>Aucune salle disponible le {{ filterStart|date('d/m/Y') }}
+                    de {{ filterStart|date('H:i') }} à {{ filterEnd|date('H:i') }}</strong>
+                </span>
+            {% else %}
+                <span class="filter-result-ok">
+                    {{ filteredRooms|length }} salle{{ filteredRooms|length > 1 ? 's disponibles' : ' disponible' }}
+                    le {{ filterStart|date('d/m/Y') }} de {{ filterStart|date('H:i') }} à {{ filterEnd|date('H:i') }} :
+                    {% for room in filteredRooms %}
+                        <strong>{{ room.name }}</strong>{% if not loop.last %}, {% endif %}
+                    {% endfor %}
+                </span>
+            {% endif %}
+        </div>
+    {% endif %}
+</div>
