@@ -14,7 +14,7 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Validator\Constraints\NotBlank;
 
 
-class CreateReservationType extends AbstractType
+class AdminReservationType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
@@ -42,7 +42,8 @@ class CreateReservationType extends AbstractType
                 'constraints'  => [
                     new NotBlank(message: 'Veuillez choisir une salle.'
                 )],
-                'data'         => $options['preselected_room'],
+                // 'data'         => $options['preselected_room'],
+                'preferred_choices' => $options['preselected_room'] ? [$options['preselected_room']] : [],
                 'attr'         => [
                     'class' => 'form-select'
                 ],

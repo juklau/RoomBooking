@@ -1,0 +1,18 @@
+{#
+    Bouton retirer un étudiant d'une classe — version admin
+    NE SUPPRIME PAS le compte — détache uniquement de la classe
+    Usage : {{ include('partials/_remove_student_classe_admin.html.twig', { student: student, classe: classe }) }}
+#}
+<form method="post"
+      action="{{ path('app_admin_student_remove', {classeId: classe.id, id: student.id}) }}"
+      onsubmit="return confirm('Retirer {{ student.user.firstname }} {{ student.user.lastname }} de la classe {{ classe.name }} ?\n\nSon compte ne sera pas supprimé.')">
+
+    <input type="hidden" name="_token"
+           value="{{ csrf_token('remove_student_' ~ student.id) }}">
+
+    <button type="submit" class="btn-action-danger btn-sm-action" title="Retirer de la classe">
+        ✕
+    </button>
+
+</form>
+

@@ -1,10 +1,10 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}{{ room.name }} — Coordinateur RoomBooking{% endblock %}
+{% block title %}{{ room.name }} — Étudiant RoomBooking{% endblock %}
 
 {% block stylesheets %}
     <link rel="stylesheet" href="{{ asset('styles/admin.css') }}">
-    <link rel="stylesheet" href="{{ asset('styles/coordinator.css') }}">
+    <link rel="stylesheet" href="{{ asset('styles/student.css') }}">
     <link rel="stylesheet" href="{{ asset('styles/rooms.css') }}">
 {% endblock %}
 
@@ -16,13 +16,13 @@
         <div class="d-flex align-items-center justify-content-between">
             <div>
                 <div class="d-flex align-items-center gap-2 mb-1">
-                    <span class="badge-coordinator">Coordinateur</span>
+                    <span class="badge-student">Étudiant</span>
                 </div>
                 <div class="d-flex align-items-center gap-2 mb-1">
-                    <a href="{{ path('app_coordinator_dashboard') }}" class="breadcrumb-link-coordinator">Dashboard</a>
+                    <a href="{{ path('app_student_dashboard') }}" class="breadcrumb-link-student">Dashboard</a>
                     <span class="breadcrumb-sep">›</span>
 
-                    <a href="{{ path('app_coordinator_rooms') }}" class="breadcrumb-link-coordinator">Salles</a>
+                    <a href="{{ path('app_student_rooms') }}" class="breadcrumb-link-student">Salles</a>
                     <span class="breadcrumb-sep">›</span>
 
                     <span class="breadcrumb-current">{{ room.name }}</span>
@@ -31,8 +31,8 @@
                 <p>Détail de la salle</p>
             </div>
             <div>
-                <a href="{{ path('app_coordinator_reservation_new') }}"
-                   class="btn-coordinator-outline text-decoration-none d-inline">
+                <a href="{{ path('app_student_reservation_new', {room: room.id}) }}"
+                   class="btn-student-outline text-decoration-none d-inline">
                     Réserver cette salle
                 </a>
             </div>
@@ -42,7 +42,7 @@
     <div class="row g-4 d-flex justify-content-center">
 
         {# ---- Infos principales ---- #}
-        <div class="col-md-6 col-lg-3 ">
+        <div class="col-md-6 col-lg-3 "> {# ?????????#}
             <div class="detail-card shadow">
                 <div class="detail-card-title">📋 Informations</div>
 
@@ -64,7 +64,7 @@
         </div>
 
         {# ---- Équipements ---- #}
-        <div class="col-md-6 col-lg-4">
+        <div class="col-md-6 col-lg-4"> {#????????#}
             <div class="detail-card shadow">
                 <div class="detail-card-title">🖥 Équipements</div>
 
@@ -81,15 +81,21 @@
         </div>
 
         {# ---- Réservations à venir pour cette salle ---- #}
-        <div class="col-md-6 col-lg-5">
+        <div class="col-md-6 col-lg-5"> {# ????????????#}
             <div class="detail-card shadow">
-                <div class="detail-card-title">📅 Prochaines réservations</div>
+                <div class="detail-card-title d-flex align-items-center justify-content-between">
+                    <span>📅 Prochaines réservations</span>
+                    <a href="{{ path('app_student_reservation_new', {room: room.id}) }}"
+                       class="btn-student-outline text-decoration-none">
+                        Réserver
+                    </a>
+                </div>
 
                 {# toutes les réservations à venir #}
                 {% set upcoming = room.reservations|filter(r => r.reservationStart >= date() and r.status != 'canceled')  %}
 
                 {% if upcoming is empty %}
-                    <p class="text-muted small mt-2">Aucune réservation à venir pour cette salle.</p>
+                    <p class="text-muted small mt-2">Aucune réservation à venir - la salle est libre !</p>
                 {% else %}
                     <div class="reservations-table details mt-3">
                         <table class="table table-borderless mb-0">
@@ -105,7 +111,7 @@
                             <tbody>
                                 {% for res in upcoming %}
                                     {% set isMine = res.user.id == user.id %}
-                                    <tr class="{{ isMine ? 'row-mine' : '' }}">
+                                    <tr class="{{ isMine ? 'row-mine-student' : '' }}">
                                         <td>
                                             <div class="next-res-date">
                                                 {{ res.reservationStart|date('d/m/Y') }}
@@ -119,15 +125,16 @@
                                         </td>
                                         <td>
                                             {% if isMine %}
-                                                <span class="badge-mine">👤 Moi</span>
+                                                <span class="badge-mine-student">👤 Moi</span>
                                             {% else %}
+                                            {# ????? #}
                                                 <span class="text-muted-detail-rooms small">Autre utilisateur</span>
                                             {% endif %}
                                         </td>
                                         <td>
                                             {% if isMine %}
                                                 {# annuler sa propre réservation #}
-                                                {{ include('partials/_cancel_reservation_coordinator.html.twig', { reservation: res }) }}
+                                                {{ include('partials/_cancel_reservation_student.html.twig', { reservation: res }) }}
                                             {% else %}
                                                 <span class="text-muted-detail-rooms small">—</span>
                                             {% endif %}
@@ -144,10 +151,9 @@
 
     {# ---- Retour ---- #}
     <div class="mt-5">
-        <a href="{{ path('app_coordinator_rooms') }}" class="btn-action-secondary text-decoration-none d-inline">
+        <a href="{{ path('app_student_rooms') }}" class="btn-action-secondary text-decoration-none d-inline">
             ← Retour aux salles
         </a>
     </div>
-
 </div>
 {% endblock %}

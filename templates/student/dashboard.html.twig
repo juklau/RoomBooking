@@ -1,6 +1,6 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Dashboard Admin — RoomBooking{% endblock %}
+{% block title %}Dashboard Étudiant — RoomBooking{% endblock %}
 
 {% block stylesheets %}
     <link rel="stylesheet" href="{{ asset('styles/admin.css')}}">
@@ -12,7 +12,6 @@
 <div class="container-fluid px-4">
 
     {# ---- Header ---- #}
-
     <div class="dashboard-header">
         <div class="d-flex align-items-center justify-content-between">
             <div>
@@ -29,8 +28,7 @@
         </div>
     </div>
 
-     {# ---- Stats ---- #}
-
+    {# ---- Stats ---- #}
     <div class="row g-3 mb-4">
         <div class="col-6 col-md-4">
             <div class="stat-card text-center flex-column d-flex shadow">
@@ -80,7 +78,7 @@
                                 <tr>
                                     <td colspan="4" class="text-center text-muted py-4">
                                         Aucune réservation à venir
-                                        <a href="#" class="link-student">Réserver une salle</a>
+                                        <a href="{{ path('app_student_reservation_new') }}" class="link-student">Réserver une salle</a>
                                     </td>
                                 </tr>
                             {% else %}
@@ -94,7 +92,8 @@
                                         </td>
                                         <td>{{ res.reservationEnd|date('d/m/Y H:i') }}</td>
                                         <td>
-                                            <a href="#" class="btn btn-sm btn-outline-danger">Annuler</a>
+                                            {# <a href="#" class="btn btn-sm btn-outline-danger">Annuler</a> #}
+                                            {{ include('partials/_cancel_reservation_student.html.twig', { reservation: res }) }}
                                         </td>
                                     </tr>
                                 {% endfor %}
@@ -113,7 +112,7 @@
                             <div class="room-card shadow">
                                 <div class="d-flex align-items-start justify-content-between mb-2">
                                     <div class="room-name">{{ room.name }}</div>
-                                    <a href="#" class="btn btn-sm btn-student">Réserver</a>
+                                    <a href="{{ path('app_student_reservation_new', {room: room.id}) }}" class="btn btn-sm btn-student">Réserver</a>
                                 </div>
                                 <div class="room-capacity">👥 {{ room.capacity }} places</div>
                                 {% if room.equipments is not empty %}
@@ -141,11 +140,11 @@
             <div class="mb-4">
                 <div class="section-title d-flex align-items-center">⚡ Actions rapides</div>
                 <div class="d-flex flex-column gap-2">
-                    <a href="#" class="action-btn text-decoration-none d-flex align-items-center">
+                    <a href="{{ path('app_student_rooms') }}" class="action-btn text-decoration-none d-flex align-items-center">
                         <span class="action-icon d-flex align-items-center justify-content-center" id="action-icon-rooms">🏫</span>
                         Réserver une salle
                     </a>
-                    <a href="#" class="action-btn text-decoration-none d-flex align-items-center">
+                    <a href="{{ path('app_student_rooms') }}" class="action-btn text-decoration-none d-flex align-items-center">
                         <span class="action-icon d-flex align-items-center justify-content-center" id="action-icon-reservations">📅</span>
                         Mes réservations
                     </a>

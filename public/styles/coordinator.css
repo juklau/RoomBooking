@@ -152,7 +152,7 @@
 
 .btn-coordinator.btn-sm-action {
     font-size: 1.1rem;
-}
+} 
 
 .btn-coordinator-details{
     background: #677384;
@@ -227,7 +227,7 @@
     transition: color 0.2s;
 }
 
-.breadcrumb-link-coordinator:hover {
+.breadcrumb-link-coordinator:hover { 
      color: #22772d; 
 }
 

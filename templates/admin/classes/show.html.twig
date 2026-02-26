@@ -95,7 +95,7 @@
                 </div>
 
                 {% if classe.students is empty %}
-                    <div class="empty-state-sm">
+                    <div class="empty-state-sm mt-2">
                         <p>Aucun étudiant dans cette classe.</p>
                         <a href="{{ path('app_admin_classe_add_student', {id: classe.id}) }}" class="btn-action-primary text-decoration-none d-inline">+ Ajouter un étudiant</a>
                     </div>
@@ -122,9 +122,9 @@
                                        title="Réinitialiser le mot de passe">
                                         🔑
                                     </a>
-                                    {# Tâche 12 : supprimer l'étudiant #}
+                                    {# Tâche 12 : retirer l'étudiant #}
                                     {# <a href="#" class="btn-action-danger btn-sm-action" title="Supprimer l'étudiant"> 🗑</a> #}
-                                    {{ include('partials/_delete_student.html.twig', { student: student }) }}
+                                    {{ include('partials/_remove_student_classe_admin.html.twig', { student: student, classe: classe }) }}
                                 </div>
                             </div>
                         {% endfor %}
@@ -167,9 +167,9 @@
                                        title="Réinitialiser le mot de passe">
                                         🔑
                                     </a>
-                                    {# Tâche 16 : supprimer le coordinateur #} 
+                                    {# Tâche 16 : retirer le coordinateur #} 
                                     {# <a href="#" class="btn-action-danger btn-sm-action" title="Supprimer le cordinateur"> 🗑</a> #}
-                                    {{ include('partials/_delete_coordinator.html.twig', { coordinator: coordinator }) }}
+                                    {{ include('partials/_remove_coordinator_classe.html.twig', { coordinator: coordinator, classe: classe }) }}
                                 </div>
                             </div>
                         {% endfor %}

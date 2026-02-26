@@ -18,7 +18,7 @@
                 </li>
             </ul>
 
-            <div class="d-flex align-items-center gap-2">
+            <div class="d-flex align-items-center gap-4">
                 {% if app.user %}
                     <span class="navbar-text text-white-50 me-5">
                         {{ app.user.userIdentifier }}
@@ -28,6 +28,10 @@
                         Déconnexion
                     </a>
                 {% else %}
+                    <a class="btn btn-outline-light btn-sm" href="{{ path('app_registration') }}">
+                        Inscription
+                    </a>
+
                     <a class="btn btn-outline-light btn-sm" href="{{ path('app_login') }}">
                         Connexion
                     </a>

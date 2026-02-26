@@ -29,9 +29,10 @@ security:
 
     access_control:
         - { path: ^/login, roles: PUBLIC_ACCESS }
+        - { path: ^/registration, roles: PUBLIC_ACCESS } 
         - { path: ^/admin, roles: ROLE_ADMIN }
         - { path: ^/coordinator, roles: ROLE_COORDINATOR }
-        - { path: ^/, roles: ROLE_USER }
+        - { path: ^/, roles: ROLE_USER }  # => bloque /registration pour les non connectés !
 
 when@test:
     security:

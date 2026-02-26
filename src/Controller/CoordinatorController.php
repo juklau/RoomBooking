@@ -13,7 +13,7 @@ use App\Entity\Student;
 use App\Entity\Room;
 use App\Entity\Reservation;
 
-use App\Form\AddStudentToClasseType;
+use App\Form\AddStudentToClasseType; 
 use App\Form\CoordinatorReservationType;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
@@ -249,7 +249,7 @@ final class CoordinatorController extends AbstractController
             }
         }
 
-        //comme CreateReservationType.php =>  // Créneaux 08:00 → 20:00 par 30 min
+        //comme AdminReservationType.php =>  // Créneaux 08:00 → 20:00 par 30 min
         $timeSlots = [];
         for ($hour = 8; $hour <= 20; $hour++) {
             foreach ([0, 30] as $min) {
@@ -349,7 +349,7 @@ final class CoordinatorController extends AbstractController
 
             // date fin avant ou égal au début
             if($end <= $start){
-                $this->addFlash('error', 'La date de fin doit être après la date de début.');
+                $this->addFlash('error', 'L\'heure de fin doit être après l\'heure de début.');
                 return $this->render('coordinator/reservations/new.html.twig', [
                     'form' => $form
                 ]);

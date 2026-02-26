@@ -9,7 +9,7 @@
     transition: color 0.2s;
 }
 
-.breadcrumb-link:hover { color: #f85149; }
+.breadcrumb-link:hover { color: #f85149; } 
 
 .breadcrumb-sep {
     color: #4a5270;
@@ -462,7 +462,7 @@
 
 .row-available-highlight {
     background: rgba(63,185,80,0.05) !important;
-    border-left: 3px solid #3fb950;
+    border-left: 5px solid #3fb950;
 }
 
 .btn-sm-action {

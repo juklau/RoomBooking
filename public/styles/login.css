@@ -1,4 +1,4 @@
-/* Login CSS */
+/* Login et inscription CSS */
 
  body {
         background-color: #cbcbcb;
@@ -104,4 +104,16 @@ label.form-label {
     margin-top: 1.5rem;
     font-size: 0.72rem;
     color: #fcfdff;
+}
+
+
+/* --------------------------- Inscription ---------------------------------------- */
+.form-error {
+    color: #f85149;
+    font-size: 0.78rem;
+    margin-top: 0.3rem;
+}
+
+.form-group {
+    margin-bottom: 0;
 }

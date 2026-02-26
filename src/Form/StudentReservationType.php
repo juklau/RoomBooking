@@ -2,10 +2,7 @@
 
 namespace App\Form;
 
-use App\Entity\Coordinator;
 use App\Entity\Room;
-use App\Entity\User;
-use App\Repository\UserRepository;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
@@ -15,13 +12,10 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Validator\Constraints\NotBlank;
 
 
-class CoordinatorReservationType extends AbstractType
+class StudentReservationType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
-
-        /** @var Coordinator|null $coordinator */
-        $coordinator = $options['coordinator'];
 
         // Générer les créneaux de 08:00 à 20:00 par tranches de 30 min
             // ['08:00' => '08:00', '08:30' => '08:30', ..., '20:00' => '20:00']
@@ -34,18 +28,6 @@ class CoordinatorReservationType extends AbstractType
                 $label = sprintf('%02d:%02d', $hour, $min);
                 $timeSlots[$label] = $label;
             }
-        }
-
-        //collecter les Ids des étudiants de toutes les classes => pour le filtre EntityType
-        $studentUserIds = [];
-
-        if($coordinator){
-            foreach($coordinator->getClasses() as $classe){
-                foreach($classe->getStudents() as $student){
-                    $studentUserIds [] = $student->getUser()->getId();
-                }
-            }
-            $studentUserIds = array_unique($studentUserIds);
         }
 
         $builder
@@ -98,30 +80,15 @@ class CoordinatorReservationType extends AbstractType
                 'attr'        => [
                     'class' => 'form-select'
                 ],
-            ])
-            ->add('beneficiary', EntityType::class, [
-                'class'         => User::class,
-                'choice_label'  => fn(User $u) => $u->getFirstname() . ' ' . $u->getLastname() . ' (' . $u->getEmail() . ')',
-                'label'         => 'Réserver pour',
-                'placeholder'   => '-- Pour moi même --',
-                'required'      => false,                   
-
-                //filtrer uniquement les étudiants de ses classes
-                'query_builder' => fn(UserRepository $repo) => $repo->createQueryBuilder('u')
-                    ->where('u.id IN (:ids)')
-                    ->setParameter('ids', $studentUserIds ?: [0])  //=> [0] pour éviter une erreur SQM si vide
-                    ->orderBy('u.lastname', 'ASC'),
-                'attr'          => [
-                    'class' => 'form-select'
-                ],
             ]);
+           
+            //étudiant réserve uniquement pour lui même
     }
 
     public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefaults([
             'preselected_room' => null,
-            'coordinator'      => null,
         ]);
        
     }

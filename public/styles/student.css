@@ -6,7 +6,7 @@
 .badge-student {
     background: rgba(76, 143, 220, 0.3);
     color: #4078b7;
-    border: 1px solid rgba(88, 166, 255, 0.8);
+    border: 1px solid rgba(88, 166, 255, 0.8); 
     border-radius: 20px;
     padding: 0.25rem 0.75rem;
     font-size: 0.75rem;
@@ -44,7 +44,7 @@
     border-color: #58a6ff;
 }
 
-/* Bouton accent étudiant */
+/*********************************** Bouton accent étudiant *************************************/
 .btn-student {
     background: rgba(88, 166, 255, 0.15);
     color: #58a6ff;
@@ -53,6 +53,7 @@
     font-weight: 500;
     white-space: nowrap;
     transition: all 0.2s;
+    border-radius: 10px;
 }
 
 .btn-student:hover {
@@ -101,14 +102,14 @@
 
 .class-block-count {
     font-size: 0.78rem;
-    color: #7d8590;
+    color: #cfd5dc;
 }
 
 .class-block-students {
     padding: 0.75rem 1.2rem 1rem;
 }
 
-/* Student row */
+/************************************ Student row *********************************************/
 .student-row {
     background: #1c2128;
     border: 1px solid #21262d;
@@ -139,4 +140,112 @@
 .student-email {
     font-size: 0.72rem;
     color: #a9b1bc;
+}
+
+/* ----------------------------- student /rooms/index.html.twig -------------------------------------- */
+
+
+/* -------------------------------------------- Breadcrumb ------------------------------------- */
+.breadcrumb-link-student {
+    color: #4a5270;
+    text-decoration: none;
+    font-size: 0.95rem;
+    transition: color 0.2s;
+}
+
+.breadcrumb-link-student:hover { 
+     color: #4078b7; 
+}
+
+.breadcrumb-sep {
+    color: #4a5270;
+    font-size: 0.95rem;
+}
+
+.breadcrumb-current {
+    color: #4a5270;
+    text-decoration: underline;
+    font-size: 0.95rem;
+    font-weight: 500;
+}
+
+/* --------------------------------  Lister les salles -------------------------------- */
+
+.btn-student-outline {
+    background: transparent;
+    color: #1367c7;
+    border: 1px solid rgba(18, 57, 102, 0.63);
+    border-radius: 8px;
+    padding: 0.45rem 1rem;
+    font-size: 0.82rem;
+    font-weight: 500;
+    transition: all 0.2s;
+}
+
+.btn-student-outline.filtrer:hover,
+.btn-student-outline:hover {
+    background: rgba(88, 166, 255, 0.603);
+    border-color: #58a6ff;
+    color: white;
+}
+
+.btn-student-outline.filtrer{
+    background: #4784cb9b;
+    color: #142b45;
+}
+
+.btn-action-secondary.student:hover {
+    border-color: #58a6ff;
+    color: #58a6ff;
+}
+
+.btn-action-danger {
+    background: rgba(248, 81, 73, 0.1);
+    /* color: #f85149; */
+    color: black;
+    border: 1px solid rgba(248, 81, 73, 0.2);
+    border-radius: 8px;
+    font-weight: 600;
+    padding: 0.45rem 0.7rem;
+    font-size: 0.85rem;
+    transition: all 0.2s;
+}
+
+.btn-action-danger:hover {
+    background: #f85149;
+    color: #fff;
+}
+
+.btn-student-details{
+    background: #677384;
+    color: #e6edf3;
+    border: 1px solid #677384; 
+    border-radius: 8px;
+    padding: 0.45rem 0.9rem;
+    font-size: 0.82rem;
+    font-weight: 500;
+    transition: all 0.2s;
+}
+
+.btn-student-details:hover{
+    background: #58a6ff;
+    color: #0d1117;
+    border-color: #58a6ff;
+}
+
+
+/* --------------------------------------------- Détail d'une salle -------------------------------------- */
+.row-mine-student {
+    background: rgba(88, 166, 255, 0.05) !important;
+    border-left: 3px solid #58a6ff;
+}
+
+.badge-mine-student {
+    background: rgba(88, 166, 255, 0.12);
+    color: #58a6ff;
+    border: 1px solid rgba(88, 166, 255, 0.25);
+    border-radius: 20px;
+    padding: 0.2rem 0.65rem;
+    font-size: 0.78rem;
+    font-weight: 600;
 }

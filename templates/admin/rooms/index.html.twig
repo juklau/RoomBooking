@@ -58,8 +58,9 @@
                 {% else %}
                     {% for item in roomsWithStats %}
                         {% set isFiltered = filterStart and filteredRooms is not null and item.room in filteredRooms %}
-                        <tr class="{{ isFiltered ? 'row-available-highlight' : '' }}">
-
+                        <tr onclick="window.location='{{ path('app_student_room_show', {id: item.room.id}) }}'" class="{{ isFiltered ? 'row-available-highlight' : '' }}">
+                        
+                        {# style="cursor: pointer; #}
                             {# Nom + équipements #}
                             <td>
                                 <div class="room-row-name">{{ item.room.name }}</div>
@@ -134,7 +135,7 @@
                                     </a>
 
                                     {# Tâche 18 : réserver #}
-                                    <a href="{{ path('app_admin_reservation_new') }}"
+                                    <a href="{{ path('app_admin_reservation_new', {id: item.room.id}) }}"
                                        class="btn-action-primary btn-sm-action text-decoration-none" title="Réserver cette salle">
                                         <span class="action-icon-dispo d-flex align-items-center justify-content-center">📅</span>
                                     </a>

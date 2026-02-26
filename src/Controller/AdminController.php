@@ -21,7 +21,7 @@ use App\Form\CreateCoordinatorType;
 use App\Form\RoomType;
 use App\Form\AddStudentToClasseType;
 use App\Form\AddCoordinatorToClasseType;
-use App\Form\CreateReservationType;
+use App\Form\AdminReservationType;
 use App\Form\ResetPasswordType;
 use App\Form\RoomEquipmentType;
 use Doctrine\ORM\EntityManagerInterface;
@@ -29,10 +29,12 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
 #[Route('/admin')]
+#[IsGranted('ROLE_ADMIN')] 
 final class AdminController extends AbstractController
 {
     #[Route('/dashboard', name: 'app_admin_dashboard')]
@@ -115,7 +117,7 @@ final class AdminController extends AbstractController
             }
         }
 
-        //comme CreateReservationType.php
+        //comme AdminReservationType.php
         $timeSlots = [];
         for ($hour = 8; $hour <= 20; $hour++) {
             foreach ([0, 30] as $min) {
@@ -564,6 +566,47 @@ final class AdminController extends AbstractController
         ]);
     }
 
+     /**
+     * retirer un étudiant d'une classe => MAIS pas supprimer de la bdd
+     */
+    #[Route('/classes/{classeId}/students/{id}/remove', name: 'app_admin_student_remove', requirements: ['classeId' => '\d+', 'id' => '\d+' ], methods: ['POST'])]
+    public function studentRemove(
+        int                              $classeId,
+        \App\Entity\Student              $student,
+        Request                          $request,
+        EntityManagerInterface           $em,
+        \App\Repository\ClasseRepository $classeRepo
+    ): Response {
+
+        /** @var \App\Entity\User $user */              //=> @ est important!!!!!!!
+        $user = $this->getUser();
+      
+        $classe = $classeRepo->find($classeId);
+
+        if(!$classe){
+            throw $this->createNotFoundException('Classe introuvable.');
+        }
+
+        //vérif le token CSRF => évite la suppression malveillant
+        if(!$this->isCsrfTokenValid('remove_student_' . $student->getId(), $request->request->get('_token'))){
+            $this->addFlash('error', 'Token invalide.');
+            return $this->redirectToRoute('app_admin_classe_show', ['id' => $classeId]);
+        }
+
+
+        $name = $student->getUser()->getFirstname() . ' ' . $student->getUser()->getLastname();
+
+        //retirer la classe sans supprimer le compte
+        $student->setClasse(null);
+        
+        $em->flush();
+
+        $this->addFlash('success', 'Étudiant "' . $name . '" a été retiré(e) de la classe ' . $classe->getName() . ' avec succès.');
+
+        return $this->redirectToRoute('app_admin_classe_show', ['id' => $classeId]);
+    }
+
+
     /**
      * supprimer un étudiant
      */
@@ -720,6 +763,46 @@ final class AdminController extends AbstractController
         ]);
     }
 
+     /**
+     * retirer un coordinateur d'une classe => MAIS pas supprimer de la bdd
+     */
+    #[Route('/classes/{classeId}/coordinators/{id}/remove', name: 'app_admin_coordinator_remove', requirements: ['classeId' => '\d+', 'id' => '\d+' ], methods: ['POST'])]
+    public function coordinatorRemove(
+        int                              $classeId,
+        \App\Entity\Coordinator          $coordinator,
+        Request                          $request,
+        EntityManagerInterface           $em,
+        \App\Repository\ClasseRepository $classeRepo
+    ): Response {
+
+        /** @var \App\Entity\User $user */              //=> @ est important!!!!!!!
+        $user = $this->getUser();
+      
+        $classe = $classeRepo->find($classeId);
+
+        if(!$classe){
+            throw $this->createNotFoundException('Classe introuvable.');
+        }
+
+        //vérif le token CSRF => évite la suppression malveillant
+        if(!$this->isCsrfTokenValid('remove_coordinator_' . $coordinator->getId(), $request->request->get('_token'))){
+            $this->addFlash('error', 'Token invalide.');
+            return $this->redirectToRoute('app_admin_classe_show', ['id' => $classeId]);
+        }
+
+
+        $name = $coordinator->getUser()->getFirstname() . ' ' . $coordinator->getUser()->getLastname();
+
+        //retirer la classe sans supprimer le compte
+        $coordinator->removeClass($classe);
+        
+        $em->flush();
+
+        $this->addFlash('success', 'Coordinateur "' . $name . '" a été retiré(e) de la classe ' . $classe->getName() . ' avec succès.');
+
+        return $this->redirectToRoute('app_admin_classe_show', ['id' => $classeId]);
+    }
+
     /**
      * supprimer un coordinateur
      */
@@ -763,7 +846,7 @@ final class AdminController extends AbstractController
       * créer new reservation
       */
     #[Route('/reservations/new', name: 'app_admin_reservation_new')]
-    public function reservationNew(
+    public function reservationNew( 
         Request                     $request,
         EntityManagerInterface      $em,
         RoomRepository              $roomRepo
@@ -777,9 +860,14 @@ final class AdminController extends AbstractController
         }
 
         //créer un formulaire lié à l'entité CreateReservation
-        $form = $this->createForm(CreateReservationType::class, null, [
+        $form = $this->createForm(AdminReservationType::class, null, [
             'preselected_room' => $preselectedRoom,
         ]); 
+
+        // Après handleRequest, si GET et salle présente → forcer la valeur
+        if (!$form->isSubmitted() && $preselectedRoom) {
+            $form->get('room')->setData($preselectedRoom);
+        }
 
         // analyse la requête HTTP => POST (formulaire)
         $form->handleRequest($request);
@@ -809,7 +897,7 @@ final class AdminController extends AbstractController
 
             // date fin avant ou égal au début
             if($end <= $start){
-                $this->addFlash('error', 'La date de fin doit être après la date de début.');
+                $this->addFlash('error', 'L\'heure de fin doit être après l\'heure de début.');
                 return $this->render('admin/reservations/new.html.twig', [
                     'form' => $form
                 ]);
