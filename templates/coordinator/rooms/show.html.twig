@@ -91,7 +91,7 @@
                 {% if upcoming is empty %}
                     <p class="text-muted small mt-2">Aucune réservation à venir pour cette salle.</p>
                 {% else %}
-                    <div class="reservations-table mt-3">
+                    <div class="reservations-table details mt-3">
                         <table class="table table-borderless mb-0">
                             <thead>
                                 <tr>
@@ -127,7 +127,7 @@
                                         <td>
                                             {% if isMine %}
                                                 {# annuler sa propre réservation #}
-                                                {# {{ include('partials/_cancel_reservation.html.twig', { reservation: res }) }} #}
+                                                {{ include('partials/_cancel_reservation.html.twig', { reservation: res }) }}
                                             {% else %}
                                                 <span class="text-muted-detail-rooms small">—</span>
                                             {% endif %}

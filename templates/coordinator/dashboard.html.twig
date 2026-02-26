@@ -87,7 +87,7 @@
                                 </tr>
                             {% else %}
                                 {% for res in myReservations %}
-                                    <tr>
+                                    <tr onclick="window.location='{{ path('app_coordinator_rooms') }}'" class="rows-onclick">
                                         <td><strong>{{ res.room.name }}</strong></td>
                                         <td>
                                             {% set isToday = res.reservationStart|date('Y-m-d') == 'now'|date('Y-m-d') %}
@@ -96,7 +96,8 @@
                                         </td>
                                         <td>{{ res.reservationEnd|date('d/m/Y H:i') }}</td>
                                         <td>
-                                            <a href="#" class="btn btn-sm btn-outline-danger">Annuler</a>
+                                            {# <a href="#" class="btn btn-sm btn-outline-danger">Annuler</a> #}
+                                            {{ include('partials/_cancel_reservation_coordinator.html.twig', { reservation: res }) }}
                                         </td>
                                     </tr>
                                 {% endfor %}

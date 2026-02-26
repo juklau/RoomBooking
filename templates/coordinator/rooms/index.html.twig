@@ -60,8 +60,8 @@
                 {% else %}
                     {% for item in roomsWithStats %}
                         {% set isFiltered = filterStart and filteredRooms is not null and item.room in filteredRooms %}
-                        <tr class="{{ isFiltered ? 'row-available-highlight' : '' }}">
-                        {# onclick="window.location='{{ path('app_coordinator_room_show', {id: item.room.id}) }}'" #}
+                        <tr onclick="window.location='{{ path('app_coordinator_room_show', {id: item.room.id}) }}'" class="{{ isFiltered ? 'row-available-highlight' : '' }}">
+                        {#  #}
                             {# style="cursor: pointer;" #}
 
                             {# Nom + équipements #}
@@ -118,7 +118,7 @@
                             {# Actions #}
                             <td onclick="event.stopPropagation()">
                                 <div class="d-flex gap-4">
-                                    {#  #}
+
                                     <a href="{{ path('app_coordinator_room_show', {id: item.room.id}) }}"
                                        class="btn-action-secondary coordinator btn-sm-action text-decoration-none" title="Voir le détail">
                                         <span class="action-icon-dispo d-flex align-items-center justify-content-center">👁</span>
@@ -129,6 +129,7 @@
                                        class="btn-coordinator btn-sm-action text-decoration-none" title="Réserver cette salle">
                                         <span class="action-icon-dispo d-flex align-items-center justify-content-center">📅</span>
                                     </a>
+
                                 </div>
                             </td>
                         </tr>
