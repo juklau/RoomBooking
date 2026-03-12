@@ -135,6 +135,23 @@ class RoomRepository extends ServiceEntityRepository
             ->getResult();
     }
 
+    /**
+     * vérifier si le nom de la salle existe-il dans la BDD
+     */
+    public function isExisteRoom(Room $room): bool 
+    {
+        $count = $this->createQueryBuilder('r')
+            ->select('COUNT(r.id)')
+            ->where('r.name = :name')
+            ->andWhere('r.id != :id')                 // => exclure la salle elle-même
+            ->setParameter('name', $room->getName())
+            ->setParameter('id', $room->getId() ?? 0)   // => si c'est nouvelle salle = 0
+            ->getQuery()
+            ->getSingleScalarResult();
+
+        return (int)$count === 0; //=> true => disponible le nom
+    }
+
 
 
     

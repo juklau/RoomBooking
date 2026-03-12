@@ -7,142 +7,122 @@ CREATE DATABASE IF NOT EXISTS roombooking
 USE roombooking;
 
 -- =====================================================
--- TABLE: utilisateur
+-- TABLE: user
 -- =====================================================
-CREATE TABLE `utilisateur` (
-  `id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
-  `email` VARCHAR(255) NOT NULL,
-  `firstname` VARCHAR(100) NOT NULL,
-  `lastname` VARCHAR(100) NOT NULL,
-  `password_hash` VARCHAR(255) NOT NULL,
-  PRIMARY KEY (`id`),
-  UNIQUE KEY `uk_utilisateur_email` (`email`)
-) ENGINE=InnoDB;
+CREATE TABLE user (
+  id INT NOT NULL AUTO_INCREMENT,
+  email VARCHAR(255) NOT NULL,
+  firstname VARCHAR(100) NOT NULL,
+  lastname VARCHAR(100) NOT NULL,
+  password VARCHAR(255) NOT NULL,
+  PRIMARY KEY (id),
+  UNIQUE KEY UNIQ_user_email (email)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 -- =====================================================
--- TABLE: administrateur
+-- TABLE: administrator
 -- =====================================================
-CREATE TABLE `administrateur` (
-  `id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
-  `utilisateur_id` INT UNSIGNED NOT NULL,
-  PRIMARY KEY (`id`),
-  UNIQUE KEY `uk_administrateur_utilisateur` (`utilisateur_id`),
-  CONSTRAINT `fk_administrateur_utilisateur`
-    FOREIGN KEY (`utilisateur_id`) REFERENCES `utilisateur`(`id`)
-    ON DELETE CASCADE
-    ON UPDATE CASCADE
-) ENGINE=InnoDB;
+CREATE TABLE administrator (
+  id INT NOT NULL AUTO_INCREMENT,
+  user_id INT NOT NULL,
+  PRIMARY KEY (id),
+  UNIQUE KEY UNIQ_administrator_user (user_id),
+  CONSTRAINT FK_administrator_user FOREIGN KEY (user_id) REFERENCES user (id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 -- =====================================================
--- TABLE: coordinateur
+-- TABLE: coordinator
 -- =====================================================
-CREATE TABLE `coordinateur` (
-  `id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
-  `utilisateur_id` INT UNSIGNED NOT NULL,
-  PRIMARY KEY (`id`),
-  UNIQUE KEY `uk_coordinateur_utilisateur` (`utilisateur_id`),
-  CONSTRAINT `fk_coordinateur_utilisateur`
-    FOREIGN KEY (`utilisateur_id`) REFERENCES `utilisateur`(`id`)
-    ON DELETE CASCADE
-    ON UPDATE CASCADE
-) ENGINE=InnoDB;
+CREATE TABLE coordinator (
+  id INT NOT NULL AUTO_INCREMENT,
+  user_id INT NOT NULL,
+  PRIMARY KEY (id),
+  UNIQUE KEY UNIQ_coordinator_user (user_id),
+  CONSTRAINT FK_coordinator_user FOREIGN KEY (user_id) REFERENCES user (id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 -- =====================================================
 -- TABLE: classe
 -- =====================================================
-CREATE TABLE `classe` (
-  `id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
-  `name` VARCHAR(150) NOT NULL,
-  PRIMARY KEY (`id`),
-  UNIQUE KEY `uk_classe_name` (`name`)
-) ENGINE=InnoDB;
+CREATE TABLE classe (
+  id INT NOT NULL AUTO_INCREMENT,
+  name VARCHAR(150) NOT NULL,
+  PRIMARY KEY (id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 -- =====================================================
 -- TABLE: student
 -- =====================================================
-CREATE TABLE `student` (
-  `id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
-  `utilisateur_id` INT UNSIGNED NOT NULL,
-  `classe_id` INT UNSIGNED NOT NULL,
-  PRIMARY KEY (`id`),
-  UNIQUE KEY `uk_student_utilisateur` (`utilisateur_id`),
-  KEY `idx_student_classe` (`classe_id`),
-  CONSTRAINT `fk_student_utilisateur`
-    FOREIGN KEY (`utilisateur_id`) REFERENCES `utilisateur`(`id`)
-    ON DELETE CASCADE
-    ON UPDATE CASCADE,
-  CONSTRAINT `fk_student_classe`
-    FOREIGN KEY (`classe_id`) REFERENCES `classe`(`id`)
-    ON DELETE RESTRICT
-    ON UPDATE CASCADE
-) ENGINE=InnoDB;
+CREATE TABLE student (
+  id INT NOT NULL AUTO_INCREMENT,
+  user_id INT NOT NULL,
+  classe_id INT DEFAULT NULL,
+  PRIMARY KEY (id),
+  UNIQUE KEY UNIQ_student_user (user_id),
+  KEY IDX_student_classe (classe_id),
+  CONSTRAINT FK_student_user FOREIGN KEY (user_id) REFERENCES user (id),
+  CONSTRAINT FK_student_classe FOREIGN KEY (classe_id) REFERENCES classe (id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 -- =====================================================
 -- TABLE: coordinateur_classe (association N-N)
 -- =====================================================
-CREATE TABLE `coordinateur_classe` (
-  `id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
-  `coordinateur_id` INT UNSIGNED NOT NULL,
-  `classe_id` INT UNSIGNED NOT NULL,
-  PRIMARY KEY (`id`),
-  UNIQUE KEY `uk_coordinateur_classe` (`coordinateur_id`, `classe_id`),
-  KEY `idx_cc_classe` (`classe_id`),
-  CONSTRAINT `fk_cc_coordinateur`
-    FOREIGN KEY (`coordinateur_id`) REFERENCES `coordinateur`(`id`)
-    ON DELETE CASCADE
-    ON UPDATE CASCADE,
-  CONSTRAINT `fk_cc_classe`
-    FOREIGN KEY (`classe_id`) REFERENCES `classe`(`id`)
-    ON DELETE CASCADE
-    ON UPDATE CASCADE
-) ENGINE=InnoDB;
+CREATE TABLE coordinator_classe (
+  coordinator_id INT NOT NULL,
+  classe_id INT NOT NULL,
+  PRIMARY KEY (coordinator_id, classe_id),
+  KEY IDX_cc_coordinator (coordinator_id),
+  KEY IDX_cc_classe (classe_id),
+  CONSTRAINT FK_cc_coordinator FOREIGN KEY (coordinator_id) REFERENCES coordinator (id) ON DELETE CASCADE,
+  CONSTRAINT FK_cc_classe FOREIGN KEY (classe_id) REFERENCES classe (id) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 -- =====================================================
--- TABLE: salle
+-- TABLE: room
 -- =====================================================
-CREATE TABLE `salle` (
-  `id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
-  `name` VARCHAR(150) NOT NULL,
-  `capacity` INT UNSIGNED NOT NULL,
-  PRIMARY KEY (`id`),
-  UNIQUE KEY `uk_salle_name` (`name`)
-) ENGINE=InnoDB;
+CREATE TABLE room (
+  id INT NOT NULL AUTO_INCREMENT,
+  name VARCHAR(150) NOT NULL,
+  capacity INT NOT NULL,
+  PRIMARY KEY (id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 -- =====================================================
--- TABLE: equipement
+-- TABLE: equipment
 -- =====================================================
-CREATE TABLE `equipement` (
-  `id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
-  `name` VARCHAR(150) NOT NULL,
-  `salle_id` INT UNSIGNED NOT NULL,
-  PRIMARY KEY (`id`),
-  KEY `idx_equipement_salle` (`salle_id`),
-  CONSTRAINT `fk_equipement_salle`
-    FOREIGN KEY (`salle_id`) REFERENCES `salle`(`id`)
-    ON DELETE CASCADE
-    ON UPDATE CASCADE
-) ENGINE=InnoDB;
+CREATE TABLE equipment (
+  id INT NOT NULL AUTO_INCREMENT,
+  name VARCHAR(150) NOT NULL,
+  PRIMARY KEY (id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+-- =====================================================
+-- TABLE: room_equipment
+-- =====================================================
+CREATE TABLE room_equipment (
+  room_id INT NOT NULL,
+  equipment_id INT NOT NULL,
+  PRIMARY KEY (room_id, equipment_id),
+  KEY IDX_room_equipment_room (room_id),
+  KEY IDX_room_equipment_equipment (equipment_id),
+  CONSTRAINT FK_room_equipment_room FOREIGN KEY (room_id) REFERENCES room (id) ON DELETE CASCADE,
+  CONSTRAINT FK_room_equipment_equipment FOREIGN KEY (equipment_id) REFERENCES equipment (id) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
 
 -- =====================================================
 -- TABLE: reservation
 -- =====================================================
-CREATE TABLE `reservation` (
-  `id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
-  `salle_id` INT UNSIGNED NOT NULL,
-  `utilisateur_id` INT UNSIGNED NOT NULL,
-  `reservation_start` DATETIME NOT NULL,
-  `reservation_end` DATETIME NOT NULL,
-  PRIMARY KEY (`id`),
-  KEY `idx_reservation_salle` (`salle_id`),
-  KEY `idx_reservation_utilisateur` (`utilisateur_id`),
-  KEY `idx_reservation_salle_time` (`salle_id`, `reservation_start`, `reservation_end`),
-  CONSTRAINT `fk_reservation_salle`
-    FOREIGN KEY (`salle_id`) REFERENCES `salle`(`id`)
-    ON DELETE RESTRICT
-    ON UPDATE CASCADE,
-  CONSTRAINT `fk_reservation_utilisateur`
-    FOREIGN KEY (`utilisateur_id`) REFERENCES `utilisateur`(`id`)
-    ON DELETE RESTRICT
-    ON UPDATE CASCADE,
-  CONSTRAINT `chk_reservation_time` CHECK (`reservation_end` > `reservation_start`)
-) ENGINE=InnoDB;
+CREATE TABLE reservation (
+  id INT NOT NULL AUTO_INCREMENT,
+  reservation_start DATETIME NOT NULL,
+  reservation_end DATETIME NOT NULL,
+  room_id INT NOT NULL,
+  user_id INT NOT NULL,
+  status VARCHAR(20) NOT NULL,
+  PRIMARY KEY (id),
+  KEY IDX_reservation_room (room_id),
+  KEY IDX_reservation_user (user_id),
+  CONSTRAINT FK_reservation_room FOREIGN KEY (room_id) REFERENCES room (id),
+  CONSTRAINT FK_reservation_user FOREIGN KEY (user_id) REFERENCES user (id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;

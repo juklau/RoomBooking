@@ -40,7 +40,7 @@ class StudentReservationType extends AbstractType
                 'constraints'  => [
                     new NotBlank(message: 'Veuillez choisir une salle.'
                 )],
-                'data'         => $options['preselected_room'],
+                'data'         => $options['preselected_room'], 
                 'attr'         => [
                     'class' => 'form-select'
                 ],

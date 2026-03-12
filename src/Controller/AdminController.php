@@ -24,6 +24,7 @@ use App\Form\AddCoordinatorToClasseType;
 use App\Form\AdminReservationType;
 use App\Form\ResetPasswordType;
 use App\Form\RoomEquipmentType;
+use App\Repository\EquipmentRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -148,7 +149,7 @@ final class AdminController extends AbstractController
      * créer un room
     */
     #[Route('/rooms/new', name: 'app_admin_room_new')]
-    public function newRoom(Request $request, EntityManagerInterface $em):Response 
+    public function newRoom(Request $request, EntityManagerInterface $em, RoomRepository $roomRepo):Response 
     {
         $room = new Room();
 
@@ -160,6 +161,14 @@ final class AdminController extends AbstractController
 
         //si le formulaire est soumise et valide
         if($form->isSubmitted() && $form->isValid()) {
+
+            //vérifier si le nom du room est disponible
+            if(!$roomRepo->isExisteRoom($room)){
+                $this->addFlash('error', 'Ce nom de salle est déjà pris.');
+                return $this->render('admin/rooms/new.html.twig', [
+                    'form' => $form,   // => il faut passer le form!!
+                ]);
+            }
 
             //persister l'entité dans la BDD
             $em->persist($room);
@@ -198,10 +207,14 @@ final class AdminController extends AbstractController
     public function roomEdit(
         Room                   $room,
         Request                $request,
-        EntityManagerInterface $em
+        EntityManagerInterface $em, 
+        RoomRepository         $roomRepo
     ): Response {
 
         // réutilisation de Roomtype, MAIS avec les données préremplis
+
+        //sauvegarder le nom original
+        $originalName = $room->getName();
 
         //créer un formulaire lié à l'entité Room
         $form = $this->createForm(RoomType::class, $room);  //=> formulaire pré-rempli par Symfony
@@ -210,6 +223,16 @@ final class AdminController extends AbstractController
 
          //si le formulaire est soumise et valide
         if($form->isSubmitted() && $form->isValid()) {
+
+            //vérifier si le nom du room est disponible
+            if(!$roomRepo->isExisteRoom($room)){
+                $room->setName($originalName);
+                $this->addFlash('error', 'Ce nom de salle est déjà pris.');
+                return $this->render('admin/rooms/edit.html.twig', [
+                    'form' => $this->createForm(RoomType::class, $room),  // => récrée le formulaire avec l'ancien nom
+                    'room' => $room,
+                ]);
+            }
 
             // $em->persist($room); => il faut pas car $room est déjà dans la BDD
             $em->flush();
@@ -864,8 +887,8 @@ final class AdminController extends AbstractController
             'preselected_room' => $preselectedRoom,
         ]); 
 
-        // Après handleRequest, si GET et salle présente → forcer la valeur
-        if (!$form->isSubmitted() && $preselectedRoom) {
+        // forcer la valeur AVANT handleRequest
+        if ($preselectedRoom && !$request->isMethod('POST')) {
             $form->get('room')->setData($preselectedRoom);
         }
 
@@ -997,7 +1020,8 @@ final class AdminController extends AbstractController
     public function roomEquipement(
         Room                   $room,
         Request                $request,
-        EntityManagerInterface $em
+        EntityManagerInterface $em, 
+        EquipmentRepository    $equipmentRepo
     ):Response {
 
         $form = $this->createForm(RoomEquipmentType::class, null, [
@@ -1012,6 +1036,7 @@ final class AdminController extends AbstractController
             $existingEquipment = $data['existingEquipment'];
             $newEquipmentName = trim($data['newEquipment']);
 
+
             //cas 1 => équipement existant séléctionné
             if($existingEquipment){
                 $room->addEquipment($existingEquipment);
@@ -1020,10 +1045,18 @@ final class AdminController extends AbstractController
                 $this->addFlash('success', '"' . $existingEquipment->getName() . '" ajouté à la salle.');
             }
 
+        //   
             //cas 2 => nouvel équipement à créer
             elseif($newEquipmentName !== ''){
                 $equipment = new \App\Entity\Equipment();
                 $equipment->setName($newEquipmentName);
+
+                 // true = disponible, false = déjà pris
+                if (!$equipmentRepo->isExisteEquipment($equipment)) {
+                    $this->addFlash('error', 'Un équipement avec ce nom existe déjà.');
+                    return $this->redirectToRoute('app_admin_room_equipments', ['id' => $room->getId()]);
+                }
+
                 $room->addEquipment($equipment);
                 
                 $em->persist($equipment);
@@ -1046,7 +1079,7 @@ final class AdminController extends AbstractController
     }
 
     /**
-     * 
+     * supprimer un équipement
      */
     #[Route('/rooms/{id}/equipments/{equipmentId}/remove', name: 'app_admin_room_equipment_remove', requirements: ['id' => '\d+', 'equipmentId' => '\d+'], methods: ['POST'])]
     public function roomEquipmentRemove(

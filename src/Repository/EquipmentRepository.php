@@ -16,7 +16,26 @@ class EquipmentRepository extends ServiceEntityRepository
         parent::__construct($registry, Equipment::class);
     }
 
-    //    /**
+    /**
+     * Vérifie si le nom de l'équipement est déjà pris en BDD
+     * true  = nom disponible
+     * false = nom déjà utilisé
+     */
+    public function isExisteEquipment(Equipment $equipment): bool
+    {
+        $count = $this->createQueryBuilder('e')
+            ->select('COUNT(e.id)')
+            ->where('e.name = :name')
+            ->setParameter('name', $equipment->getName())
+            ->getQuery()
+            ->getSingleScalarResult();
+
+        return (int)$count === 0;
+    }
+}
+
+
+  //    /**
     //     * @return Equipment[] Returns an array of Equipment objects
     //     */
     //    public function findByExampleField($value): array
@@ -40,4 +59,3 @@ class EquipmentRepository extends ServiceEntityRepository
     //            ->getOneOrNullResult()
     //        ;
     //    }
-}

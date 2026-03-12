@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Entity\Student;
 use App\Entity\User;
 use App\Form\RegistrationFormType;
 use App\Repository\UserRepository;
@@ -72,6 +73,10 @@ final class AuthController extends AbstractController
             // $user->setRoles(['ROLE_STUDENT']); => il ne faut pas: automatiquement rôle student
 
             $em->persist($user);
+
+            $student = new Student();
+            $student->setUser($user);
+            $em->persist($student);
             $em->flush();
 
             $this->addFlash('success', 'Compte créé avec succès ! Vous pouvez vous connecter.');

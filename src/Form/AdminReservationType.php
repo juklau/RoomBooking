@@ -40,10 +40,10 @@ class AdminReservationType extends AbstractType
                 'placeholder'  => '-- Choisir une salle --',
                 'required'     => true,
                 'constraints'  => [
-                    new NotBlank(message: 'Veuillez choisir une salle.'
+                    new NotBlank(message: 'Veuillez choisir une salle.' 
                 )],
-                // 'data'         => $options['preselected_room'],
-                'preferred_choices' => $options['preselected_room'] ? [$options['preselected_room']] : [],
+                'data'         => $options['preselected_room'],
+                // 'preferred_choices' => $options['preselected_room'] ? [$options['preselected_room']] : [],
                 'attr'         => [
                     'class' => 'form-select'
                 ],

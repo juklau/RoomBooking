@@ -153,7 +153,7 @@ final class StudentController extends AbstractController
         RoomRepository              $roomRepo
     ):Response {
 
-        /** @var \App\Entity\User  $user*/
+        /** @var \App\Entity\User  $user*/ 
         $user = $this->getUser();
 
         //préselectionner la salle => si passée en GET (?room=4)
