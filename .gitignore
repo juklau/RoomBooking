@@ -15,9 +15,6 @@
 docker-compose.override.yml
 ###< Docker ###
 
-###> Base de données ###
-/sql/*.backup.sql
-###< Base de données ###
 
 ###> IDE ###
 /.idea/
@@ -30,3 +27,9 @@ docker-compose.override.yml
 .DS_Store
 Thumbs.db
 ###< OS ###
+
+backup.sh
+restore.sh
+
+backups
+restores

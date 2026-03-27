@@ -1,7 +1,27 @@
 # 🏫 RoomBooking
 
 > Application web de réservation de salles — MediaSchool IRIS Nice  
-> BTS SIO SLAM — Réalisation Professionnelle — Février 2026
+> BTS SIO SLAM — Réalisation Professionnelle — Mars 2026
+
+---
+
+## Sommaire
+
+- [Présentation](#présentation)
+- [Fonctionnalités](#fonctionnalités)
+- [Stack technique](#stack-technique)
+- [Installation](#installation)
+- [Premier compte administrateur](#premier-compte-administrateur)
+- [Comptes de démonstration](#comptes-de-démonstration)
+- [Structure du projet](#structure-du-projet)
+- [Variables d'environnement](#variables-denvironnement)
+- [Base de données](#base-de-données)
+- [Backup & Restauration](#backup--restauration)
+- [Règles métier](#règles-métier)
+- [Sécurité](#sécurité)
+- [Commandes utiles](#commandes-utiles)
+- [Documentation](#documentation)
+- [Auteur](#auteur)
 
 ---
 
@@ -39,13 +59,13 @@
 
 ## Stack technique
 
-| Couche            | Technologie                               |
-|-------------------|-------------------------------------------|
-| Backend           | Symfony 7 / PHP 8.2+                      |
-| Base de données   | MySQL 8 + Doctrine ORM                    |
-| Frontend          | Twig + Bootstrap 5 + CSS par rôle         |
-| Authentification  | Symfony Security (firewalls, rôles, CSRF) |
-| Conteneurisation  | Docker / docker-compose                   |
+| Couche | Technologie |
+|---|---|
+| Backend | Symfony 7 / PHP 8.2+ |
+| Base de données | MySQL 8 + Doctrine ORM |
+| Frontend | Twig + Bootstrap 5 + CSS par rôle |
+| Authentification | Symfony Security (firewalls, rôles, CSRF) |
+| Conteneurisation | Docker / docker-compose |
 
 ---
 
@@ -77,7 +97,7 @@ composer install
 php bin/console doctrine:migrations:migrate
 
 # 6. Ouvrir l'application dans le navigateur
-# → http://localhost (port défini dans docker-compose.yml)
+# → http://localhost:9084
 ```
 
 ---
@@ -105,7 +125,7 @@ INSERT INTO administrator (user_id) VALUES (1);
 ## Comptes de démonstration
 
 | Rôle | Email | Mot de passe |
-|------|-------|-------------|
+|---|---|---|
 | Administrateur | admin@roombooking.fr | `Admin2026!` |
 | Coordinateur | coordinateur@roombooking.fr | `Coord2026!` |
 | Étudiant | etudiant@roombooking.fr | `Student2026!` |
@@ -114,10 +134,14 @@ INSERT INTO administrator (user_id) VALUES (1);
 
 ---
 
-## 📁 Structure du projet
+## Structure du projet
 
 ```
 roombooking/
+├── backup/
+│   ├── backup.sh                      # Script de sauvegarde
+│   └── restore.sh                     # Script de restauration
+├── backups/                           # Archives générées automatiquement
 ├── src/
 │   ├── Controller/
 │   │   ├── AdminController.php        # Gestion admin complète
@@ -183,7 +207,7 @@ DATABASE_URL="mysql://${DB_USER}:${DB_PASSWORD}@mysql:3306/${DB_NAME}?serverVers
 
 ---
 
-## 🗄Base de données
+## Base de données
 
 ### Réinitialiser complètement
 
@@ -201,16 +225,90 @@ php bin/console doctrine:schema:create --dump-sql
 
 ---
 
+## Backup & Restauration
+
+Les scripts `backup.sh` et `restore.sh` se trouvent dans le dossier `backup/`. Ils fonctionnent avec Docker Compose et ne nécessitent aucune configuration manuelle : les chemins sont résolus automatiquement.
+
+### Ce qui est sauvegardé
+
+| Catégorie | Contenu |
+|---|---|
+| **Base de données** | Dump complet MySQL (`.sql.gz`) via `mysqldump` |
+| **Volumes Docker** | `roombooking_mysql-data` + `roombooking_vendor_data` |
+| **Configuration** | `docker-compose.yml`, `.env`, `Dockerfile`, `composer.json`, `composer.lock`, `docker/nginx/default.conf`, `docker/php/php.ini` |
+| **Code applicatif** | `public/`, `src/`, `config/`, `templates/`, `migrations/`, `bin/` |
+| **Logs Docker** | Logs des 4 conteneurs RoomBooking |
+
+### Lancer un backup
+
+```bash
+bash backup/backup.sh
+```
+
+Un backup réussi génère 3 fichiers dans `backups/` :
+
+```
+backups/
+├── roombooking_backup_YYYYMMDD_HHMMSS.tar.gz         ← Archive compressée
+├── roombooking_backup_YYYYMMDD_HHMMSS.tar.gz.sha256  ← Checksum SHA256
+└── backup_YYYYMMDD_HHMMSS.log                        ← Log détaillé
+```
+
+> Les backups de plus de **7 jours** sont supprimés automatiquement à chaque exécution.
+
+### Lancer une restauration
+
+```bash
+# Mode interactif — sélection guidée du backup à restaurer
+bash backup/restore.sh
+
+# Avec un backup spécifique
+bash backup/restore.sh --backup-file ./backups/roombooking_backup_20250327_143000.tar.gz
+
+# Mode développement — conserve le docker-compose.yml et .env actuels
+bash backup/restore.sh --dev
+```
+
+Une fois la restauration terminée, l'application est accessible aux adresses habituelles :
+
+| Service | URL |
+|---|---|
+| Application RoomBooking | http://localhost:9084 |
+| phpMyAdmin | http://localhost:8084 |
+
+### Options du script restore.sh
+
+| Option | Description |
+|---|---|
+| `--backup-dir PATH` | Répertoire contenant les archives (défaut : `./backups`) |
+| `--target-dir PATH` | Répertoire cible de restauration (défaut : `./restores`) |
+| `--backup-file PATH` | Fichier backup précis à restaurer |
+| `--dev` | Conserve `docker-compose.yml` et `.env` actuels |
+| `-h`, `--help` | Afficher l'aide |
+
+### Intégrité des archives
+
+Chaque archive est vérifiée par checksum SHA256 avant extraction. Vérification manuelle possible :
+
+```bash
+cd backups/
+sha256sum -c roombooking_backup_YYYYMMDD_HHMMSS.tar.gz.sha256
+```
+
+> Pour la documentation complète du système de backup (fonctionnement interne, erreurs fréquentes, ordre de restauration), consulter [`backup/README_backup.md`](backup/README_backup.md).
+
+---
+
 ## Règles métier
 
-| Règle                 | Détail                                                          |
-|-----------------------|-----------------------------------------------------------------|
-| Créneaux              | 08:00 → 20:00 par tranches de 30 min                            |
-| Date minimale         | À partir de demain uniquement                                   |
-| Conflit               | Impossible de créer deux réservations qui se chevauchent        |
-| Annulation            | Soft delete — historique conservé, impossible si déjà commencée |
-| Suppression de classe | Uniquement si elle ne contient plus aucun étudiant              |
-| Retrait d'utilisateur | Détachement de la classe uniquement — compte conservé en BDD    |
+| Règle | Détail |
+|---|---|
+| Créneaux | 08:00 → 20:00 par tranches de 30 min |
+| Date minimale | À partir de demain uniquement |
+| Conflit | Impossible de créer deux réservations qui se chevauchent |
+| Annulation | Soft delete — historique conservé, impossible si déjà commencée |
+| Suppression de classe | Uniquement si elle ne contient plus aucun étudiant |
+| Retrait d'utilisateur | Détachement de la classe uniquement — compte conservé en BDD |
 
 ---
 
@@ -243,16 +341,17 @@ php bin/console security:hash-password
 
 ## Documentation
 
-| Document                      | Description                                      |
-|-------------------------------|--------------------------------------------------|
-| `docs/cahier_des_charges.pdf` | Expression du besoin, contexte, fonctionnalités  |
-| `docs/guide_admin.pdf`        | Guide de prise en main administrateur            |
-| `docs/guide_utilisateur.pdf`  | Guide de prise en main coordinateurs & étudiants |
+| Document | Description |
+|---|---|
+| `docs/cahier_des_charges.pdf` | Expression du besoin, contexte, fonctionnalités |
+| `docs/guide_admin.pdf` | Guide de prise en main administrateur |
+| `docs/guide_utilisateur.pdf` | Guide de prise en main coordinateurs & étudiants |
+| `backup/README_backup.md` | Documentation complète du système de backup & restauration |
 
 ---
 
 ## Auteur
 
 **Klaudia Juhasz** — BTS SIO SLAM  
-MediaSchool IRIS Nice — Février 2026  
+MediaSchool IRIS Nice — Mars 2026  
 Intervenant : Nicolas Choquet
