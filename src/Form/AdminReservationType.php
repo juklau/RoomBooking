@@ -27,13 +27,13 @@ class AdminReservationType extends AbstractType
 
                 if ($hour === 20 && $min === 30) break;             // => pas de 20:30
 
-                $label = sprintf('%02d:%02d', $hour, $min);
+                $label = sprintf('%02d:%02d', $hour, $min);  // =>  formate les nombres sur 2 chiffres : '08:00'
                 $timeSlots[$label] = $label;
             }
         }
 
         $builder
-            ->add('room', EntityType::class, [
+            ->add('room', EntityType::class, [ // EntityType::class => charge automatiquement toutes les Room depuis BDD
                 'class'        => Room::class,
                 'choice_label' => fn(Room $r) => $r->getName() . ' (' . $r->getCapacity() . 'places)',
                 'label'        => 'Salle',
@@ -45,7 +45,7 @@ class AdminReservationType extends AbstractType
                 'data'         => $options['preselected_room'],
                 // 'preferred_choices' => $options['preselected_room'] ? [$options['preselected_room']] : [],
                 'attr'         => [
-                    'class' => 'form-select'
+                    'class' => 'form-select' 
                 ],
             ])
             ->add('date', DateType::class, [
@@ -62,7 +62,7 @@ class AdminReservationType extends AbstractType
             ])
             ->add('startTime', ChoiceType::class, [
                 'label'       => 'Heure de début',
-                'choices'     => $timeSlots,
+                'choices'     => $timeSlots,                            //select avec les créneaux horaires
                 'placeholder' => '-- Heure de début --',
                 'required'    => true,
                 'constraints' => [
@@ -89,9 +89,9 @@ class AdminReservationType extends AbstractType
                 'choice_label'  => fn(User $u) => $u->getFirstname() . ' ' . $u->getLastname() . ' (' . $u->getEmail() . ')',
                 'label'         => 'Réserver pour',
                 'placeholder'   => '-- Pour moi même --',
-                'required'      => false,                   //s'il est vide => admin connecté
+                'required'      => false,                   //s'il est vide => l'admin réserve pour lui-même
                 'query_builder' => fn(UserRepository $repo) => $repo->createQueryBuilder('u')
-                    ->orderBy('u.lastname', 'ASC'),
+                    ->orderBy('u.lastname', 'ASC'),         //SELECT u.* FROM user u ORDER BY u.lastname ASC
                 'attr'          => [
                     'class' => 'form-select'
                 ],

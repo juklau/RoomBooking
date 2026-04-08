@@ -91,7 +91,7 @@
                         {% for equipment in room.equipments %}
                             <div class="student-list-row d-flex align-items-center justify-content-between px-3">
                                 <div class="d-flex align-items-center gap-3">
-                                    <div class="equipment-avatar d-flex align-items-center justify-content-center">
+                                    <div class="equipment-avatar d-flex align-items-center justify-content-center"> 
                                         🖥
                                     </div>
                                     <div>
@@ -107,7 +107,7 @@
                                       action="{{ path('app_admin_room_equipment_remove', {id: room.id, equipmentId: equipment.id}) }}"
                                       onsubmit="return confirm('Retirer « {{ equipment.name }} » de cette salle ?')">
                                     <input type="hidden" name="_token"
-                                           value="{{ csrf_token('remove_equipment_' ~ equipment.id) }}">
+                                           value="{{ csrf_token('remove_equipment_' ~ equipment.id) }}">  {#~ en Twig = . en PHP — concaténation#}
                                     <button type="submit" class="btn-action-danger btn-sm-action" title="Retirer de la salle">
                                         ✕
                                     </button>

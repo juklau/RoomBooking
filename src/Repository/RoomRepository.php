@@ -24,13 +24,20 @@ class RoomRepository extends ServiceEntityRepository
         $now = new \DateTime();
 
         $rooms = $this->createQueryBuilder('r')
+
             ->leftJoin('r.reservations', 'res')
             ->addSelect('res')
-            ->leftJoin('res.user', 'u')
+            ->leftJoin('res.user', 'u') 
             ->addSelect('u')
             ->orderBy('r.name', 'ASC')
             ->getQuery()
             ->getResult();
+
+        // SELECT r.*, res.*, u.*
+        // FROM room r
+        // LEFT JOIN reservation res ON res.room_id = r.id
+        // LEFT JOIN user u ON u.id = res.user_id
+        // ORDER BY r.name ASC
 
         $result = [];
 
@@ -87,11 +94,12 @@ class RoomRepository extends ServiceEntityRepository
             ];
         }
         return $result;
+        //dans twig => room.status, room.currentReservation
     }
 
     /**
      * vérif si salle est disponible sur un creneau donné
-     * count = 0
+     * count = 0 => pas de réservation qui chevauche le créneau => disponible
      */
     public function isAvailable(Room $room, \DateTime $start, \DateTime $end): bool
     {
@@ -109,6 +117,14 @@ class RoomRepository extends ServiceEntityRepository
             ->setParameter('canceled', 'canceled')
             ->getQuery()
             ->getSingleScalarResult();
+
+            // SELECT COUNT(res.id)
+            // FROM room r
+            // JOIN reservation res ON res.room_id = r.id
+            // WHERE r.id = :roomId
+            // AND res.reservation_start < :end
+            // AND res.reservation_end > :start
+            // AND res.status != 'canceled'
 
         return $count === 0;
     }
@@ -133,6 +149,17 @@ class RoomRepository extends ServiceEntityRepository
             ->orderBy('r.name', 'ASC')
             ->getQuery()
             ->getResult();
+
+            // SELECT r.*
+            // FROM room r
+            // WHERE NOT EXISTS (
+            //     SELECT 1 FROM reservation res
+            //     WHERE res.room_id = r.id
+            //     AND res.reservation_start < :end
+            //     AND res.reservation_end > :start
+            //     AND res.status != 'canceled'
+            // )
+            // ORDER BY r.name ASC
     }
 
     /**
@@ -143,11 +170,16 @@ class RoomRepository extends ServiceEntityRepository
         $count = $this->createQueryBuilder('r')
             ->select('COUNT(r.id)')
             ->where('r.name = :name')
-            ->andWhere('r.id != :id')                 // => exclure la salle elle-même
+            ->andWhere('r.id != :id')                   // => exclure la salle elle-même 
             ->setParameter('name', $room->getName())
-            ->setParameter('id', $room->getId() ?? 0)   // => si c'est nouvelle salle = 0
+            ->setParameter('id', $room->getId() ?? 0)   // => si c'est nouvelle salle = 0 //gère le cas d'une nouvelle salle qui n'a pas encore d'id
             ->getQuery()
             ->getSingleScalarResult();
+
+            // SELECT COUNT(r.id)
+            // FROM room r
+            // WHERE r.name = :name
+            // AND r.id != :id
 
         return (int)$count === 0; //=> true => disponible le nom
     }

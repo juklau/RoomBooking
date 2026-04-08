@@ -33,3 +33,6 @@ restore.sh
 
 backups
 restores
+
+###> il faut enlever le suivi sur github sinon il écrase le .env de prod###
+docker-compose.yml

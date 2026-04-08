@@ -8,19 +8,36 @@
     {% set required = options.required|default(false) %}
     {% set autocomplete = options.autocomplete|default(null) %}
     {% set placeholder = options.placeholder|default(null) %}
+    {% set toggleEye = options.toggleEye|default(false) %}
+
 
     <div class="mb-3 {{ class }}">
         <label for="{{ id }}" class="form-label">{{ label }}</label>
+
+        {% if toggleEye %}
+            <div class="input-group">  {# => à wrapper seulement si œil demandé #}
+        {% endif %}
+        
         <input
             type="{{ type }}"
             class="form-control"
-            id="{{ id }}"
+            id="{{ id }}" 
             name="{{ name }}"
             value="{{ value ?? '' }}"
             {% if required %}required{% endif %}
             {% if autocomplete %}autocomplete="{{ autocomplete }}"{% endif %}
             {% if placeholder %}placeholder="{{ placeholder }}"{% endif %}
         >
+
+        {% if toggleEye %}
+                <button type="button"
+                        class="btn btn-outline-secondary"
+                        onclick="togglePassword('{{ id }}', this)"
+                        title="Afficher/Masquer">
+                    👁
+                </button>
+            </div>
+        {% endif %}
     </div>
 
 {% endmacro %}

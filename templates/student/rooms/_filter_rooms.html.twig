@@ -53,7 +53,7 @@
     {# Résultat du filtre #}
     {% if filterStart and filterEnd %}
         <div class="filter-result mt-3">
-            {% if filteredRooms is empty %}
+            {% if filteredRooms is empty %} 
                 <span class="filter-result-empty">
                     <strong>Aucune salle disponible le {{ filterStart|date('d/m/Y') }}
                     de {{ filterStart|date('H:i') }} à {{ filterEnd|date('H:i') }}</strong>

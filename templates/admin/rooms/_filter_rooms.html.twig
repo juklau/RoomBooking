@@ -19,7 +19,7 @@
             <label for="filter-start">Début</label>
             <select id="filter-start" name="startTime" class="form-select mt-1">
                 <option value="">-- Début --</option>
-                {% for label, value in timeSlots %}
+                {% for label, value in timeSlots %}  {# ['08:00' => '08:00', '08:30' => '08:30', ...]#}
                     <option value="{{ value }}" {{ filterStartTime == value ? 'selected' : '' }}>
                         {{ label }}
                     </option>

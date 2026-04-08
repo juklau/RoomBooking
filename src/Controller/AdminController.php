@@ -38,7 +38,7 @@ use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 #[IsGranted('ROLE_ADMIN')] 
 final class AdminController extends AbstractController
 {
-    #[Route('/dashboard', name: 'app_admin_dashboard')]
+    #[Route('/dashboard', name: 'app_admin_dashboard')] 
     public function dashboard(
         RoomRepository        $roomRepo,
         ClasseRepository      $classeRepo,
@@ -134,10 +134,10 @@ final class AdminController extends AbstractController
         $roomsWithStats = $roomRepo->findAllWithStats();
 
         return $this->render('admin/rooms/index.html.twig', [
-            'roomsWithStats' => $roomsWithStats,
-            'filteredRooms'  => $filteredRooms,
-            'filterStart'    => $filterStart,
-            'filterEnd'      => $filterEnd,
+            'roomsWithStats'  => $roomsWithStats,
+            'filteredRooms'   => $filteredRooms,
+            'filterStart'     => $filterStart,
+            'filterEnd'       => $filterEnd,
             'timeSlots'       => $timeSlots,
             'filterDate'      => $dateParam,
             'filterStartTime' => $startTimeParam,
@@ -163,6 +163,7 @@ final class AdminController extends AbstractController
         if($form->isSubmitted() && $form->isValid()) {
 
             //vérifier si le nom du room est disponible
+            //true => disponible, false => existe déjà
             if(!$roomRepo->isExisteRoom($room)){
                 $this->addFlash('error', 'Ce nom de salle est déjà pris.');
                 return $this->render('admin/rooms/new.html.twig', [
@@ -255,7 +256,7 @@ final class AdminController extends AbstractController
      */
     #[Route('/rooms/{id}/delete', name: 'app_admin_room_delete', requirements: ['id' => '\d+'], methods: ['POST'])]
     public function roomDelete(
-        Room                   $room,
+        Room                   $room,  // Symfony fait en coulisses $room = $roomRepository->find($id);
         Request                $request,
         EntityManagerInterface $em
     ): Response {
@@ -269,18 +270,26 @@ final class AdminController extends AbstractController
         //vérif si la salle a des réservation à venir
         $hasUpcoming = false;
         foreach($room->getReservations() as $res){
-            if($res->getReservationStart() > new \DateTime()){
-                $hasUpcoming = true;
-                break;
-            }
+        if(
+            $res->getReservationStart() > new \DateTime() &&
+            $res->getStatus() !== 'canceled'   
+        ){
+            $hasUpcoming = true;
+            break;
         }
+    }
 
         if($hasUpcoming){
-            $this->addFlash('error', 'Impossible de supprimer "' . $room->getName() . '" : elle a des réservations à venir.');
+            $this->addFlash('error', 'Impossible de supprimer la salle "' . $room->getName() . '" : elle a des réservations à venir.');
             return $this->redirectToRoute('app_admin_room_show', ['id' => $room->getId()]);
         }
 
         $name = $room->getName();
+
+        foreach($room->getReservations() as $res){
+            $em->remove($res);
+        }
+
         $em->remove($room);
         $em->flush();
 
@@ -309,7 +318,7 @@ final class AdminController extends AbstractController
      * créer une classe
     */
     #[Route('/classes/new', name: 'app_admin_classe_new')]
-    public function newClasse(Request $request,EntityManagerInterface $em):Response
+    public function newClasse(Request $request,EntityManagerInterface $em, ClasseRepository $classeRepo):Response
     {
         $classe = new Classe();
 
@@ -321,6 +330,15 @@ final class AdminController extends AbstractController
 
         //si le formulaire est soumise et valide
         if($form->isSubmitted() && $form->isValid()) {
+
+            //vérifier si le nom de la classe est disponible
+            //true => disponible, false => existe déjà
+            if(!$classeRepo->isExisteClasse($classe)){
+                $this->addFlash('error', 'Ce nom de classe est déjà pris.');
+                return $this->render('admin/classes/new.html.twig', [
+                    'form' => $form,   // => il faut passer le form!!
+                ]);
+            }
 
             //persister l'entité dans la BDD
             $em->persist($classe);
@@ -359,7 +377,8 @@ final class AdminController extends AbstractController
     public function classEdit(
         Classe                 $classe,
         Request                $request,
-        EntityManagerInterface $em
+        EntityManagerInterface $em,
+        ClasseRepository       $classeRepo
     ): Response {
 
         // u.a. ClasseType que la création => formulaire pré-rempli automatiquement
@@ -367,6 +386,15 @@ final class AdminController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+
+            //vérifier si le nom de la classe est disponible
+            //true => disponible, false => existe déjà
+            if(!$classeRepo->isExisteClasse($classe)){
+                $this->addFlash('error', 'Ce nom de classe est déjà pris.');
+                return $this->render('admin/classes/new.html.twig', [
+                    'form' => $form,   // => il faut passer le form!!
+                ]);
+            }
 
             // pas de persist()!! — Doctrine surveille déjà l'entité
             $em->flush();
@@ -431,7 +459,7 @@ final class AdminController extends AbstractController
 
         if ($form->isSubmitted() && $form->isValid()) {
 
-            /** @var Student $student */
+            /** @var Student $student */  // => @ est important!!!!!!! => pour indiquer à l'IDE que $student est de type Student, même si on l'initialise pas dans ce code
             $student = $form->get('student')->getData();
 
             // assigner la nouvelle classe à l'étudiant
@@ -463,7 +491,7 @@ final class AdminController extends AbstractController
         EntityManagerInterface $em
     ): Response {
 
-        // passer l'id de la classe au formulaire pour filtrer les étudiants qui ne sont pas déjà dans cette classe
+        // passer l'id de la classe au formulaire pour filtrer les coordinateurs qui ne sont pas liés à cette classe
         $form = $this->createForm(AddCoordinatorToClasseType::class, null, [
             'classe_id' => $classe->getId(),
         ]);
@@ -472,7 +500,7 @@ final class AdminController extends AbstractController
 
         if ($form->isSubmitted() && $form->isValid()) {
 
-            /** @var Coordinator $coordinator */
+            /** @var Coordinator $coordinator */  // => @ est important!!!!!!! => pour indiquer à l'IDE que $student est de type Coordinator, même si on l'initialise pas dans ce code
             $coordinator = $form->get('coordinator')->getData();
 
             //ajoute la classe au coordinateur => ManyToMany
@@ -507,7 +535,7 @@ final class AdminController extends AbstractController
         UserRepository              $userRepo
     ): Response {
 
-        // u.a. ClasseType que la création => formulaire pré-rempli automatiquement
+        
         $form = $this->createForm(CreateStudentType::class);
         $form->handleRequest($request);
 
@@ -601,7 +629,7 @@ final class AdminController extends AbstractController
         \App\Repository\ClasseRepository $classeRepo
     ): Response {
 
-        /** @var \App\Entity\User $user */              //=> @ est important!!!!!!!
+        /** @var \App\Entity\User $user */              //=> @ est important!!!!!!! => pour indiquer à l'IDE que $user est de type User, même si on l'initialise pas dans ce code
         $user = $this->getUser();
       
         $classe = $classeRepo->find($classeId);
@@ -655,13 +683,25 @@ final class AdminController extends AbstractController
         $user = $student->getUser();
 
         //il faut vérifier si l'étudiant a des réservations
-        if(!$user->getReservations()->isEmpty()){
+        $hasActiveReservations = false;
+        foreach($user->getReservations() as $res){
+            if($res->getStatus() !== 'canceled' && $res->getReservationStart() > new \DateTime()){      //=> que les réservations à venir et pas annulées qui bloquent la suppression
+                $hasActiveReservations = true;
+                break;
+            }
+        }
+
+        if($hasActiveReservations){
             $this->addFlash('error', 'Impossible de supprimer "' . $name . '" : il a des réservations enregistrées.');
 
             if($classeId){
                 return $this->redirectToRoute('app_admin_classe_show', ['id' => $classeId]);
             }
             return $this->redirectToRoute('app_admin_users');
+        }
+
+        foreach($user->getReservations() as $res){
+            $em->remove($res);
         }
 
         $em->remove($user);
@@ -729,8 +769,11 @@ final class AdminController extends AbstractController
 
             //Créer le Coordinator lié au User
             $coordinator = new Coordinator();
-            $coordinator->setUser($user);
-            $user->setCoordinator($coordinator);
+            $coordinator->setUser($user);          // => indispensable pour la BDD
+
+            // => indispensable pour la cohérence objet <=> sans ca il retournera le ROLE_USER et pas ROLE_COORDINATOR
+            //=> pour que $user->getCoordinator() retourne le bon objet dans la même requête
+            $user->setCoordinator($coordinator);   
 
             //Assigner la classe =>ManyToMany
             foreach($data['classes'] as $classe){
@@ -798,7 +841,7 @@ final class AdminController extends AbstractController
         \App\Repository\ClasseRepository $classeRepo
     ): Response {
 
-        /** @var \App\Entity\User $user */              //=> @ est important!!!!!!!
+        /** @var \App\Entity\User $user */             //=> @ est important!!!!!!! => pour indiquer à l'IDE que $user est de type User
         $user = $this->getUser();
       
         $classe = $classeRepo->find($classeId);
@@ -827,7 +870,7 @@ final class AdminController extends AbstractController
     }
 
     /**
-     * supprimer un coordinateur
+     * supprimer un coordinateur de la BDD
      */
     #[Route('/coordinators/{id}/delete', name: 'app_admin_coordinator_delete', requirements: ['id' => '\d+'], methods: ['POST'])]
     public function coordinatorDelete(
@@ -848,12 +891,24 @@ final class AdminController extends AbstractController
         $user = $coordinator->getUser();
 
         //il faut vérifier si le coordinateur a des réservations
-        if(!$user->getReservations()->isEmpty()){
+        $hasActiveReservations = false;
+        foreach($user->getReservations() as $res){
+            if($res->getStatus() !== 'canceled' && $res->getReservationStart() > new \DateTime()){  //=> que les réservations à venir et pas annulées qui bloquent la suppression
+                $hasActiveReservations = true;
+                break;
+            }
+        }
+      
+        if($hasActiveReservations){
             $this->addFlash('error', 'Impossible de supprimer "' . $name . '" : il a des réservations enregistrées.');
 
             return $this->redirectToRoute('app_admin_users');
         }
 
+         foreach($user->getReservations() as $res){
+            $em->remove($res);
+        }
+      
         $em->remove($user);
         $em->flush();
 
@@ -956,7 +1011,7 @@ final class AdminController extends AbstractController
             $isSelf = ($beneficiary->getId() === $currentAdmin->getId());
 
             $this->addFlash('success', 
-                'Réservation créé : ' . $room->getName() . '"le '
+                'Réservation créé : "' . $room->getName() . '" le '
                 . $start->format('d/m/Y') . ' de '
                 . $start->format('H:i') . ' à ' . $end->format('H:i')
                 . ($isSelf ? '' : ' pour ' .$beneficiary->getFirstname() . ' ' . $beneficiary->getLastname())
@@ -1089,6 +1144,8 @@ final class AdminController extends AbstractController
         EntityManagerInterface $em
     ):Response {
         if (!$this->isCsrfTokenValid('remove_equipment_' . $equipmentId, $request->request->get('_token'))) {
+
+            //si le 2 id (dans .twig et celui de la route) ne correspondent pas => rediriger avec message d'erreur
             $this->addFlash('error', 'Token invalide.');
             return $this->redirectToRoute('app_admin_room_equipments', ['id' => $room->getId()]);
         }

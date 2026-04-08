@@ -31,7 +31,7 @@
                 <p>Détail de la salle</p>
             </div>
             <div>
-                <a href="{{ path('app_coordinator_reservation_new') }}"
+                <a href="{{ path('app_coordinator_reservation_new', {room: room.id}) }}"
                    class="btn-coordinator-outline text-decoration-none d-inline">
                     Réserver cette salle
                 </a>
@@ -121,7 +121,7 @@
                                             {% if isMine %}
                                                 <span class="badge-mine">👤 Moi</span>
                                             {% else %}
-                                                <span class="text-muted-detail-rooms small">Autre utilisateur</span>
+                                                <span class="text-muted-detail-rooms small">Autre utilisateur</span> 
                                             {% endif %}
                                         </td>
                                         <td>

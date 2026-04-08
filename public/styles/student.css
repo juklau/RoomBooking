@@ -47,7 +47,7 @@
 /*********************************** Bouton accent étudiant *************************************/
 .btn-student {
     background: rgba(88, 166, 255, 0.15);
-    color: #58a6ff;
+    color: #f2f2f2;
     border: 1px solid rgba(88, 166, 255, 0.3);
     font-size: 0.78rem;
     font-weight: 500;
@@ -107,6 +107,13 @@
 
 .class-block-students {
     padding: 0.75rem 1.2rem 1rem;
+}
+
+#btn-reserve-detail{
+    color: white !important;
+}
+#btn-reserve-detail:hover{
+    color: black !important;
 }
 
 /************************************ Student row *********************************************/
@@ -237,7 +244,7 @@
 /* --------------------------------------------- Détail d'une salle -------------------------------------- */
 .row-mine-student {
     background: rgba(88, 166, 255, 0.05) !important;
-    border-left: 3px solid #58a6ff;
+    border-left: 4px solid #58a6ff;
 }
 
 .badge-mine-student {

@@ -15,7 +15,8 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    private ?int $id = null;
+    private ?int $id = null;  //=> n'existe pas encore tant que l'entité n'est pas persistée en BDD
+                              //persister= maradni
 
     #[ORM\Column(length: 255, unique: true)]
     private ?string $email = null;
@@ -35,12 +36,15 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\OneToMany(targetEntity: Reservation::class, mappedBy: 'user')]
     private Collection $reservations;
 
+    // coordinateur qui porte le FK user_id
     #[ORM\OneToOne(mappedBy: 'user', cascade: ['persist', 'remove'])]
     private ?Coordinator $coordinator = null;
 
+    // administrator qui porte le FK user_id
     #[ORM\OneToOne(mappedBy: 'user', cascade: ['persist', 'remove'])]
     private ?Administrator $administrator = null;
 
+    // student qui porte le FK user_id
     #[ORM\OneToOne(mappedBy: 'user', cascade: ['persist', 'remove'])]
     private ?Student $student = null;
 
@@ -58,11 +62,14 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     // UserInterface + PasswordAuthenticatedUserInterface
     // -------------------------------------------------------
 
+    //imposé par UserInterface
     public function getUserIdentifier(): string
     {
         return (string) $this->email;
     }
 
+    //imposé par UserInterface
+    // appellé par le système de sécurité pour récupérer les rôles de l'utilisateur
     public function getRoles(): array
     {
         if($this->administrator !== null){              //=> admin
@@ -76,7 +83,8 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return ['ROLE_USER'];                           //=> student
     }
 
-
+    //imposé par UserInterface
+    // appelée par Symfony après authentification pour effacer les données sensibles temporaires
     public function eraseCredentials(): void
     {
         // Vider les données sensibles temporaires si besoin
@@ -119,6 +127,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
+    //imposé par PasswordAuthenticatedUserInterface
     public function getPassword(): ?string
     {
         return $this->password;
@@ -139,7 +148,9 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     {
         if (!$this->reservations->contains($reservation)) {
             $this->reservations->add($reservation);
-            $reservation->setUser($this);
+
+            // il redirige vers Reservation (propriétaire) pour persister
+            $reservation->setUser($this);  // => synchronise le côté propriétaire
         }
         return $this;
     }

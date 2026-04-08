@@ -85,7 +85,7 @@ class CreateStudentType extends AbstractType
                 'required'     => true,
                 'placeholder'  => '-- Choisir une classe --',
                 'constraints'  => [
-                    new NotBlank(message: "La classe est obligatoire."),
+                    new NotBlank(message: "La classe est obligatoire."), 
                 ],
                 'attr'         => [
                     'class' => 'form-select'

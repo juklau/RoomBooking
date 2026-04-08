@@ -35,9 +35,9 @@
 }
 
 .alert-error {
-    background: rgba(248, 81, 73, 0.1);
-    border: 1px solid rgba(248, 81, 73, 0.25);
-    color: #f85149;
+    background: rgba(101, 19, 14, 0.532);
+    border: 1px solid rgba(167, 45, 41, 0.589);
+    color: #fe342a;
     border-radius: 8px;
     padding: 0.75rem 1rem;
     font-size: 0.83rem;
@@ -109,11 +109,25 @@ label.form-label {
 
 /* --------------------------- Inscription ---------------------------------------- */
 .form-error {
-    color: #f85149;
+    color: #f9e5e4;
     font-size: 0.78rem;
     margin-top: 0.3rem;
+    background-color: #943d3aa5;
+    border-radius: 10px;
 }
 
 .form-group {
     margin-bottom: 0;
+}
+
+#lien-vers-login{
+    color: #f85149; 
+    text-decoration: none;
+}
+
+
+/* ------------------------ Reset -password --------------------------------------- */
+
+.input-group-password{
+    flex-wrap: nowrap!important;
 }

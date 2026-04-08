@@ -17,6 +17,7 @@
 
         {% if error %}
             <div class="alert-error">
+                {# error.messageKey => error message : 'Invalid credentials.'#}
                 ⚠ {{ error.messageKey|trans(error.messageData, 'security') }}
             </div>
         {% endif %}
@@ -33,14 +34,20 @@
             </div>
 
             <div class="form-group">
-                {{ form.input('password', 'Mot de passe', null, {
-                    type: 'password',
-                    required: true,
-                    autocomplete: 'current-password',
-                    placeholder: '••••••••'
-                }) }}
+                <div >
+                    {{ form.input('password', 'Mot de passe', null, {
+                        type: 'password',
+                        required: true,
+                        autocomplete: 'current-password',
+                        placeholder: '••••••••',
+                        toggleEye: true
+                    }) }}
+                </div>
             </div>
 
+            {# Génère un token unique caché dans le formulaire => envoyer automatiquement avec le formulaire #}
+            {# protection contre les attaques CSRF ( Cross-Site Request Forgery ) #}
+            {# La fonction csrf_token() est fournie par Symfony et disponible automatiquement dans tous les templates Twig #}
             <input type="hidden" name="_csrf_token" value="{{ csrf_token('authenticate') }}">
 
             <div class="form-group">
@@ -54,4 +61,7 @@
 
     </div>
 </div>
+{% endblock %}
+{% block javascripts %}
+    <script src="{{ asset('js/login.js') }}"></script>
 {% endblock %}

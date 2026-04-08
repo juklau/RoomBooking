@@ -81,7 +81,7 @@ body {
     color: #388bfd;
 }
 
-#stat-icon-classes,
+#stat-icon-classes, 
 #action-icon-classes{
     background: rgba(63,185,80,0.15); 
     color: #3fb950;
@@ -121,7 +121,7 @@ body {
 }
 
 .section-title::after {
-    content: '';
+    content: '';  /* donne le linear*/
     flex: 1;
     height: 1px;
     background: #21262d;
@@ -286,4 +286,9 @@ body {
     --bs-btn-hover-bg: #21262d;
     --bs-btn-hover-color: #e6edf3;
     --bs-btn-hover-border-color: #7d8590;
+}
+
+#btn-details-salle,
+#btn-details-classe {
+    color: white !important;
 }

@@ -22,6 +22,8 @@ class Equipment
     // #[ORM\JoinColumn(nullable: false)]
     // private ?Room $room = null;
 
+    //Equipment est le côté inverse, c'est Room qui possède la relation 
+    //      et gère la table de jointure.
     #[ORM\ManyToMany(targetEntity: Room::class, mappedBy: 'equipments')]
     private Collection $rooms;
 
@@ -55,11 +57,14 @@ class Equipment
     {
         if (!$this->rooms->contains($room)) {
             $this->rooms->add($room);
+            // l'admin passe toujours par Room::addEquipment() directement => 
+            // la synchronisation depuis Equipment n'était pas nécessaire.
         }
         return $this;
     }
 
-    public function removeEquipment(Room $room): static
+    //modifié de removeEquipment en removeRoom
+    public function removeRoom(Room $room): static
     {
         $this->rooms->removeElement($room);
         return $this;

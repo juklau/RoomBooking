@@ -3,7 +3,13 @@ framework:
     secret: '%env(APP_SECRET)%'
 
     # Note that the session will be started ONLY if you read or write from it.
-    session: true
+    # session: true
+
+    session:
+        cookie_lifetime: 900        # 900 secondes = 15 minutes => durée de vie côté client
+        gc_maxlifetime: 900         # durée de vie côté serveur
+        cookie_secure: auto         # HTTPS uniquement en prod => en HTTP en dev Synfony détecte automatiquement
+        cookie_httponly: true       # inaccessible au JavaScript => plus sécurisé
 
     #esi: true
     #fragments: true

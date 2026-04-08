@@ -13,7 +13,7 @@ class Room
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    private ?int $id = null;
+    private ?int $id = null; //=> n'existe pas encore tant que l'entité n'est pas persistée en BDD.
 
     #[ORM\Column(length: 150)]
     private ?string $name = null;
@@ -25,11 +25,15 @@ class Room
      * @var Collection<int, Equipment>
      */
     // #[ORM\OneToMany(targetEntity: Equipment::class, mappedBy: 'room', orphanRemoval: true)]
+    // Room est le côté propriétaire, c'est lui qui gère la table de jointure
     #[ORM\ManyToMany(targetEntity: Equipment::class, inversedBy: 'rooms')]
     private Collection $equipments;
 
     /**
      * @var Collection<int, Reservation>
+     * Room est le côté inverse ici — Reservation porte la clé étrangère room_id
+     * suppression d'une salle, les réservations ne sont pas supprimées automatiquement 
+     *          (à gérer manuellement dans le controller) !!!
      */
     #[ORM\OneToMany(targetEntity: Reservation::class, mappedBy: 'room')]
     private Collection $reservations;
@@ -81,6 +85,8 @@ class Room
     {
         if (!$this->equipments->contains($equipment)) {
             $this->equipments->add($equipment);
+            // pas de synchronisation vers Equipment
+            // Room est propriétaire, ça suffit
         }
         return $this;
     }
@@ -103,6 +109,9 @@ class Room
     {
         if (!$this->reservations->contains($reservation)) {
             $this->reservations->add($reservation);
+
+            //Room est côté inverse, donc elle redirige vers 
+            //      Reservation (propriétaire) pour que la persistance fonctionne.
             $reservation->setRoom($this);
         }
         return $this;
@@ -111,7 +120,8 @@ class Room
     public function removeReservation(Reservation $reservation): static
     {
         if ($this->reservations->removeElement($reservation)) {
-            // set the owning side to null (unless already changed)
+
+            // vérifie que la réservation pointe bien vers cette salle avant de mettre null 
             if ($reservation->getRoom() === $this) {
                 $reservation->setRoom(null);
             }

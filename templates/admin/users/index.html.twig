@@ -129,15 +129,12 @@
                                     <div>
                                         {# btn pour supprimer user #}
                                         {% if user.student %}
-                                            {{ include('partials/_delete_student.html.twig', { student: user.student }) }}
+                                            {{ include('partials/_delete_student.html.twig', { student: user.student }) }} 
                                         {% elseif user.coordinator %}
                                             {{ include('partials/_delete_coordinator.html.twig', { coordinator: user.coordinator }) }}
                                         {% endif %}
                                     </div>
                                 </div>
-                               
-
-                    
                             </td>
                         </tr>
                     {% endfor %}

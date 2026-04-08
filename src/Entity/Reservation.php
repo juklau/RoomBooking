@@ -11,7 +11,7 @@ class Reservation
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    private ?int $id = null;
+    private ?int $id = null;  //=> n'existe pas encore tant que l'entité n'est pas persistée en BDD.
 
     #[ORM\Column]
     private ?\DateTime $reservationStart = null;
@@ -19,10 +19,12 @@ class Reservation
     #[ORM\Column]
     private ?\DateTime $reservationEnd = null;
 
+    // propriétaire des deux relations → c'est elle qui porte les clés étrangères
     #[ORM\ManyToOne(inversedBy: 'reservations')]
     #[ORM\JoinColumn(nullable: false)]
     private ?Room $room = null;
 
+    // propriétaire des deux relations → c'est elle qui porte les clés étrangères
     #[ORM\ManyToOne(inversedBy: 'reservations')]
     #[ORM\JoinColumn(nullable: false)]
     private ?User $user = null;

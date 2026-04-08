@@ -39,4 +39,5 @@ class ClasseType extends AbstractType
             'data_class' => Classe::class,
         ]);
     }
+    
 }

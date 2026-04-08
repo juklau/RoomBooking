@@ -30,7 +30,7 @@
             <div class="stat-card text-center flex-column d-flex shadow">
                 <div class="stat-icon mx-auto" id="stat-icon-rooms" >🏫</div>
                 <div class="stat-value">{{ stats.rooms }}</div>
-                <div class="stat-label">Salles</div>
+                <div class="stat-label">Salles</div> 
             </div>
         </div>
 
@@ -102,8 +102,10 @@
                                             {{ res.user.firstname }} {{ res.user.lastname }}
                                         </td>
                                         <td>
+                                            {# comparaison date resa_start et date actuelle#}
                                             {% set isToday = res.reservationStart|date('Y-m-d') == 'now'|date('Y-m-d') %}
                                             <span class="status-dot {{ isToday ? 'status-today' : 'status-upcoming' }}"></span>
+                                            
                                             {{ res.reservationStart|date('d/m/Y H:i') }}
                                         </td>
                                         <td>{{ res.reservationEnd|date('d/m/Y H:i') }}</td>
@@ -138,7 +140,7 @@
                                     {% endif %}
                                 </div>
                                                         
-                                <a href="{{ path('app_admin_room_show', {id: room.id}) }}" class="btn btn-sm btn-outline-secondary" id="btn-details">Voir →</a>
+                                <a href="{{ path('app_admin_room_show', {id: room.id}) }}" class="btn btn-sm btn-outline-secondary" id="btn-details-salle">Voir →</a>
                             </div>
                         </div>
                     {% else %}
@@ -195,7 +197,7 @@
                                 </div>
                             </div>
 
-                            <a href="{{ path('app_admin_classe_show', {id: classe.id}) }}" class="btn btn-sm btn-outline-secondary" id="btn-details">Voir →</a>
+                            <a href="{{ path('app_admin_classe_show', {id: classe.id}) }}" class="btn btn-sm btn-outline-secondary" id="btn-details-classe">Voir →</a>
                         </div>
                     {% else %}
                         <p class="txt-muted small">Aucune classe enregistrée.</p>

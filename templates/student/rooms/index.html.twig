@@ -43,11 +43,11 @@
         <table class="table table-borderless mb-0">
             <thead>
                 <tr>
-                    <th>Salle</th>
-                    <th>Capacité</th>
-                    <th>Statut actuel</th>
-                    <th>Ma prochaine réservation</th>
-                    <th>Actions</th>
+                    <th class="text-center">Salle</th>
+                    <th class="text-center">Capacité</th>
+                    <th class="text-center">Statut actuel</th>
+                    <th class="text-center">Ma prochaine réservation</th>
+                    <th class="text-center">Actions</th>
                 </tr>
             </thead>
             <tbody>
@@ -80,12 +80,12 @@
                             </td>
 
                             {# Capacité #}
-                            <td>
+                            <td class="text-center">
                                 <span class="room-capacity-badge">👥 {{ item.room.capacity }}</span>
                             </td>
 
                             {# Statut actuel #}
-                            <td>
+                            <td class="text-center">
                                 {% if item.status == 'occupied' %}
 
                                     <span class="status-badge d-inline status-occupied">🔴 Occupée</span>
@@ -118,7 +118,7 @@
 
                             {# Actions #}
                             <td onclick="event.stopPropagation()">
-                                <div class="d-flex gap-4">
+                                <div class="d-flex gap-4 justify-content-center">
 
                                     {# {{ path('app_student_room_show', {id: item.room.id}) }} #}
                                     <a href="{{ path('app_student_room_show', {id: item.room.id}) }}"

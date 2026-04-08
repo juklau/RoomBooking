@@ -1,7 +1,7 @@
 # 🏫 RoomBooking
 
 > Application web de réservation de salles — MediaSchool IRIS Nice  
-> BTS SIO SLAM — Réalisation Professionnelle — Mars 2026
+> BTS SIO SLAM — Réalisation Professionnelle — Avril 2026
 
 ---
 
@@ -353,5 +353,5 @@ php bin/console security:hash-password
 ## Auteur
 
 **Klaudia Juhasz** — BTS SIO SLAM  
-MediaSchool IRIS Nice — Mars 2026  
+MediaSchool IRIS Nice — Avril 2026  
 Intervenant : Nicolas Choquet

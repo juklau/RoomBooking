@@ -45,7 +45,7 @@ class CoordinatorReservationType extends AbstractType
                     $studentUserIds [] = $student->getUser()->getId();
                 }
             }
-            $studentUserIds = array_unique($studentUserIds);
+            $studentUserIds = array_unique($studentUserIds);  //=> pour éviter les doublons
         }
 
         $builder
@@ -114,6 +114,11 @@ class CoordinatorReservationType extends AbstractType
                 'attr'          => [
                     'class' => 'form-select'
                 ],
+
+                // SELECT u.*
+                // FROM user u
+                // WHERE u.id IN (3, 4, 5, 6, 7)
+                // ORDER BY u.lastname ASC
             ]);
     }
 

@@ -69,7 +69,7 @@ final class StudentController extends AbstractController
     #[Route('/rooms', name: 'app_student_rooms')]
     public function rooms(Request $request, RoomRepository $roomRepo): Response
     {
-         /** @var \App\Entity\User $user */              //=> @ est important!!!!!!!
+         /** @var \App\Entity\User $user */              //=> @ est important!!!!!!! 
         $user = $this->getUser();
 
         //filtrer par créneau => paramètres GET

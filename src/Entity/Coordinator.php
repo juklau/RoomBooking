@@ -13,7 +13,7 @@ class Coordinator
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    private ?int $id = null;
+    private ?int $id = null;  //=> n'existe pas encore tant que l'entité n'est pas persistée en BDD.
 
     #[ORM\OneToOne(inversedBy: 'coordinator', cascade: ['persist', 'remove'])]
     #[ORM\JoinColumn(nullable: false)]
@@ -21,6 +21,9 @@ class Coordinator
 
     /**
      * @var Collection<int, Classe>
+     * Coordinator qui possède la relation  grâce à inversedBy 
+     * (le côté propriétaire a toujours inversedBy, => lui qui contrôle la table de jointure
+     * le côté inverse a mappedBy).
      */
     #[ORM\ManyToMany(targetEntity: Classe::class, inversedBy: 'coordinators')]
     private Collection $classes;
@@ -58,6 +61,7 @@ class Coordinator
     {
         if (!$this->classes->contains($class)) {
             $this->classes->add($class);
+             // ← pas d'appel retour vers Classe <=> sinon j'aurais un boucle infinie de synchronisation entre les deux entités.
         }
         return $this;
     }

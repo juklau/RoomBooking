@@ -68,7 +68,7 @@ final class CoordinatorController extends AbstractController
         return $this->render('coordinator/dashboard.html.twig', [
             'stats'          => $stats,
             'myClasses'      => $myClasses,
-            'myReservations' => $myReservations,
+            'myReservations' => $myReservations, 
             'rooms'          => $rooms,
         ]);
 

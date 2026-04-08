@@ -28,7 +28,7 @@ class AddCoordinatorToClasseType extends AbstractType
                 ],
 
                 // afficher que les coordinateurs qui ne sont pas encore dans cette classe => sans classe ou autre classe
-                //  fn(CoordinatorRepository $repo) => function flèche PHP == function($repo)
+                // fn(CoordinatorRepository $repo) => function flèche PHP == function($repo)
                 'query_builder' => fn(CoordinatorRepository $repo) => $repo->createQueryBuilder('c')
                     ->leftJoin('c.user', 'u')                       //il faut NOT EXISTS si ManyToMany
                     ->where('NOT EXISTS (
@@ -39,6 +39,17 @@ class AddCoordinatorToClasseType extends AbstractType
                     ->setParameter('classeId', $classeId)           //function contre injection SQL
                     ->orderBy('u.lastname', 'ASC'),
                 'attr' => ['class' => 'form-select']
+
+                // SELECT c.*
+                // FROM coordinator c
+                // LEFT JOIN user u ON u.id = c.user_id
+                // WHERE NOT EXISTS (
+                //     SELECT 1
+                //     FROM coordinator_classe cc
+                //     WHERE cc.coordinator_id = c.id
+                //     AND cc.classe_id = :classeId
+                // )
+                // ORDER BY u.lastname ASC
             ]);
     }
 

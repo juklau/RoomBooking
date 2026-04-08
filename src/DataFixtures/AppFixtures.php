@@ -165,6 +165,7 @@ class AppFixtures extends Fixture
         $res3->setReservationEnd(new \DateTime('2026-03-03 12:00:00'));
         $manager->persist($res3);
 
-        $manager->flush();
+        //=> exécute toutes les requêtes d'insertion en BDD pour les entités persistées
+        $manager->flush();  
     }
 }

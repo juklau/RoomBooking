@@ -16,6 +16,21 @@ class ClasseRepository extends ServiceEntityRepository
         parent::__construct($registry, Classe::class);
     }
 
+    // ClasseRepository
+    public function isExisteClasse(Classe $classe): bool
+    {
+        $count = $this->createQueryBuilder('c')
+            ->select('COUNT(c.id)')
+            ->where('c.name = :name')
+            ->andWhere('c.id != :id')
+            ->setParameter('name', $classe->getName())
+            ->setParameter('id', $classe->getId() ?? 0)
+            ->getQuery()
+            ->getSingleScalarResult();
+
+        return (int)$count === 0;
+    }
+
     //    /**
     //     * @return Classe[] Returns an array of Classe objects
     //     */

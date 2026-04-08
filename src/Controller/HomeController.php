@@ -24,4 +24,5 @@ final class HomeController extends AbstractController
 
         return $this->redirectToRoute('app_student_dashboard');
     }
+    
 }

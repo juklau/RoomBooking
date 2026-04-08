@@ -29,7 +29,7 @@ class RoomEquipmentType extends AbstractType
                 'required'      => false,
 
                 // afficher seulement les équipements pas encore dans cette salle
-                'query_builder' => fn(EquipmentRepository $repo) => $repo->createQueryBuilder('e')
+                'query_builder' => fn(EquipmentRepository $repo) => $repo->createQueryBuilder('e') 
                     ->where('NOT EXISTS (
                         SELECT 1 FROM App\Entity\Room r
                         JOIN r.equipments re

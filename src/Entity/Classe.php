@@ -13,19 +13,22 @@ class Classe
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    private ?int $id = null;
+    private ?int $id = null; //=> n'existe pas encore tant que l'entité n'est pas persistée en BDD.
 
     #[ORM\Column(length: 150)]
     private ?string $name = null;
 
     /**
      * @var Collection<int, Coordinator>
+     * Coordinator qui possède la relation (le côté qui a inversedBy). 
+     * Classe est le côté inverse, donc c'est Coordinator qui gère la table de jointure en BDD
      */
     #[ORM\ManyToMany(targetEntity: Coordinator::class, mappedBy: 'classes')]
     private Collection $coordinators;
 
     /**
      * @var Collection<int, Student>
+     * La clé étrangère classe_id se trouve dans la table student, pas dans classe
      */
     #[ORM\OneToMany(targetEntity: Student::class, mappedBy: 'classe')]
     private Collection $students;
@@ -65,7 +68,10 @@ class Classe
     {
         if (!$this->coordinators->contains($coordinator)) {
             $this->coordinators->add($coordinator);
-            $coordinator->addClasse($this);
+
+            // Coordinator qui possède la relation, il faut 
+            // le notifier sinon Doctrine ne persiste pas le lien en BDD.
+            $coordinator->addClasse($this);     // => synchronise l'autre côté // ← appelle le côté propriétaire
         }
 
         return $this;

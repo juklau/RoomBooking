@@ -90,6 +90,7 @@ class ReservationRepository extends ServiceEntityRepository
 
     public function countByUser(User $user): int
     {
+        //  FROM reservation r
         return (int) $this->createQueryBuilder('r')
 
             ->select('COUNT(r.id)')

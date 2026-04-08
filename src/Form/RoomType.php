@@ -11,7 +11,7 @@ use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Validator\Constraints\NotBlank;
 use Symfony\Component\Validator\Constraints\Positive;
-use Symfony\Component\Validator\Constraints\Length;
+use Symfony\Component\Validator\Constraints\Length; 
 
 
 class RoomType extends AbstractType
@@ -48,10 +48,9 @@ class RoomType extends AbstractType
     public function configureOptions(OptionsResolver $resolver):void
     {
         $resolver->setDefaults([
-            'data_class' => Room::class
+            'data_class' => Room::class  // lie le formulaire à l'entité Room
         ]);
     }
-
 
 
 

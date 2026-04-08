@@ -26,6 +26,8 @@ final class AuthController extends AbstractController
         }
 
         $error = $authenticationUtils->getLastAuthenticationError();
+
+        // récup du dernière last username saisi par l'utilisateur
         $lastUsername = $authenticationUtils->getLastUsername();
 
         return $this->render('auth/login.html.twig', [
@@ -46,7 +48,7 @@ final class AuthController extends AbstractController
     ): Response {
 
         // Rediriger vers home si déjà connecté
-        if ($this->getUser()) {
+        if ($this->getUser()) {         // retourne objet user connecté ou null si pas connecté
             return $this->redirectToRoute('app_home');
         }
 

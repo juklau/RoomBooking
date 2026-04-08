@@ -11,7 +11,7 @@
     <div class="login-card" style="max-width: 460px;">
 
         <h1 class="mb-3 text-center">RoomBooking</h1>
-        <p class="subtitle text-center">Créez votre compte pour réserver une salle</p>
+        <p class="subtitle text-center">Créez votre compte pour réserver une salle</p> 
 
         {# Flash errors #}
         {% for message in app.flashes('error') %}
@@ -19,48 +19,84 @@
         {% endfor %}
 
         {{ form_start(form, { attr: { novalidate: 'novalidate' } }) }}
+        {# généré automatiquement:
+            <form name="registration_form" method="post" action="/registration">
+                <input type="hidden" name="_token" value="abc123..."> #}
 
+            {# Firstname #}
             <div class="row g-3 mb-3">
                 <div class="col-6">
-                    <label class="form-label">{{ form_label(form.firstname) }}</label>
-                    {{ form_widget(form.firstname) }}
+                    <label class="form-label">{{ form_label(form.firstname) }}</label> {# => <label for="registration_form_firstname">Prénom</label>#}
+                    {{ form_widget(form.firstname) }}           {# => le champs d'input#}
+
                     {% if form_errors(form.firstname) %}
-                        <div class="form-error">{{ form_errors(form.firstname) }}</div>
+                        <div class="form-error">{{ form_errors(form.firstname) }}</div> {# => affiche les erreurs de validation #}
                     {% endif %}
                 </div>
+
+                {# Lastname #}
                 <div class="col-6">
                     <label class="form-label">{{ form_label(form.lastname) }}</label>
                     {{ form_widget(form.lastname) }}
+
                     {% if form_errors(form.lastname) %}
-                        <div class="form-error">{{ form_errors(form.lastname) }}</div>
+                        <div class="form-error">{{ form_errors(form.lastname) }}</div> 
                     {% endif %}
                 </div>
             </div>
 
+            {# Email #}
             <div class="form-group mb-3">
                 {{ form_label(form.email, null, { label_attr: { class: 'form-label' } }) }}
+
                 {{ form_widget(form.email) }}
+
                 {% if form_errors(form.email) %}
                     <div class="form-error">{{ form_errors(form.email) }}</div>
                 {% endif %}
             </div>
 
+             {# Mot de passe #}
             <div class="form-group mb-3">
-                {{ form_label(form.password.first, null, { label_attr: { class: 'form-label' } }) }}
-                {{ form_widget(form.password.first) }}
+                {{ form_label(form.password.first, null, { label_attr: { class: 'form-label' } }) }} 
+                {# <label for="registration_form_password_first" class="form-label"> Mot de passe </label>#}
+
+                <div class="input-group">
+                    {{ form_widget(form.password.first) }}          {# champ "Mot de passe" #}
+                    <button type="button" 
+                            class="btn btn-outline-secondary" 
+                            {# id généré par Symfony: registration_form_password_first <=> avec que password_first ne passe pas!  #}
+                            onclick="togglePassword('registration_form_password_first', this)"
+                            title="Afficher/Masquer le mot de passe">
+                        👁
+                    </button>
+                </div>
+                
                 {% if form_errors(form.password.first) %}
                     <div class="form-error">{{ form_errors(form.password.first) }}</div>
                 {% endif %}
             </div>
 
+            {# Confirmation de mot de passe #}
             <div class="form-group mb-4">
                 {{ form_label(form.password.second, null, { label_attr: { class: 'form-label' } }) }}
-                {{ form_widget(form.password.second) }}
+
+                <div class="input-group">
+                    {{ form_widget(form.password.second) }}         {# champ "Confirmer" #}
+
+                    <button type="button" 
+                            class="btn btn-outline-secondary" 
+                            onclick="togglePassword('registration_form_password_second', this)"
+                            title="Afficher/Masquer le mot de passe">
+                        👁
+                    </button>
+                </div>
+
                 {% if form_errors(form.password.second) %}
                     <div class="form-error">{{ form_errors(form.password.second) }}</div>
                 {% endif %}
                 {% if form_errors(form.password) %}
-                    <div class="form-error">{{ form_errors(form.password) }}</div>
+                    <div class="form-error">{{ form_errors(form.password) }}</div>  {# erreur de correspondance entre les deux champs #}
                 {% endif %}
             </div>
 
@@ -72,7 +108,7 @@
 
         <div class="login-footer">
             Déjà un compte ?
-            <a href="{{ path('app_login') }}" style="color: #f85149; text-decoration: none;">
+            <a href="{{ path('app_login') }}" id="lien-vers-login">
                 Se connecter
             </a>
         </div>
@@ -83,4 +119,7 @@
 
     </div>
 </div>
+{% endblock %}
+{% block javascripts %}
+    <script src="{{ asset('js/login.js') }}"></script>
 {% endblock %}

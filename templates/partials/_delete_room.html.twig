@@ -6,9 +6,10 @@
 <form method="post" action="{{ path('app_admin_room_delete', {id: room.id}) }}"
       onsubmit="return confirm('Supprimer la salle « {{ room.name }} » ? Cette action est irréversible.')">
 
-    {# csrf_token('delete_room_' ~ room.id) => génère le tokent unique pour la salle #}
+    {# csrf_token('delete_room_' ~ room.id) => génère le token unique pour la salle #}
     <input type="hidden" name="_token" value="{{ csrf_token('delete_room_' ~ room.id) }}">
 
-    <button type="submit" class="btn-action-danger">🗑 Supprimer</button>
+    <button type="submit" class="btn-action-danger">🗑 Supprimer</button> 
+    
 
 </form>

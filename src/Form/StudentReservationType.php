@@ -57,7 +57,7 @@ class StudentReservationType extends AbstractType
                     'min'   => (new \DateTime('tomorrow'))->format('Y-m-d'), // interdit le passé
                 ],
             ])
-            ->add('startTime', ChoiceType::class, [
+            ->add('startTime', ChoiceType::class, [ 
                 'label'       => 'Heure de début',
                 'choices'     => $timeSlots,
                 'placeholder' => '-- Heure de début --',

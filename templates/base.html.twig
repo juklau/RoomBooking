@@ -19,7 +19,7 @@
         {% include 'partials/_navbar.html.twig' %}
 
         {# afficher les messages dans un template Twig => sinon il s'affiche pas #}
-        {# à vérifier!!! #}
+        {# message affiché une seul fois => puis il est supprimé #} 
         {% for message in app.flashes('success') %}
             <div class="flash-success">
                 ✓ {{ message }}

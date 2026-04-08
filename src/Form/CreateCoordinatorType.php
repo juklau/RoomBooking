@@ -89,9 +89,10 @@ class CreateCoordinatorType extends AbstractType
                     'class' => 'form-select',
                     'size'  => 5,
                 ],
-            ]);
+            ]); 
     }
 
+    
     public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefaults([]);
