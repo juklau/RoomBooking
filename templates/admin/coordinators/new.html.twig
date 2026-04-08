@@ -6,6 +6,7 @@
     <link rel="stylesheet" href="{{ asset('styles/admin.css') }}">
     <link rel="stylesheet" href="{{ asset('styles/rooms.css') }}">
     <link rel="stylesheet" href="{{ asset('styles/classes.css') }}">
+    <link rel="stylesheet" href="{{ asset('styles/login.css') }}">
 {% endblock %}
 
 {% block body %}
@@ -65,13 +66,33 @@
                     {# Mot de passe #}
                     <div class="form-field">
                         {{ form_label(form.password.first) }}
-                        {{ form_widget(form.password.first) }}
-                        {{ form_errors(form.password.first) }}
+
+                        <div class="input-group input-group-password">
+                            {{ form_widget(form.password.first) }}
+                            <button type="button" 
+                                    class="btn btn-outline-secondary" 
+                                    onclick="togglePassword('create_coordinator_password_first', this)"
+                                    title="Afficher/Masquer le mot de passe">
+                                👁
+                            </button>
+                        </div>
+
+                        {{ form_errors(form.password.first) }} 
                     </div>
 
                     <div class="form-field">
                         {{ form_label(form.password.second) }}
-                        {{ form_widget(form.password.second) }}
+
+                        <div class="input-group input-group-password">
+                            {{ form_widget(form.password.second) }}
+                            <button type="button" 
+                                    class="btn btn-outline-secondary" 
+                                    onclick="togglePassword('create_coordinator_password_second', this)"
+                                    title="Afficher/Masquer le mot de passe">
+                                👁
+                            </button>
+                        </div>
+
                         {{ form_errors(form.password.second) }}
                     </div>
 
@@ -110,4 +131,7 @@
     </div>
 
 </div>
+{% endblock %}
+{% block javascripts %}
+    <script src="{{ asset('js/login.js') }}"></script>
 {% endblock %}
