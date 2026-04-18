@@ -43,7 +43,7 @@ final class Version20260418110519 extends AbstractMigration
 
     public function down(Schema $schema): void
     {
-        $rooms = ['Salle 101', 'Salle 102', 'Salle 103'];
+        $rooms = ['Azur', 'Nikaia', 'La Bella', 'La Baieta', 'Riviera', 'Bureau Informatique', 'Baie des Anges', 'La Pitchoun', 'Saleya', 'La Prom'];
 
         foreach ($rooms as $name) {
             $this->addSql(
