@@ -295,7 +295,7 @@ cd backups/
 sha256sum -c roombooking_backup_YYYYMMDD_HHMMSS.tar.gz.sha256
 ```
 
-> Pour la documentation complète du système de backup (fonctionnement interne, erreurs fréquentes, ordre de restauration), consulter [`backup/README_backup.md`](backup/README_backup.md).
+> Pour la documentation complète du système de backup (fonctionnement interne, erreurs fréquentes, ordre de restauration), consulter [`backup/BACKUP_RESTORE.md`](backup/BACKUP_RESTORE.md).
 
 ---
 
@@ -304,7 +304,7 @@ sha256sum -c roombooking_backup_YYYYMMDD_HHMMSS.tar.gz.sha256
 | Règle | Détail |
 |---|---|
 | Créneaux | 08:00 → 20:00 par tranches de 30 min |
-| Date minimale | À partir de demain uniquement |
+| Date minimale | À partir de la date et de l’heure actuelles (impossible de réserver dans le passé)  |
 | Conflit | Impossible de créer deux réservations qui se chevauchent |
 | Annulation | Soft delete — historique conservé, impossible si déjà commencée |
 | Suppression de classe | Uniquement si elle ne contient plus aucun étudiant |
@@ -346,7 +346,7 @@ php bin/console security:hash-password
 | `docs/cahier_des_charges.pdf` | Expression du besoin, contexte, fonctionnalités |
 | `docs/guide_admin.pdf` | Guide de prise en main administrateur |
 | `docs/guide_utilisateur.pdf` | Guide de prise en main coordinateurs & étudiants |
-| `backup/README_backup.md` | Documentation complète du système de backup & restauration |
+| `backup/BACKUP_RESTORE.md` | Documentation complète du système de backup & restauration |
 
 ---
 
