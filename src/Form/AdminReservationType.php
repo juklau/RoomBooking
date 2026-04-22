@@ -57,7 +57,8 @@ class AdminReservationType extends AbstractType
                 ],
                 'attr'        => [
                     'class' => 'form-control',
-                    'min'   => (new \DateTime('tomorrow'))->format('Y-m-d'), // interdit le passé
+                    // 'min'   => (new \DateTime('tomorrow'))->format('Y-m-d'), // interdit le passé
+                    'min'   => (new \DateTime('today'))->format('Y-m-d'), // interdit le passé
                 ],
             ])
             ->add('startTime', ChoiceType::class, [

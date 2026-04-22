@@ -1,0 +1,4 @@
+# config/packages/test/doctrine.yaml
+doctrine:
+    dbal:
+        url: 'mysql://root:RoomBooking2026!@mysql:3306/roombooking_test?serverVersion=8.0&charset=utf8mb4'

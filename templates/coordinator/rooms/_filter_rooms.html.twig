@@ -10,7 +10,8 @@
                    id="filter-date"
                    name="date"
                    class="form-control mt-1"
-                   min="{{ 'tomorrow'|date('Y-m-d') }}"
+                   {# min="{{ 'tomorrow'|date('Y-m-d') }}" #}
+                   min="{{ 'today'|date('Y-m-d') }}"
                    value="{{ filterDate ?? '' }}">
         </div>
 

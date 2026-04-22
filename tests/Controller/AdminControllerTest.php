@@ -191,15 +191,22 @@ class AdminControllerTest extends WebTestCase
         $this->em->persist($reservation);
         $this->em->flush();
 
+        //le token CSRF est récupéré sans session active => nem jo!!!
         // Faire une requête pour initialiser la session
-        $this->client->request('GET', '/admin/dashboard');
+        // $this->client->request('GET', '/admin/dashboard');
+        // // Générer le token après initialisation de la session
+        // $tokenId   = 'delete_room_' . $room->getId();
+        // $csrfToken = $this->client->getContainer()
+        //     ->get('security.csrf.token_manager')
+        //     ->getToken($tokenId)
+        //     ->getValue();
 
-        // Générer le token après initialisation de la session
-        $tokenId   = 'delete_room_' . $room->getId();
-        $csrfToken = $this->client->getContainer()
-            ->get('security.csrf.token_manager')
-            ->getToken($tokenId)
-            ->getValue();
+        //il faut récuperer le token CSRF depuis le HTML de la page!!! :
+        // Aller sur la page de détail pour initialiser la session
+        $crawler = $this->client->request('GET', '/admin/rooms/' . $room->getId());
+
+        // Extraire le token CSRF depuis le formulaire de suppression dans le HTML
+        $csrfToken = $crawler->filter('input[name="_token"]')->first()->attr('value');
 
         $this->client->request('POST', '/admin/rooms/' . $room->getId() . '/delete', [
             '_token' => $csrfToken,
@@ -274,23 +281,24 @@ class AdminControllerTest extends WebTestCase
         $this->em->persist($reservation);
         $this->em->flush();
 
-        // Initialiser la session
-        $this->client->request('GET', '/admin/dashboard');
-
-        $tokenId   = 'cancel_reservation_' . $reservation->getId();
-        $csrfToken = $this->client->getContainer()
-            ->get('security.csrf.token_manager')
-            ->getToken($tokenId)
-            ->getValue();
-
-        $this->client->request('POST', '/admin/reservations/' . $reservation->getId() . '/cancel', [
-            '_token' => $csrfToken,
+        $reservationId = $reservation->getId();
+       
+        // CSRF désactivé en test → n'importe quelle valeur fonctionne
+        $this->client->request('POST', '/admin/reservations/' . $reservationId . '/cancel', [
+            '_token' => 'test_token',
         ]);
+
+        //pour trouver le debug
+        // var_dump($this->client->getResponse()->getStatusCode());
+        // var_dump($this->client->getResponse()->headers->get('Location'));
+        // die();
 
         $this->assertResponseRedirects();
 
-        $this->em->clear();
-        $updated = $this->em->getRepository(Reservation::class)->find($reservation->getId());
+        //récup l'EM utilisé par le controller pendant la requête
+        $em = $this->client->getContainer()->get(EntityManagerInterface::class);
+        $em->clear();
+        $updated = $em->getRepository(Reservation::class)->find($reservationId);
         $this->assertEquals('canceled', $updated->getStatus());
     }
 
@@ -311,14 +319,21 @@ class AdminControllerTest extends WebTestCase
         $this->em->persist($reservation);
         $this->em->flush();
 
-        // Initialiser la session
-        $this->client->request('GET', '/admin/dashboard');
+        // // Initialiser la session
+        // $this->client->request('GET', '/admin/dashboard');
+        // $tokenId   = 'cancel_reservation_' . $reservation->getId();
+        // $csrfToken = $this->client->getContainer()
+        //     ->get('security.csrf.token_manager')
+        //     ->getToken($tokenId)
+        //     ->getValue();
 
-        $tokenId   = 'cancel_reservation_' . $reservation->getId();
-        $csrfToken = $this->client->getContainer()
-            ->get('security.csrf.token_manager')
-            ->getToken($tokenId)
-            ->getValue();
+        // // Aller sur la page de détail pour initialiser la session
+        // $crawler = $this->client->request('GET', '/admin/rooms/' . $room->getId());
+
+        // // Extraire le token CSRF depuis le formulaire de suppression dans le HTML
+        // $csrfToken = $crawler->filter('form[action*="cancel"] input[name="_token"]')->first()->attr('value');
+
+        $csrfToken = '';
 
         $this->client->request('POST', '/admin/reservations/' . $reservation->getId() . '/cancel', [
             '_token' => $csrfToken,

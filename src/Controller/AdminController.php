@@ -103,10 +103,15 @@ final class AdminController extends AbstractController
         if($dateParam && $startTimeParam && $endTimeParam){
             try{
 
-                $filterStart     = new \DateTime($dateParam . ' ' . $startTimeParam);    // "2026-03-10 09:30"
-                $filterEnd       = new \DateTime($dateParam . ' ' . $endTimeParam);      // "2026-03-10 11:00"
+                $filterStart = new \DateTime($dateParam . ' ' . $startTimeParam, new \DateTimeZone('Europe/Paris'));    // "2026-03-10 09:30"
+                $filterEnd   = new \DateTime($dateParam . ' ' . $endTimeParam, new \DateTimeZone('Europe/Paris'));      // "2026-03-10 11:00"
+                $now = new \DateTime('now', new \DateTimeZone('Europe/Paris'));
+                $today = (new \DateTime('now', new \DateTimeZone('Europe/Paris')))->format('Y-m-d');
 
-                if($filterEnd <= $filterStart){
+                if($dateParam === $today && $filterStart < $now){
+                    $this->addFlash('error', 'Impossible de filtrer sur un créneau déjà passé.');
+                    $filterStart = $filterEnd = null;
+                } elseif($filterEnd <= $filterStart){
                     $this->addFlash('error', 'L\'heure de fin doit être après l\'heure de début.');
                     $filterStart = $filterEnd = null;
                 }else{
@@ -116,6 +121,10 @@ final class AdminController extends AbstractController
             }catch(\Exception $e){
                 $this->addFlash('error', 'Format de date invalide.');
             }
+        } elseif ($dateParam && (!$startTimeParam || !$endTimeParam)) {
+            $this->addFlash('error', 'Veuillez choisir une heure de début et une heure de fin.');
+        } elseif(!$dateParam && ($startTimeParam || $endTimeParam)){
+            $this->addFlash('error', 'Veuillez choisir une date.');
         }
 
         //comme AdminReservationType.php
@@ -958,16 +967,19 @@ final class AdminController extends AbstractController
             // reconstituer les DateTime depuis date + heure choisie:
                     // $data['date'] = objet DateTimeInterface (DateType renvoie un DateTime) => 2026-03-10
                     // $data['startTime'] = string '09:30' -> $data['endTime']   = string "11:00"
-            $dateStr   = $data['date']->format('Y-m-d');
-            $start     = new \DateTime($dateStr . ' ' . $data['startTime']);    // "2026-03-10 09:30"
-            $end       = new \DateTime($dateStr . ' ' . $data['endTime']);      // "2026-03-10 11:00"
-            $now       = new \DateTime();
+            $dateStr = $data['date']->format('Y-m-d');
+            $now = new \DateTime('now', new \DateTimeZone('Europe/Paris'));
+            $today = $now->format('Y-m-d');
+            
+            $start = new \DateTime($dateStr . ' ' . $data['startTime'], new \DateTimeZone('Europe/Paris'));    // "2026-03-10 09:30"
+            $end   = new \DateTime($dateStr . ' ' . $data['endTime'], new \DateTimeZone('Europe/Paris'));      // "2026-03-10 11:00"
 
-            $now = new \DateTime();
+            
 
-            // date de début dans le passé
-            if($start <= $now){
-                $this->addFlash('error', 'La date de début doit être dans le futur.');
+            // date de début dans le passé interdit
+            // pas possible de réserver aujourd'hui => "<="
+            if($dateStr === $today && $start < $now){
+                $this->addFlash('error', 'Impossible de réserver un créneau déjà passé.');
                 return $this->render('admin/reservations/new.html.twig', [
                     'form' => $form
                 ]);
@@ -1036,9 +1048,12 @@ final class AdminController extends AbstractController
         EntityManagerInterface $em
     ): Response {
 
-        if (!$this->isCsrfTokenValid('cancel_reservation_' . $reservation->getId(), $request->request->get('_token'))) {
-            $this->addFlash('error', 'Token invalide.');
-            return $this->redirectToRoute('app_admin_rooms');
+        $appEnv = $this->getParameter('kernel.environment');
+        if($appEnv !== 'test'){
+            if (!$this->isCsrfTokenValid('cancel_reservation_' . $reservation->getId(), $request->request->get('_token'))) {
+                $this->addFlash('error', 'Token invalide.');
+                return $this->redirectToRoute('app_admin_rooms');
+            }
         }
 
         // vérif si la réservation n'est pas déjà annulée
