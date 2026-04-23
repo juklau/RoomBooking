@@ -31,8 +31,17 @@ Thumbs.db
 backup.sh
 restore.sh
 
+backup_serveur.sh
+restore_serveur.sh
+restore_serveur_isoled.sh
+
 backups
 restores
 
 ###> il faut enlever le suivi sur github sinon il écrase le .env de prod###
 docker-compose.yml
+
+# Fichiers Claude/Byan
+_byan/
+_byan-output/
+.claude/
