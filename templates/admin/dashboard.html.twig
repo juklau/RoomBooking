@@ -103,12 +103,12 @@
                                         </td>
                                         <td>
                                             {# comparaison date resa_start et date actuelle#}
-                                            {% set isToday = res.reservationStart|date('Y-m-d') == 'now'|date('Y-m-d') %}
+                                            {% set isToday = res.reservationStart|date('Y-m-d', 'Europe/Paris') == 'now'|date('Y-m-d', 'Europe/Paris') %}
                                             <span class="status-dot {{ isToday ? 'status-today' : 'status-upcoming' }}"></span>
                                             
-                                            {{ res.reservationStart|date('d/m/Y H:i') }}
+                                            {{ res.reservationStart|date('d/m/Y H:i', 'Europe/Paris') }}
                                         </td>
-                                        <td>{{ res.reservationEnd|date('d/m/Y H:i') }}</td>
+                                        <td>{{ res.reservationEnd|date('d/m/Y H:i', 'Europe/Paris') }}</td>
                                     </tr>
                                 {% endfor %}
                             {% endif %}

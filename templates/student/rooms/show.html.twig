@@ -114,13 +114,13 @@
                                     <tr class="{{ isMine ? 'row-mine-student' : '' }}">
                                         <td>
                                             <div class="next-res-date">
-                                                {{ res.reservationStart|date('d/m/Y') }}
+                                                {{ res.reservationStart|date('d/m/Y', 'Europe/Paris') }}
                                             </div>
                                         </td>
                                         <td>
                                             <div class="next-res-time">
-                                                {{ res.reservationStart|date('H:i') }}
-                                                → {{ res.reservationEnd|date('H:i') }}
+                                                {{ res.reservationStart|date('H:i', 'Europe/Paris') }}
+                                                → {{ res.reservationEnd|date('H:i', 'Europe/Paris') }}
                                             </div>
                                         </td>
                                         <td>

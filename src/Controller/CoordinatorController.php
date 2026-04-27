@@ -6,6 +6,7 @@ use App\Repository\ClasseRepository;
 use App\Repository\ReservationRepository;
 use App\Repository\RoomRepository;
 use App\Repository\StudentRepository;
+use App\Repository\UserRepository;
 
 use App\Entity\Classe;
 use App\Entity\User;
@@ -246,7 +247,9 @@ final class CoordinatorController extends AbstractController
                     $this->addFlash('error', 'L\'heure de fin doit être après l\'heure de début.');
                     $filterStart = $filterEnd = null;
                 }else{
-                    $filteredRooms = $roomRepo->findAvailableForPeriod($filterStart, $filterEnd);
+                    $filterStartUtc = (clone $filterStart)->setTimezone(new \DateTimeZone('UTC'));
+                    $filterEndUtc = (clone $filterEnd)->setTimezone(new \DateTimeZone('UTC'));
+                    $filteredRooms = $roomRepo->findAvailableForPeriod($filterStartUtc, $filterEndUtc);
                 }
 
             }catch(\Exception $e){
@@ -310,7 +313,8 @@ final class CoordinatorController extends AbstractController
     public function reservationNew(
         Request                     $request,
         EntityManagerInterface      $em,
-        RoomRepository              $roomRepo
+        RoomRepository              $roomRepo,
+        ClasseRepository            $classeRepo
     ):Response {
 
         /** @var \App\Entity\User  $user*/
@@ -330,6 +334,34 @@ final class CoordinatorController extends AbstractController
             'coordinator'      => $coordinator,
         ]); 
 
+        // construire usersData pour le JS
+        $coordClasses = $coordinator->getClasses()->toArray();
+
+        $usersData = [
+            // classes du coordinateur uniquement
+            'allClasses' => array_map(fn($c) => ['id' => $c->getId(), 'name' => $c->getName()], $coordClasses),
+            'users'      => [],
+        ];
+
+        //ajouter coordinateur lui même
+        $usersData['users'][$user->getId()] = [
+            'type'    => 'coordinator',
+            'classe'  => null,
+            'classes' => array_map(fn($c) => ['id' => $c->getId(), 'name' => $c->getName()], $coordClasses),
+        ];
+
+        //ajouter les étudiants des classes du coordinateur
+        foreach($coordClasses as $classe){
+            foreach($classe->getStudents() as $student){
+                $studentUser = $student->getUser();
+                $usersData['users'][$studentUser->getId()] = [
+                    'type'    => 'student',
+                    'classe'  => ['id' => $classe->getId(), 'name' => $classe->getName()],
+                    'classes' => [],
+                ];
+            }
+        }
+
         // analyse la requête HTTP => POST (formulaire)
         $form->handleRequest($request);
 
@@ -341,12 +373,14 @@ final class CoordinatorController extends AbstractController
             // reconstituer les DateTime depuis date + heure choisie:
                     // $data['date'] = objet DateTimeInterface (DateType renvoie un DateTime) => 2026-03-10
                     // $data['startTime'] = string '09:30' -> $data['endTime']   = string "11:00"
-            $dateStr   = $data['date']->format('Y-m-d');
+            $dateStr = $data['date']->format('Y-m-d');
             $now = new \DateTime('now', new \DateTimeZone('Europe/Paris'));
             $today = $now->format('Y-m-d');
             
             $start = new \DateTime($dateStr . ' ' . $data['startTime'], new \DateTimeZone('Europe/Paris'));    // "2026-03-10 09:30"
             $end   = new \DateTime($dateStr . ' ' . $data['endTime'], new \DateTimeZone('Europe/Paris'));      // "2026-03-10 11:00"
+
+            $selectedBeneficiaryId = $data['beneficiary'] ? $data['beneficiary']->getId() : null;
 
 
             // date de début dans le passé
@@ -354,7 +388,9 @@ final class CoordinatorController extends AbstractController
             if($dateStr === $today && $start < $now){
                 $this->addFlash('error', 'Impossible de réserver un créneau déjà passé.');
                 return $this->render('coordinator/reservations/new.html.twig', [
-                    'form' => $form
+                    'form'                => $form,
+                    'usersData'           => $usersData,
+                    'selectedBeneficiary' => $selectedBeneficiaryId,
                 ]);
             }
 
@@ -362,27 +398,37 @@ final class CoordinatorController extends AbstractController
             if($end <= $start){
                 $this->addFlash('error', 'L\'heure de fin doit être après l\'heure de début.');
                 return $this->render('coordinator/reservations/new.html.twig', [
-                    'form' => $form
+                    'form'                => $form,
+                    'usersData'           => $usersData,
+                    'selectedBeneficiary' => $selectedBeneficiaryId,
                 ]);
             }
 
+            //convertir en UTC
+            $startUtc = (clone $start)->setTimezone(new \DateTimeZone('UTC'));
+            $endUtc = (clone $end)->setTimezone(new \DateTimeZone('UTC'));
+
             // salle est déjà réservé pour ce créneau
-            if(!$roomRepo->isAvailable($room, $start, $end)){
+            if(!$roomRepo->isAvailable($room, $startUtc, $endUtc)){
                 $this->addFlash('error', 'La salle "' . $room->getName() . '" n\'est pas disponible sur ce créneau.');
                 return $this->render('coordinator/reservations/new.html.twig', [
-                    'form' => $form
+                    'form' => $form,
+                    'usersData'           => $usersData,
+                    'selectedBeneficiary' => $selectedBeneficiaryId,
                 ]);
             }
 
             //déterminer le bénéficiaire=> étudiant choisi ou lui même
 
             $beneficiary = $data['beneficiary'] ?: $user;
+            $classe = $data['classe'] ?? null;
 
             $reservation = new \App\Entity\Reservation();
             $reservation->setRoom($room);
             $reservation->setUser($beneficiary);
-            $reservation->setReservationStart($start);
-            $reservation->setReservationEnd($end);
+            $reservation->setReservationStart($startUtc);
+            $reservation->setReservationEnd($endUtc);
+            $reservation->setClasse($classe);
 
             $em->persist($reservation);
             $em->flush();
@@ -401,7 +447,9 @@ final class CoordinatorController extends AbstractController
         }
 
         return $this->render('coordinator/reservations/new.html.twig', [
-            'form' => $form
+            'form'                => $form,
+            'usersData'           => $usersData,
+            'selectedBeneficiary' => null,
         ]);
     }
 
@@ -436,7 +484,7 @@ final class CoordinatorController extends AbstractController
         }
 
         // vérif si la réservation n'a pas encore commencé
-        if ($reservation->getReservationStart() <= new \DateTime()) {
+        if ($reservation->getReservationStart() <= new \DateTime('now', new \DateTimeZone('UTC'))) {
             $this->addFlash('error', 'Impossible d\'annuler une réservation déjà commencée ou passée.');
             return $this->redirectToRoute('app_coordinator_rooms');
         }
@@ -447,7 +495,9 @@ final class CoordinatorController extends AbstractController
 
         $this->addFlash('success',
             'Réservation de "' . $reservation->getRoom()->getName() . '" du '
-            . $reservation->getReservationStart()->format('d/m/Y H:i')
+            . (clone $reservation->getReservationStart())
+                ->setTimezone(new \DateTimeZone('Europe/Paris'))
+                ->format('d/m/Y H:i')
             . ' annulée avec succès.'
         );
 

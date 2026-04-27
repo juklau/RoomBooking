@@ -75,7 +75,7 @@
                                             <span class="equipment-tag">{{ equip.name }}</span>
                                         {% endfor %}
                                     </div>
-                                {% endif %}
+                                {% endif %} 
                             </td>
 
                             {# Capacité #}
@@ -92,7 +92,7 @@
                                     {% if item.currentReservation %}
 
                                         <div class="status-detail">
-                                            jusqu'à {{ item.currentReservation.reservationEnd|date('H:i') }}
+                                            jusqu'à {{ item.currentReservation.reservationEnd|date('H:i', 'Europe/Paris') }}
                                         </div>
                                     {% endif %}
 
@@ -107,8 +107,8 @@
 
                                     <div class="next-res-date">{{ item.nextReservation.reservationStart|date('d/m/Y') }}</div>
                                     <div class="next-res-time">
-                                        {{ item.nextReservation.reservationStart|date('H:i') }}
-                                        → {{ item.nextReservation.reservationEnd|date('H:i') }}
+                                        {{ item.nextReservation.reservationStart|date('H:i', 'Europe/Paris') }}
+                                        → {{ item.nextReservation.reservationEnd|date('H:i', 'Europe/Paris') }}
                                     </div>
                                 {% else %}
                                     <span class="text-muted-next-res small">Aucune</span>

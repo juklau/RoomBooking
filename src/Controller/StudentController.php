@@ -96,7 +96,9 @@ final class StudentController extends AbstractController
                     $this->addFlash('error', 'L\'heure de fin doit être après l\'heure de début.');
                     $filterStart = $filterEnd = null;
                 }else{
-                    $filteredRooms = $roomRepo->findAvailableForPeriod($filterStart, $filterEnd);
+                    $filterStartUtc = (clone $filterStart)->setTimezone(new \DateTimeZone('UTC'));
+                    $filterEndUtc = (clone $filterEnd)->setTimezone(new \DateTimeZone('UTC'));
+                    $filteredRooms = $roomRepo->findAvailableForPeriod($filterStartUtc, $filterEndUtc);
                 }
 
             }catch(\Exception $e){
@@ -159,11 +161,16 @@ final class StudentController extends AbstractController
     public function reservationNew(
         Request                     $request,
         EntityManagerInterface      $em,
-        RoomRepository              $roomRepo
+        RoomRepository              $roomRepo, 
+
     ):Response {
 
         /** @var \App\Entity\User  $user*/ 
         $user = $this->getUser();
+        $student = $user->getStudent();
+
+        //récup la classe de student
+        $studentClasse = $student?->getClasse();
 
         //préselectionner la salle => si passée en GET (?room=4)
         $preselectedRoom = null;
@@ -174,7 +181,8 @@ final class StudentController extends AbstractController
 
         //créer un formulaire lié à l'entité CoordinatorReservation
         $form = $this->createForm(StudentReservationType::class, null, [
-            'preselected_room' => $preselectedRoom,
+            'preselected_room'   => $preselectedRoom,
+            'preselected_classe' => $studentClasse,
         ]); 
 
         // analyse la requête HTTP => POST (formulaire)
@@ -200,7 +208,8 @@ final class StudentController extends AbstractController
             if($dateStr === $today && $start < $now){
                 $this->addFlash('error', 'Impossible de réserver un créneau déjà passé.');
                 return $this->render('student/reservations/new.html.twig', [
-                    'form' => $form
+                    'form' => $form,
+                    'studentClasse' => $studentClasse,
                 ]);
             }
 
@@ -208,23 +217,30 @@ final class StudentController extends AbstractController
             if($end <= $start){
                 $this->addFlash('error', 'L\'heure de fin doit être après l\'heure de début.');
                 return $this->render('student/reservations/new.html.twig', [
-                    'form' => $form
+                    'form' => $form,
+                    'studentClasse' => $studentClasse,
                 ]);
             }
 
+            //convertir en UTC
+            $startUtc = (clone $start)->setTimezone(new \DateTimeZone('UTC'));
+            $endUtc = (clone $end)->setTimezone(new \DateTimeZone('UTC'));
+
             // salle est déjà réservé pour ce créneau
-            if(!$roomRepo->isAvailable($room, $start, $end)){
+            if(!$roomRepo->isAvailable($room, $startUtc, $endUtc)){
                 $this->addFlash('error', 'La salle "' . $room->getName() . '" n\'est pas disponible sur ce créneau.');
                 return $this->render('student/reservations/new.html.twig', [
-                    'form' => $form
+                    'form' => $form,
+                    'studentClasse' => $studentClasse,
                 ]);
             }
 
             $reservation = new \App\Entity\Reservation();
             $reservation->setRoom($room);
             $reservation->setUser($user);
-            $reservation->setReservationStart($start);
-            $reservation->setReservationEnd($end);
+            $reservation->setReservationStart($startUtc);
+            $reservation->setReservationEnd($endUtc);
+            $reservation->setClasse($studentClasse);
 
             $em->persist($reservation);
             $em->flush();
@@ -239,7 +255,8 @@ final class StudentController extends AbstractController
         }
 
         return $this->render('student/reservations/new.html.twig', [
-            'form' => $form
+            'form' => $form,
+            'studentClasse' => $studentClasse,
         ]);
     }
 
@@ -275,7 +292,7 @@ final class StudentController extends AbstractController
         }
 
         // vérif si la réservation n'a pas encore commencé
-        if ($reservation->getReservationStart() <= new \DateTime()) {
+        if ($reservation->getReservationStart() <= new \DateTime('now', new \DateTimeZone('UTC'))) {
             $this->addFlash('error', 'Impossible d\'annuler une réservation déjà commencée ou passée.');
             return $this->redirectToRoute('app_student_dashboard');
         }
@@ -286,7 +303,9 @@ final class StudentController extends AbstractController
 
         $this->addFlash('success',
             'Réservation de "' . $reservation->getRoom()->getName() . '" du '
-            . $reservation->getReservationStart()->format('d/m/Y H:i')
+            . (clone $reservation->getReservationStart())
+                ->setTimezone(new \DateTimeZone('Europe/Paris'))
+                ->format('d/m/Y H:i')
             . ' annulée avec succès.'
         );
 

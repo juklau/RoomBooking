@@ -4,6 +4,7 @@ namespace App\Repository;
 
 use App\Entity\Room;
 use App\Entity\User;
+use App\Entity\Classe;
 
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
@@ -21,7 +22,8 @@ class RoomRepository extends ServiceEntityRepository
 
     public function findAllWithStats(?User $user = null): array
     {
-        $now = new \DateTime();
+   
+        $now = new \DateTime('now', new \DateTimeZone('UTC'));
 
         $rooms = $this->createQueryBuilder('r')
 
@@ -29,6 +31,8 @@ class RoomRepository extends ServiceEntityRepository
             ->addSelect('res')
             ->leftJoin('res.user', 'u') 
             ->addSelect('u')
+            ->join('res.classe', 'c')  //??????????????????????????????????????????????????????
+            ->addSelect('c')
             ->orderBy('r.name', 'ASC')
             ->getQuery()
             ->getResult();
@@ -44,6 +48,20 @@ class RoomRepository extends ServiceEntityRepository
         foreach ($rooms as $room){
             $reservations = $room->getReservations();
 
+            //  debug: affichage room occupé en disponible
+            // dump([
+            //     'room' => $room->getName(),
+            //     'now' => $now->format('Y-m-d H:i:s'),
+            //     'reservations_count' => count($reservations),
+            //     'reservations' => array_map(fn($r) => [
+            //         'start'  => $r->getReservationStart()->format('Y-m-d H:i:s'),
+            //         'end'    => $r->getReservationEnd()->format('Y-m-d H:i:s'),
+            //         'status' => $r->getStatus(),
+            //         'timezone_start' => $r->getReservationStart()->getTimezone()->getName(),
+            //         'timezone_now'   => $now->getTimezone()->getName(),
+            //     ], $reservations->toArray()),
+            // ]);
+
             //nbre total de réservation => exlure les annulés
             $totalReservations = 0;
             foreach($reservations as $res){
@@ -55,7 +73,10 @@ class RoomRepository extends ServiceEntityRepository
             $currentReservation = null;
             foreach($reservations as $res){
                 if($res->getStatus() === 'canceled') continue; // => passer à l'itération suivante
-                if($res->getReservationStart() <= $now && $res->getReservationEnd() >= $now){
+
+                $resStart = (clone $res->getReservationStart());
+                $resEnd = (clone $res->getReservationEnd());
+                if($resStart <= $now && $resEnd >= $now){
                     $currentReservation = $res;
                     break;
                 }
@@ -65,20 +86,20 @@ class RoomRepository extends ServiceEntityRepository
             $nextReservation = null;
             $minDiff = null;
 
-            foreach ($reservations as $res){
-                if($res->getReservationStart() > $now){
-                    if($res->getStatus() === 'canceled') continue;
-                    if($res->getReservationStart() <= $now) continue;
-                    
-                    //filtrer par user si passé en paramètre
-                    if($user !== null && $res->getUser()->getId() !== $user->getId()) continue;
+            foreach ($reservations as $res) {
+                if ($res->getStatus() === 'canceled') continue;
 
-                    $diff = $res->getReservationStart()->getTimestamp() - $now->getTimestamp();
+                $resStart = (clone $res->getReservationStart());
 
-                    if($minDiff === null || $diff < $minDiff){
-                        $minDiff = $diff;
-                        $nextReservation = $res;
-                    }
+                if ($resStart <= $now) continue; // => déjà passé
+
+                if ($user !== null && $res->getUser()->getId() !== $user->getId()) continue;
+
+                $diff = $resStart->getTimestamp() - $now->getTimestamp();
+
+                if ($minDiff === null || $diff < $minDiff) {
+                    $minDiff = $diff;
+                    $nextReservation = $res;
                 }
             }
 
@@ -86,7 +107,7 @@ class RoomRepository extends ServiceEntityRepository
             $status = $currentReservation ? 'occupied' : 'available';
 
             $result [] = [
-                'room'               => $room,
+                'room'               => $room, 
                 'status'             => $status,
                 'currentReservation' => $currentReservation,
                 'nextReservation'    => $nextReservation,

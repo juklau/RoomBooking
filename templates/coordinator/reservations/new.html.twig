@@ -41,6 +41,9 @@
 
                 {{ form_start(form) }}
 
+                {# marquer classe comme rendu pour éviter le rendu automatique par form_end #}
+                {% do form.classe.setRendered() %}
+
                     {# Salle #}
                     <div class="form-field">
                         {{ form_label(form.room) }}
@@ -88,6 +91,17 @@
                         </div>
                     </div>
 
+                    {# Classe #}
+                    <div class="form-field">
+                        <label for="classe-select">Classe concernée</label>
+                        <select name="coordinator_reservation[classe]" id="classe-select" class="form-select">
+                            <option value="">-- Sélectionnez d'abord un bénéficiaire --</option>
+                        </select>
+                        <div class="field-hint" id="classe-hint">
+                            Sélectionnez la classe concernée par cette réservation.
+                        </div>
+                    </div>
+
                     {# Boutons #}
                     <div class="d-flex gap-2 mt-4">
                         <button type="submit" class="btn-coordinator-details flex-fill text-center">
@@ -112,4 +126,12 @@
     </div>
 
 </div>
+{% endblock %}
+
+{% block javascripts %}
+<script>
+    const usersData = {{ usersData|json_encode|raw }};
+    const selectedBeneficiaryId = {{ selectedBeneficiary ?? 'null' }};
+</script>
+<script src="{{ asset('js/coordinator_reservation.js') }}"></script>
 {% endblock %}

@@ -5,6 +5,7 @@ namespace App\Form;
 use App\Entity\Coordinator;
 use App\Entity\Room;
 use App\Entity\User;
+use App\Entity\Classe;
 use App\Repository\UserRepository;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
@@ -119,6 +120,17 @@ class CoordinatorReservationType extends AbstractType
                 // FROM user u
                 // WHERE u.id IN (3, 4, 5, 6, 7)
                 // ORDER BY u.lastname ASC
+            ])
+            ->add('classe', EntityType::class, [
+                'class'        => Classe::class,
+                'choice_label' => 'name',
+                'label'        => 'Classe concernée',
+                'placeholder'  => '-- Choisir une classe --',
+                'required'     => false,
+                'attr'         => [
+                    'class' => 'form-select',
+                    'id'    => 'reservation_classe'
+                ],
             ]);
     }
 

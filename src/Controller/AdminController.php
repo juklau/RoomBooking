@@ -115,7 +115,9 @@ final class AdminController extends AbstractController
                     $this->addFlash('error', 'L\'heure de fin doit être après l\'heure de début.');
                     $filterStart = $filterEnd = null;
                 }else{
-                    $filteredRooms = $roomRepo->findAvailableForPeriod($filterStart, $filterEnd);
+                    $filterStartUtc = (clone $filterStart)->setTimezone(new \DateTimeZone('UTC'));
+                    $filterEndUtc = (clone $filterEnd)->setTimezone(new \DateTimeZone('UTC'));
+                    $filteredRooms = $roomRepo->findAvailableForPeriod($filterStartUtc, $filterEndUtc);
                 }
 
             }catch(\Exception $e){
@@ -149,7 +151,7 @@ final class AdminController extends AbstractController
             'filterEnd'       => $filterEnd,
             'timeSlots'       => $timeSlots,
             'filterDate'      => $dateParam,
-            'filterStartTime' => $startTimeParam,
+            'filterStartTime' => $startTimeParam, 
             'filterEndTime'   => $endTimeParam,
         ]);
     }
@@ -280,7 +282,7 @@ final class AdminController extends AbstractController
         $hasUpcoming = false;
         foreach($room->getReservations() as $res){
         if(
-            $res->getReservationStart() > new \DateTime() &&
+            $res->getReservationStart() > new \DateTime('now', new \DateTimeZone('UTC')) &&
             $res->getStatus() !== 'canceled'   
         ){
             $hasUpcoming = true;
@@ -694,7 +696,7 @@ final class AdminController extends AbstractController
         //il faut vérifier si l'étudiant a des réservations
         $hasActiveReservations = false;
         foreach($user->getReservations() as $res){
-            if($res->getStatus() !== 'canceled' && $res->getReservationStart() > new \DateTime()){      //=> que les réservations à venir et pas annulées qui bloquent la suppression
+            if($res->getStatus() !== 'canceled' && $res->getReservationStart() > new \DateTime('now', new \DateTimeZone('UTC'))){      //=> que les réservations à venir et pas annulées qui bloquent la suppression
                 $hasActiveReservations = true;
                 break;
             }
@@ -902,7 +904,7 @@ final class AdminController extends AbstractController
         //il faut vérifier si le coordinateur a des réservations
         $hasActiveReservations = false;
         foreach($user->getReservations() as $res){
-            if($res->getStatus() !== 'canceled' && $res->getReservationStart() > new \DateTime()){  //=> que les réservations à venir et pas annulées qui bloquent la suppression
+            if($res->getStatus() !== 'canceled' && $res->getReservationStart() > new \DateTime('now', new \DateTimeZone('UTC'))){  //=> que les réservations à venir et pas annulées qui bloquent la suppression
                 $hasActiveReservations = true;
                 break;
             }
@@ -936,7 +938,9 @@ final class AdminController extends AbstractController
     public function reservationNew( 
         Request                     $request,
         EntityManagerInterface      $em,
-        RoomRepository              $roomRepo
+        RoomRepository              $roomRepo,
+        UserRepository              $userRepo,
+        ClasseRepository            $classeRepo
     ):Response {
 
         //préselectionner la salle => si passée en GET (?room=4)
@@ -956,13 +960,48 @@ final class AdminController extends AbstractController
             $form->get('room')->setData($preselectedRoom);
         }
 
-        // analyse la requête HTTP => POST (formulaire)
+        // il faut construire le JSON pour le js
+        $users = $userRepo->findAll();
+        $classes = $classeRepo->findAll();
+
+        $usersData = [
+            'allClasses' => array_map(fn($c) => ['id' => $c->getId(), 'name' => $c->getName()], $classes),
+            'users'      => [],
+        ];
+
+        foreach ($users as $u){
+            $type = 'other';
+            $uClasses = [];
+            $uClasse = null;
+
+            if ($u->getStudent()){
+                $type = 'student';
+                $uClasse = $u->getStudent()->getClasse()
+                    ? ['id' => $u->getStudent()->getClasse()->getId(), 'name' => $u->getStudent()->getClasse()->getName()]
+                    : null;
+            }elseif ($u->getCoordinator()){
+                $type = 'coordinator';
+                $uClasses = array_map(
+                    fn($c) => ['id' => $c->getId(), 'name' => $c->getName()],
+                    $u->getCoordinator()->getClasses()->toArray()
+                );
+            }
+
+            $usersData['users'][$u->getId()] = [
+                'type'    => $type,
+                'classe'  => $uClasse,
+                'classes' => $uClasses,
+            ];
+        }
+
+        // traitement du formularie : analyse la requête HTTP => POST (formulaire)
         $form->handleRequest($request);
 
         //si le formulaire est soumise et valide
         if($form->isSubmitted() && $form->isValid()){
             $data = $form->getData();
             $room = $data['room'];
+
 
             // reconstituer les DateTime depuis date + heure choisie:
                     // $data['date'] = objet DateTimeInterface (DateType renvoie un DateTime) => 2026-03-10
@@ -971,17 +1010,20 @@ final class AdminController extends AbstractController
             $now = new \DateTime('now', new \DateTimeZone('Europe/Paris'));
             $today = $now->format('Y-m-d');
             
+            // pour l'affichage
             $start = new \DateTime($dateStr . ' ' . $data['startTime'], new \DateTimeZone('Europe/Paris'));    // "2026-03-10 09:30"
             $end   = new \DateTime($dateStr . ' ' . $data['endTime'], new \DateTimeZone('Europe/Paris'));      // "2026-03-10 11:00"
 
+            $selectedBeneficiaryId = $data['beneficiary'] ? $data['beneficiary']->getId() : null;
             
-
             // date de début dans le passé interdit
             // pas possible de réserver aujourd'hui => "<="
             if($dateStr === $today && $start < $now){
                 $this->addFlash('error', 'Impossible de réserver un créneau déjà passé.');
                 return $this->render('admin/reservations/new.html.twig', [
-                    'form' => $form
+                    'form' => $form,
+                    'usersData' => $usersData,
+                    'selectedBeneficiary' => $selectedBeneficiaryId,
                 ]);
             }
 
@@ -989,15 +1031,23 @@ final class AdminController extends AbstractController
             if($end <= $start){
                 $this->addFlash('error', 'L\'heure de fin doit être après l\'heure de début.');
                 return $this->render('admin/reservations/new.html.twig', [
-                    'form' => $form
+                    'form' => $form,
+                    'usersData' => $usersData,
+                    'selectedBeneficiary' => $selectedBeneficiaryId,
                 ]);
             }
 
+            //convertir en UTC
+            $startUtc = (clone $start)->setTimezone(new \DateTimeZone('UTC'));
+            $endUtc = (clone $end)->setTimezone(new \DateTimeZone('UTC'));
+
             // salle est déjà réservé pour ce créneau
-            if(!$roomRepo->isAvailable($room, $start, $end)){
+            if(!$roomRepo->isAvailable($room, $startUtc, $endUtc)){
                 $this->addFlash('error', 'La salle "' . $room->getName() . '" n\'est pas disponible sur ce créneau.');
                 return $this->render('admin/reservations/new.html.twig', [
-                    'form' => $form
+                    'form'                => $form,
+                    'usersData'           => $usersData,
+                    'selectedBeneficiary' => $selectedBeneficiaryId,
                 ]);
             }
 
@@ -1011,11 +1061,15 @@ final class AdminController extends AbstractController
                 $beneficiary = $currentAdmin;
             }
 
+            //récuperer la classe choisi
+            $classe = $data['classe'] ?? null;
+
             $reservation = new Reservation();
             $reservation->setRoom($room);
             $reservation->setUser($beneficiary);
-            $reservation->setReservationStart($start);
-            $reservation->setReservationEnd($end);
+            $reservation->setReservationStart($startUtc);
+            $reservation->setReservationEnd($endUtc);
+            $reservation->setClasse($classe);
 
             $em->persist($reservation);
             $em->flush();
@@ -1024,7 +1078,7 @@ final class AdminController extends AbstractController
 
             $this->addFlash('success', 
                 'Réservation créé : "' . $room->getName() . '" le '
-                . $start->format('d/m/Y') . ' de '
+                . $start->format('d/m/Y') . ' de '  // => afficher en Paris
                 . $start->format('H:i') . ' à ' . $end->format('H:i')
                 . ($isSelf ? '' : ' pour ' .$beneficiary->getFirstname() . ' ' . $beneficiary->getLastname())
                 . '.'
@@ -1034,7 +1088,9 @@ final class AdminController extends AbstractController
         }
 
         return $this->render('admin/reservations/new.html.twig', [
-            'form' => $form
+            'form'                => $form,
+            'usersData'           => $usersData,
+            'selectedBeneficiary' => null,
         ]);
     }
 
@@ -1063,7 +1119,7 @@ final class AdminController extends AbstractController
         }
 
         // vérif si la réservation n'a pas encore commencé
-        if ($reservation->getReservationStart() <= new \DateTime()) {
+        if ($reservation->getReservationStart() <= new \DateTime('now', new \DateTimeZone('UTC'))) {
             $this->addFlash('error', 'Impossible d\'annuler une réservation déjà commencée ou passée.');
             return $this->redirectToRoute('app_admin_rooms');
         }
@@ -1074,7 +1130,9 @@ final class AdminController extends AbstractController
 
         $this->addFlash('success',
             'Réservation de "' . $reservation->getRoom()->getName() . '" du '
-            . $reservation->getReservationStart()->format('d/m/Y H:i')
+            . (clone $reservation->getReservationStart())
+                ->setTimezone(new \DateTimeZone('Europe/Paris'))
+                ->format('d/m/Y H:i')
             . ' annulée avec succès.'
         );
 

@@ -39,6 +39,9 @@
 
                 {{ form_start(form) }}
 
+                {# marquer classe comme rendu pour éviter le rendu automatique par form_end #}
+                {% do form.classe.setRendered() %}
+
                     {# Salle #}
                     <div class="form-field">
                         {{ form_label(form.room) }}
@@ -59,7 +62,7 @@
                             <div class="form-field">
                                 {{ form_label(form.startTime) }}
                                 {{ form_widget(form.startTime) }}
-                                {{ form_errors(form.startTime) }}
+                                {{ form_errors(form.startTime) }} 
                             </div>
                         </div>
                         <div class="col-md-6">
@@ -75,6 +78,20 @@
                         🕐 Créneaux disponibles de 08:00 à 20:00, par intervalles de 30 minutes.
                     </div>
 
+                     {# Classe #}
+                  
+                    {# Classe — affichage fixe, pas de select #}
+                    <div class="form-field">
+                        <label>Classe concernée</label>
+                        <input type="text" 
+                            class="form-control" 
+                            value="{{ studentClasse ? studentClasse.name : 'Aucune classe assignée' }}" 
+                            disabled>
+                        {# champ caché pour soumettre la valeur #}
+                        {% if studentClasse %}
+                            <input type="hidden" name="student_reservation[classe]" value="{{ studentClasse.id }}">
+                        {% endif %}
+                    </div>
                     {# Boutons #}
                     <div class="d-flex gap-2 mt-4">
                         <button type="submit" class="btn-student-details flex-fill text-center">

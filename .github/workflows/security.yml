@@ -69,6 +69,32 @@ jobs:
           name: semgrep-containers-${{ github.run_id }}
           path: 'semgrep-containers.json'
 
+  hadolint:
+    name: Hadolint — bonnes pratiques Dockerfile
+    runs-on: [self-hosted, linux, iris, docker]
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - name: Lint Dockerfiles
+        run: |
+          docker run --rm \
+            --volumes-from "$(hostname)" \
+            -w "${{ github.workspace }}" \
+            hadolint/hadolint:latest-alpine \
+            hadolint Dockerfile front/Dockerfile
+
+  compose-lint:
+    name: docker-compose lint
+    runs-on: [self-hosted, linux, iris, docker]
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - name: Validate compose syntax
+        run: |
+          for f in docker-compose*.yml compose*.yml; do
+            [ -f "$f" ] && echo "Linting $f..." && docker compose -f "$f" config --quiet && echo "$f OK"
+          done
+
   audit-report:
     name: Audit Markdown
     needs: [semgrep-code, semgrep-compose]

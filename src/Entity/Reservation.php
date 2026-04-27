@@ -32,6 +32,10 @@ class Reservation
     #[ORM\Column(length: 20)]
     private string $status = 'reserved';  // valeur par défaut
 
+    #[ORM\ManyToOne(targetEntity: Classe::class)]
+    #[ORM\JoinColumn(nullable: true, onDelete: 'SET NULL')]
+    private ?Classe $classe = null;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -89,6 +93,17 @@ class Reservation
     public function setStatus(string $status): static
     {
         $this->status = $status;
+        return $this;
+    }
+
+    public function getClasse(): ?Classe
+    {
+        return $this->classe;
+    }
+
+    public function setClasse(?Classe $classe): static
+    {
+        $this->classe = $classe;
         return $this;
     }
 }

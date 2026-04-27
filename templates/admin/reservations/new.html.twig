@@ -40,6 +40,9 @@
 
                 {{ form_start(form) }}
 
+                {# marquer classe comme rendu pour éviter le rendu automatique par form_end #}
+                {% do form.classe.setRendered() %}
+
                     {# Salle #}
                     <div class="form-field"> 
                         {{ form_label(form.room) }}
@@ -84,6 +87,31 @@
                         <div class="field-hint">Laissez vide pour réserver en votre propre nom.</div>
                     </div>
 
+                    {# Classe #}
+                    {# même si js a modifié le contenu => Symfony a déjà généré touts les option  #}
+                    {# <div class="form-field">
+                        {{ form_label(form.classe) }}
+                        {{ form_widget(form.classe) }}
+                        {{ form_errors(form.classe) }}
+                        <div class="field-hint" id="classe-hint">
+                            Sélectionnez la classe concernée par cette réservation.
+                        </div>
+                    </div>#}
+
+                    {# il faut faire les options de classe avec html #}
+                    <div class="form-field">
+                        <label for="classe-select">Classe concerné</label>
+                        <select name="admin_reservation[classe]" id="classe-select" class="form-select">
+                            <option value="">-- Sélectionnez d'abord un bénéficiaire --</option>
+                        </select>
+
+                        {# {{ form_errors(form.classe) }} #}
+
+                        <div class="field-hint" id="classe-hint">
+                            Sélectionnez la classe concernée par cette réservation.
+                        </div>
+                    </div>
+
                     {# Boutons #}
                     <div class="d-flex gap-2 mt-4">
                         <button type="submit" class="btn-action-primary flex-fill text-center">
@@ -108,4 +136,13 @@
     </div>
 
 </div>
+{% endblock %}
+
+{% block javascripts %}
+    <script>
+        //données des users avec leurs classes => injectés depuis Twig
+        const usersData = {{ usersData|json_encode|raw }};
+        const selectedBeneficiaryId = {{ selectedBeneficiary ?? 'null' }};
+    </script>
+    <script src="{{ asset('js/admin_reservation.js') }}"></script>
 {% endblock %}

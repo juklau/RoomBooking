@@ -3,6 +3,7 @@
 namespace App\Form;
 
 use App\Entity\Room;
+use App\Entity\Classe;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
@@ -81,6 +82,18 @@ class StudentReservationType extends AbstractType
                 'attr'        => [
                     'class' => 'form-select'
                 ],
+            ])
+             ->add('classe', EntityType::class, [
+                'class'        => Classe::class,
+                'choice_label' => 'name',
+                'label'        => 'Classe concernée',
+                'required'     => false,
+                'data'         => $options['preselected_classe'],
+                'attr'         => [
+                    'class'    => 'form-select',
+                    'id'       => 'reservation_classe',
+                    'disabled' => 'disabled',
+                ],
             ]);
            
             //étudiant réserve uniquement pour lui même
@@ -89,7 +102,8 @@ class StudentReservationType extends AbstractType
     public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefaults([
-            'preselected_room' => null,
+            'preselected_room'   => null,
+            'preselected_classe' => null,
         ]);
        
     }

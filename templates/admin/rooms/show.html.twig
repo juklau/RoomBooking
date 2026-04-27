@@ -103,8 +103,8 @@
                                         {{ res.user.firstname }} {{ res.user.lastname }} 
                                     </div>
                                     <div class="mini-resa-date">
-                                        {{ res.reservationStart|date('d/m/Y H:i') }}
-                                        → {{ res.reservationEnd|date('H:i') }}
+                                        {{ res.reservationStart|date('d/m/Y H:i', 'Europe/Paris') }}
+                                        → {{ res.reservationEnd|date('H:i', 'Europe/Paris') }}
                                     </div>
             
                                 </div>
