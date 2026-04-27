@@ -92,7 +92,11 @@ jobs:
       - name: Validate compose syntax
         run: |
           for f in docker-compose*.yml compose*.yml; do
-            [ -f "$f" ] && echo "Linting $f..." && docker compose -f "$f" config --quiet && echo "$f OK"
+            if [ -f "$f" ]; then
+              echo "Linting $f..."
+              docker compose -f "$f" config --quiet
+              echo "$f OK"
+            fi
           done
 
   audit-report:

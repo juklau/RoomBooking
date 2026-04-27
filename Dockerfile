@@ -3,7 +3,7 @@ FROM php:8.3-fpm
 # -------------------------------------------------------
 # Extensions système
 # -------------------------------------------------------
-RUN apt-get update && apt-get install -y \
+RUN apt-get update && apt-get install -y --no-install-recommends \
     git \
     curl \
     unzip \
@@ -29,6 +29,7 @@ COPY --from=composer:2.7 /usr/bin/composer /usr/bin/composer
 # -------------------------------------------------------
 # Symfony CLI (utile pour symfony check:requirements, etc.)
 # -------------------------------------------------------
+SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 RUN curl -sS https://get.symfony.com/cli/installer | bash \
     && mv /root/.symfony*/bin/symfony /usr/local/bin/symfony
 
