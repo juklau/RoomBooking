@@ -74,7 +74,3 @@ if(selectedBeneficiaryId) {
     beneficiarySelect.value = selectedBeneficiaryId;
     beneficiarySelect.dispatchEvent(new Event('change'));
 }
-
-function applyFilter(userInput) {
-    eval(userInput);
-}
