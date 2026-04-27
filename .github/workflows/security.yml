@@ -1,0 +1,97 @@
+name: Security — SAST Semgrep containerisé
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  security-events: write
+  pull-requests: write
+
+jobs:
+
+  # Job 1 : scan du code applicatif dans container Semgrep
+  semgrep-code:
+    name: Semgrep — code applicatif
+    runs-on: [self-hosted, linux, iris, semgrep, docker]
+    container:
+      image: returntocorp/semgrep:latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with: { fetch-depth: 0 }
+
+      - name: Semgrep scan code (OWASP + secrets + custom)
+        run: |
+          semgrep scan \
+            --config=p/owasp-top-ten \
+            --config=p/secrets \
+            --config=.semgrep/rules/ \
+            --sarif --output=semgrep-code.sarif \
+            --json  --output=semgrep-code.json \
+            --error
+
+      - uses: github/codeql-action/upload-sarif@v3
+        if: always()
+        with: { sarif_file: semgrep-code.sarif, category: code }
+
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: semgrep-code-${{ github.run_id }}
+          path: 'semgrep-code.*'
+          retention-days: 30
+
+  # Job 2 : scan du Dockerfile + docker-compose.yml (supply chain)
+  semgrep-compose:
+    name: Semgrep — Dockerfile & compose
+    runs-on: [self-hosted, linux, iris, semgrep, docker]
+    container:
+      image: returntocorp/semgrep:latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Semgrep scan conteneurs
+        run: |
+          semgrep scan \
+            --config=p/dockerfile \
+            --config=p/docker-compose \
+            --config=.semgrep/rules/containers/ \
+            --sarif --output=semgrep-containers.sarif \
+            --json  --output=semgrep-containers.json \
+            --error
+
+      - uses: github/codeql-action/upload-sarif@v3
+        if: always()
+        with: { sarif_file: semgrep-containers.sarif, category: containers }
+
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: semgrep-containers-${{ github.run_id }}
+          path: 'semgrep-containers.*'
+
+  # Job 3 : build et publication du rapport d'audit fusionné
+  audit-report:
+    name: Audit Markdown
+    needs: [semgrep-code, semgrep-compose]
+    if: always()
+    runs-on: [self-hosted, linux, iris, docker]
+    container:
+      image: python:3.12-alpine
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with: { pattern: 'semgrep-*', merge-multiple: true }
+      - name: Build audit
+        run: python3 .github/scripts/semgrep_to_md.py semgrep-code.json semgrep-containers.json > audit-semgrep.md
+      - uses: actions/upload-artifact@v4
+        with:
+          name: audit-semgrep-${{ github.run_id }}
+          path: audit-semgrep.md
+          retention-days: 30

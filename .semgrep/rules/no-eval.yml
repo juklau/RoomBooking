@@ -1,0 +1,11 @@
+rules:
+  - id: no-eval
+    pattern: eval(...)
+    message: |
+      Usage de eval() interdit — source d'injection de code.
+      Utilise JSON.parse ou un parseur dédié.
+    languages: [javascript, typescript, python]
+    severity: ERROR
+    metadata:
+      cwe: CWE-95
+      owasp: A05:2025-Injection

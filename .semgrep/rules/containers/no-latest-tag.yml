@@ -1,0 +1,22 @@
+rules:
+  - id: no-latest-tag-in-dockerfile
+    pattern: FROM $IMG:latest
+    message: |
+      Image :latest interdite — épingle une version précise (SHA256 ou tag immutable)
+      pour garantir la reproductibilité et éviter les supply chain attacks.
+    languages: [dockerfile]
+    severity: ERROR
+    metadata:
+      owasp: A03:2025-Supply-Chain-Failures
+
+  - id: no-latest-tag-in-compose
+    patterns:
+      - pattern-regex: 'image:\s*[\w./-]+:latest'
+    paths:
+      include: ['docker-compose*.yml', 'compose*.yml']
+    message: |
+      Tag :latest dans docker-compose — épingler une version précise.
+    languages: [yaml]
+    severity: ERROR
+    metadata:
+      owasp: A03:2025-Supply-Chain-Failures

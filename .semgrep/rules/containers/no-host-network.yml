@@ -1,0 +1,19 @@
+rules:
+  - id: no-host-network
+    pattern-regex: 'network_mode:\s*["'']?host["'']?'
+    paths:
+      include: ['docker-compose*.yml', 'compose*.yml']
+    message: |
+      network_mode: host contourne l'isolation Docker — très risqué en prod.
+    languages: [yaml]
+    severity: ERROR
+
+  - id: no-public-db-port
+    pattern-regex: '["''](3306|5432|27017|6379):(3306|5432|27017|6379)["'']'
+    paths:
+      include: ['docker-compose*.yml', 'compose*.yml']
+    message: |
+      Port de base de données exposé publiquement — bind sur 127.0.0.1 uniquement,
+      ou utilise un réseau interne entre containers.
+    languages: [yaml]
+    severity: WARNING
