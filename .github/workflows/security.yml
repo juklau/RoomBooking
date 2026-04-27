@@ -86,8 +86,9 @@ jobs:
             -w "${{ github.workspace }}" \
             python:3.12-alpine \
             python3 .github/scripts/semgrep_to_md.py semgrep-code.json semgrep-containers.json \
-            > "${{ github.workspace }}/audit-semgrep.md"
+            > "${{ github.workspace }}/audit-semgrep.md" || true
       - uses: actions/upload-artifact@v4
+        if: always()
         with:
           name: audit-semgrep-${{ github.run_id }}
           path: audit-semgrep.md
