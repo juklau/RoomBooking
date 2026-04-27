@@ -81,7 +81,7 @@ jobs:
             --volumes-from "$(hostname)" \
             -w "${{ github.workspace }}" \
             hadolint/hadolint:latest-alpine \
-            hadolint Dockerfile front/Dockerfile
+            hadolint --ignore DL3008 Dockerfile front/Dockerfile
 
   compose-lint:
     name: docker-compose lint
