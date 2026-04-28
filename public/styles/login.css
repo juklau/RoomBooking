@@ -35,9 +35,9 @@
 }
 
 .alert-error {
-    background: rgba(101, 19, 14, 0.532);
-    border: 1px solid rgba(167, 45, 41, 0.589);
-    color: #fe342a;
+    /* background: rgba(101, 19, 14, 0.532); */
+    /* border: 1px solid rgba(167, 45, 41, 0.589); */
+    color: rgba(116, 25, 20, 0.966);
     border-radius: 8px;
     padding: 0.75rem 1rem;
     font-size: 0.83rem;

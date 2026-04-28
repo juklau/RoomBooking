@@ -94,6 +94,11 @@
                                         <div class="status-detail">
                                             {{ item.currentReservation.user.firstname }} {{ item.currentReservation.user.lastname }}
                                         </div>
+                                        {% if item.currentReservation.classe %}
+                                            <div class="status-detail">
+                                                {{ item.currentReservation.classe.name }}
+                                            </div>
+                                        {% endif %}
                                     {% endif %}
 
                                 {% else %}
@@ -113,9 +118,11 @@
                                     <div class="next-res-user">
                                         {{ item.nextReservation.user.firstname }} {{ item.nextReservation.user.lastname }}
                                     </div>
-                                    <div class="next-res-user">
-                                        {{ item.nextReservation.user.classe }}
-                                    </div>
+                                    {% if item.nextReservation.classe %}
+                                        <div class="next-res-user">
+                                            {{ item.nextReservation.classe.name }}
+                                        </div>
+                                    {% endif %}
                                 {% else %}
                                     <span class="text-muted-next-res small">Aucune</span>
                                 {% endif %}
@@ -148,7 +155,6 @@
                                     {{ include('partials/_delete_room.html.twig', { room: item.room }) }} 
                                 </div>
                             </td>
-
                         </tr>
                     {% endfor %}
                 {% endif %}

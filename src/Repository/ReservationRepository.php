@@ -102,6 +102,37 @@ class ReservationRepository extends ServiceEntityRepository
             ->getSingleScalarResult();
     }
 
+    
+    public function findFromCurrentMonth(): array
+    {
+        $firstDayOfMonth =  new \DateTime('first day of this month 00:00:00', new \DateTimeZone('UTC'));
+
+        return $this->createQueryBuilder('res')
+            ->leftJoin('res.room', 'r')
+            ->addSelect('r')
+            ->leftJoin('res.user', 'u')
+            ->addSelect('u')
+            ->leftJoin('res.classe', 'c')
+            ->addSelect('c')
+            ->where('res.reservationStart >= :from')
+            ->setParameter('from', $firstDayOfMonth)
+            ->orderBy('res.reservationStart', 'ASC')
+            ->getQuery()
+            ->getResult();
+
+    }
+
+    public function findPassedReservations(\DateTime $now): array
+    {
+        return $this->createQueryBuilder('res')
+            ->where('res.reservationEnd < :now')
+            ->andWhere('res.status = :reserved')
+            ->setParameter('now', $now)
+            ->setParameter('reserved', 'reserved')
+            ->getQuery()
+            ->getResult();
+    }
+
 
 
 

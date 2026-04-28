@@ -169,13 +169,17 @@
                         <span class="action-icon d-flex align-items-center justify-content-center" id="action-icon-coordinators">👨‍🏫</span>
                         Créer un coordinateur
                     </a>
+                    <a href="{{ path('app_admin_classes') }}" class="action-btn text-decoration-none d-flex align-items-center">
+                        <span class="action-icon d-flex align-items-center justify-content-center" id="action-icon-classes">🎓</span>
+                        Gestion des classes
+                    </a>
                     <a href="{{ path('app_admin_rooms') }}" class="action-btn text-decoration-none d-flex align-items-center">
                         <span class="action-icon d-flex align-items-center justify-content-center" id="action-icon-reservations">📅</span>
                         Gestion des salles
                     </a>
-                    <a href="{{ path('app_admin_classes') }}" class="action-btn text-decoration-none d-flex align-items-center">
-                        <span class="action-icon d-flex align-items-center justify-content-center" id="action-icon-classes">🎓</span>
-                        Gestion des classes
+                    <a href="{{ path('app_admin_reservations') }}" class="action-btn text-decoration-none d-flex align-items-center">
+                        <span class="action-icon d-flex align-items-center justify-content-center" id="action-icon-reservations">📋</span>
+                        Toutes les réservations
                     </a>
                     <a href="{{ path('app_admin_users') }}" class="action-btn text-decoration-none d-flex align-items-center">
                     <span class="action-icon d-flex align-items-center justify-content-center" id="action-icon-all-users">👥</span>

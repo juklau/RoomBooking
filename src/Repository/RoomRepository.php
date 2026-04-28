@@ -9,6 +9,8 @@ use App\Entity\Classe;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
+use function Symfony\Component\Clock\now;
+
 /**
  * @extends ServiceEntityRepository<Room>
  */
@@ -31,7 +33,8 @@ class RoomRepository extends ServiceEntityRepository
             ->addSelect('res')
             ->leftJoin('res.user', 'u') 
             ->addSelect('u')
-            ->join('res.classe', 'c')  //??????????????????????????????????????????????????????
+            // garder toutes les réservations => même si la classe est null
+            ->leftjoin('res.classe', 'c')  
             ->addSelect('c')
             ->orderBy('r.name', 'ASC')
             ->getQuery()
@@ -65,7 +68,10 @@ class RoomRepository extends ServiceEntityRepository
             //nbre total de réservation => exlure les annulés
             $totalReservations = 0;
             foreach($reservations as $res){
-                if($res->getStatus() === 'canceled') continue; 
+                if($res->getStatus() === 'canceled') continue;
+                
+                //exclure les résas passées
+                if($res->getReservationEnd() < $now) continue; 
                 $totalReservations++;
             }
 
@@ -206,8 +212,6 @@ class RoomRepository extends ServiceEntityRepository
     }
 
 
-
-    
 
 
 

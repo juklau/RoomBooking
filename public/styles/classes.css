@@ -208,7 +208,8 @@
 }
 
 .user-fullname, 
-.text-muted-users {
+.text-muted-users,
+.text-muted-reservations{
     font-size: 0.88rem;
     font-weight: 600;
     color: #666a6e;

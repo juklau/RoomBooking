@@ -21,14 +21,14 @@ class ResetPasswordType extends AbstractType
                 'first_options'  => [
                     'label' => 'Nouveau mot de passe',
                     'attr'  => [
-                        'placeholder' => 'Nouveau mot de passe', 
+                        'placeholder' => '••••••••', 
                         'class'       => 'form-control'
                     ],
                 ],
                 'second_options' => [
                     'label' => 'Confirmer le mot de passe',
                     'attr'  => [
-                        'placeholder' => 'Confirmer le mot de passe', 
+                        'placeholder' => '••••••••', 
                         'class'       => 'form-control'
                     ],
                 ],

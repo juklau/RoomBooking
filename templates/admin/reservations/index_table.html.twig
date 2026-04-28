@@ -1,0 +1,116 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Toutes les réservations — Admin RoomBooking{% endblock %}
+
+{% block stylesheets %}
+    <link rel="stylesheet" href="{{ asset('styles/admin.css') }}">
+    <link rel="stylesheet" href="{{ asset('styles/rooms.css') }}">
+{% endblock %}
+
+{% block body %}
+
+<div class="container-fluid px-4 py-3 mt-3">
+     {# ---- Header ---- #}
+    <div class="dashboard-header">
+        <div class="d-flex align-items-center justify-content-between">
+            <div>
+                <div class="d-flex align-items-center gap-2 mb-2">
+                    <span class="badge-admin">Administrateur</span>
+                </div>
+                <div class="d-flex align-items-center gap-2 mb-1">
+                    <a href="{{ path('app_admin_dashboard') }}" class="breadcrumb-link">Dashboard</a>
+                    <span class="breadcrumb-sep">›</span>
+
+                    <span class="breadcrumb-current">Réservations</span>
+                </div>
+                <h1>Toutes les réservations</h1>
+                <p>À partir du 1er {{ 'now'|date('F Y', 'Europe/Paris') }} - {{ reservations|length }} réservation{{ reservations|length > 1 ? 's' : '' }}</p>
+            </div>
+        </div>
+    </div>
+
+    {# ---- Tableau des réservations ---- #}
+    <div class="reservations-table details shadow">
+        <table class="table table-borderless mb-0">
+            <thead>
+                <tr>
+                    <th class="text-center">Salle</th>
+                    <th class="text-center">Bénéficiaire</th>
+                    <th class="text-center">Classe</th>
+                    <th class="text-center">Début</th>
+                    <th class="text-center">Fin</th>
+                    <th class="text-center">Statut</th>
+                    <th class="text-center">Action</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                {% if reservations is empty %}
+                    <tr>
+                        <td colspan="7" class="text-center text-muted py-4">
+                            Aucune réservation ce mois-ci.
+                        </td>
+                    </tr>
+                {% else %}
+                    {% for res in reservations %}
+                        <tr class="text-center">
+                            {# salle #}
+                            <td>
+                                <a href="{{ path('app_admin_room_show', {id: res.room.id}) }}" class="text-decoration-none room-name-reservations">
+                                    <strong> {{ res.room.name }} </strong>
+                                </a>
+                            </td>
+
+                            {# bénéficiaire #}
+                            <td class="text-center">
+                                {{ res.user.firstname }} {{ res.user.lastname }}
+                            </td>
+
+                            {# classe #}
+                            <td class="text-center">
+                                {% if res.classe %}
+                                    <span class="equipment-tag-reservations">🎓 {{ res.classe.name }}<span>
+                                {% else %}
+                                    <span class="text-muted small">—<span>
+                                {% endif %}
+                            </td>
+
+                            {# début #}
+                            <td class="text-center">
+                                {{ res.reservationStart|date('d/m/Y H:i', 'Europe/Paris')}} 
+                            </td>
+
+                            {# fin #}
+                            <td class="text-center">
+                                {{ res.reservationEnd|date('H:i', 'Europe/Paris')}} 
+                            </td>
+
+                            {# statut #}
+                            <td class="text-center">
+                                {% if res.status == 'canceled' %}
+                                    <span class="status-badge status-occupied"> Annulée <span>
+                                {% elseif res.status == 'passed' %}
+                                    <span class="status-badge" style="background:#e2e8f0;color:#64748b;"> Passée <span>
+                                {% else %}
+                                    <span class="status-badge status-available"> Réservée <span>
+                                {% endif %}
+                            </td>
+
+                            {# Action #}
+                            <td class="text-center">
+                                {% if res.status == 'reserved' %}
+                                    {{ include('partials/_cancel_reservation.html.twig', { reservation: res }) }} 
+                                {% else %}
+                                    <span class="text-muted small">—<span>
+                                {% endif %}
+                            </td>
+                        <tr>
+                    {% endfor %}
+                {% endif %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+
+{% endblock %}

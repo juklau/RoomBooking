@@ -120,7 +120,8 @@
 
 .room-card-equip { min-height: 30px; }
 
-.equipment-tag {
+.equipment-tag,
+.equipment-tag-reservations {
     display: inline-block;
     background: #2e343c;
     color: #f3f4f8;
@@ -129,10 +130,22 @@
     font-size: 0.72rem;
     margin: 0.1rem;
 }
+.equipment-tag-reservations {
+
+    background: #23f7e954 !important;
+    color: #3e3f41 !important;
+}
 
 .equipment-tag.muted { color: #adb0b4; }
 
-.room-card-actions { border-top: 1px solid #21262d; padding-top: 0.9rem; }
+.room-card-actions { 
+    border-top: 1px solid #21262d; 
+    padding-top: 0.9rem; 
+}
+/*  */
+.room-name-reservations { /* toutes les réservations */
+    color: #0b413e !important;
+}
 
 
 /* --------------------------------------------- Empty state ----------------------------------- */

@@ -14,6 +14,7 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Validator\Constraints\Email;
 use Symfony\Component\Validator\Constraints\Length;
 use Symfony\Component\Validator\Constraints\NotBlank;
+use Symfony\Component\Validator\Constraints\Regex;
 
 class CreateCoordinatorType extends AbstractType
 {
@@ -26,9 +27,9 @@ class CreateCoordinatorType extends AbstractType
                     new NotBlank(message: 'Le prénom est obligatoire.'),
                     new Length(max: 100),
                 ],
-                'attr' => [
+                'attr'        => [
+                    'class'       => 'form-control',
                     'placeholder' => 'ex: Robert', 
-                    'class'       => 'form-control'
                 ],
             ])
             ->add('lastname', TextType::class, [
@@ -37,20 +38,21 @@ class CreateCoordinatorType extends AbstractType
                     new NotBlank(message: 'Le nom est obligatoire.'),
                     new Length(max: 100),
                 ],
-                'attr' => [
+                'attr'        => [
+                    'class'       => 'form-control',
                     'placeholder' => 'ex: Dupont', 
-                    'class'       => 'form-control'
                 ],
             ])
             ->add('email', EmailType::class, [
                 'label'       => 'Email',
                 'constraints' => [
-                    new NotBlank(message: "L'email est obligatoire."),
-                    new Email(message: "L'email n'est pas valide."),
+                    new NotBlank(message: 'L\'email est obligatoire.'),
+                    new Email(message: 'Email invalide.'),
                 ],
                 'attr' => [
-                    'placeholder' => 'robert@example.com', 
-                    'class'       => 'form-control'
+                    'class'        => 'form-control',
+                    'placeholder'  => 'robert@example.com', 
+                    'autocomplete' => 'email',
                 ],
             ])
             ->add('password', RepeatedType::class, [
@@ -58,23 +60,41 @@ class CreateCoordinatorType extends AbstractType
                 'first_options'  => [
                     'label' => 'Mot de passe',
                     'attr'  => [
-                        'placeholder' => 'Mot de passe', 
-                        'class'       => 'form-control'
+                        'class'        => 'form-control',
+                        'placeholder'  => '••••••••',
+                        'autocomplete' => 'new-password',
                     ],
                 ],
                 'second_options' => [
                     'label' => 'Confirmer le mot de passe',
                     'attr'  => [
-                        'placeholder' => 'Confirmer le mot de passe', 
-                        'class'       => 'form-control'
+                        'class'       => 'form-control',
+                        'placeholder' => '••••••••', 
                     ],
                 ],
                 'invalid_message' => 'Les mots de passe ne correspondent pas.',
                 'constraints'     => [
                     new NotBlank(message: 'Le mot de passe est obligatoire.'),
                     new Length(
-                        min: 8,
-                        minMessage: 'Le mot de passe doit faire au moins 8 caractères.'
+                        min: 12,
+                        minMessage: 'Le mot de passe doit contenir au moins {{ limit }} caractères.'
+                        // dans ce cas limit = 12
+                    ),
+                    new Regex(
+                        pattern: '/[a-z]/',
+                        message: 'Le mot de passe doit contenir au moins une minuscule.'
+                    ),
+                    new Regex(
+                        pattern: '/[A-Z]/',
+                        message: 'Le mot de passe doit contenir au moins une majuscule.'
+                    ),
+                    new Regex(
+                        pattern: '/[0-9]/',
+                        message: 'Le mot de passe doit contenir au moins un chiffre.'
+                    ),
+                    new Regex(
+                        pattern: '/[\W_]/',
+                        message: 'Le mot de passe doit contenir au moins un caractère spécial.'
                     ),
                 ],
             ])

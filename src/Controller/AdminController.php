@@ -721,9 +721,9 @@ final class AdminController extends AbstractController
         $this->addFlash('success', 'Étudiant "' . $name . '" supprimé avec succès.');
 
         // redirige vers la classe si elle existait
-        if ($classeId) {
-            return $this->redirectToRoute('app_admin_classe_show', ['id' => $classeId]);
-        }
+        // if ($classeId) {
+        //     return $this->redirectToRoute('app_admin_classe_show', ['id' => $classeId]);
+        // }
 
         return $this->redirectToRoute('app_admin_users');
     }
@@ -1094,6 +1094,43 @@ final class AdminController extends AbstractController
         ]);
     }
 
+
+    /**
+     * récupérer toutes les réservations à partir du mois actuelle => pour une simple table
+     */
+    // #[Route('/reservations', name: 'app_admin_reservations')]
+    //  public function reservations(ReservationRepository $reservationRepo): Response {
+
+    //     $reservations = $reservationRepo->findFromCurrentMonth();
+
+    //     return $this->render('admin/reservations/index.html.twig', [
+    //         'reservations' => $reservations,
+    //     ]);
+    // }
+
+
+    #[Route('/reservations', name: 'app_admin_reservations')]
+     public function reservations(ReservationRepository $reservationRepo): Response {
+
+        $reservations = $reservationRepo->findFromCurrentMonth();
+
+        //grouper par jour les résas
+        $grouped = [];
+
+        foreach($reservations as $res){
+            $day = $res->getReservationStart()
+                ->setTimezone(new \DateTimeZone('Europe/Paris'))
+                ->format('Y-m-d');
+            $grouped[$day][] = $res;
+        }
+
+        return $this->render('admin/reservations/index.html.twig', [
+            'grouped' => $grouped,
+            'total'   => count($reservations),
+        ]);
+    }
+
+
     /**
      * annuler une réservation
      */
@@ -1135,6 +1172,12 @@ final class AdminController extends AbstractController
                 ->format('d/m/Y H:i')
             . ' annulée avec succès.'
         );
+
+        $referer = $request->headers->get('referer');
+
+        if($referer && str_contains($referer, 'admin/reservations')){
+            return $this->redirectToRoute('app_admin_reservations');
+        }
 
         return $this->redirectToRoute('app_admin_rooms');
     }

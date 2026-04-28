@@ -77,7 +77,12 @@
                             </button>
                         </div>
 
-                        {{ form_errors(form.password.first) }}
+                        {% if form.password.first.vars.errors|length > 0 %}
+                            <div class="alert-error">
+                                {{ form_errors(form.password.first) }}
+                            </div>
+                        {% endif %}
+                        {# {{ form_errors(form.password.first) }} #}
                     </div>
 
                     <div class="form-field">

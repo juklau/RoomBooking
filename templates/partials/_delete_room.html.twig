@@ -9,7 +9,12 @@
     {# csrf_token('delete_room_' ~ room.id) => génère le token unique pour la salle #}
     <input type="hidden" name="_token" value="{{ csrf_token('delete_room_' ~ room.id) }}">
 
-    <button type="submit" class="btn-action-danger" title="Supprimer cette salle"> 🗑 </button> 
+    <button type="submit" class="btn-action-danger" title="Supprimer cette salle"> 
+        🗑 
+        {% if app.request.attributes.get('_route') == 'app_admin_room_show' %}
+            Supprimer
+        {% endif %}
+     </button> 
     
 
-</form>
+</form> 
