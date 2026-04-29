@@ -22,7 +22,7 @@ use App\Form\RoomType;
 use App\Form\AddStudentToClasseType;
 use App\Form\AddCoordinatorToClasseType;
 use App\Form\AdminReservationType;
-use App\Form\ResetPasswordType;
+use App\Form\ResetPasswordFormType;
 use App\Form\RoomEquipmentType;
 use App\Repository\EquipmentRepository;
 use Doctrine\ORM\EntityManagerInterface;
@@ -600,7 +600,7 @@ final class AdminController extends AbstractController
         UserPasswordHasherInterface $hasher
     ): Response {
 
-        $form = $this->createForm(ResetPasswordType::class);
+        $form = $this->createForm(ResetPasswordFormType::class);
         $form->handleRequest($request);
 
         if($form->isSubmitted() && $form->isValid()){
@@ -817,7 +817,7 @@ final class AdminController extends AbstractController
         UserPasswordHasherInterface $hasher
     ): Response {
 
-        $form = $this->createForm(ResetPasswordType::class);
+        $form = $this->createForm(ResetPasswordFormType::class);
         $form->handleRequest($request);
 
         if($form->isSubmitted() && $form->isValid()){

@@ -11,7 +11,7 @@
 
 .login-card {
     width: 100%;
-    max-width: 400px;
+    max-width: 500px;
     background: #5f6265;
     border: 1px solid #21262d;
     border-radius: 16px;
@@ -37,7 +37,7 @@
 .alert-error {
     /* background: rgba(101, 19, 14, 0.532); */
     /* border: 1px solid rgba(167, 45, 41, 0.589); */
-    color: rgba(116, 25, 20, 0.966);
+    color: rgba(235, 148, 143, 0.966);
     border-radius: 8px;
     padding: 0.75rem 1rem;
     font-size: 0.83rem;
@@ -106,6 +106,10 @@ label.form-label {
     color: #fcfdff;
 }
 
+#login-card-registration{
+    max-width: 460px;
+}
+
 
 /* --------------------------- Inscription ---------------------------------------- */
 .form-error {
@@ -120,7 +124,7 @@ label.form-label {
     margin-bottom: 0;
 }
 
-#lien-vers-login{
+.lien-swtich-auth{
     color: #f85149; 
     text-decoration: none;
 }
@@ -131,3 +135,30 @@ label.form-label {
 .input-group-password{
     flex-wrap: nowrap!important;
 }
+
+/* ------------------------ forgot -password --------------------------------------- */
+
+#label-forgot-password,
+.label-reset-password,
+.label-registration,
+.label-create{
+    color:white !important;
+    margin-bottom: 10px;
+    
+}
+
+
+/* ------------------------ email envoyé pour reset-password ---------------------------------- */
+
+/* tout le CSS doit être dans le <style> du fichier!! */
+
+
+
+
+
+
+
+
+
+
+

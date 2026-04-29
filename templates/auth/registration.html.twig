@@ -5,10 +5,10 @@
 {% block stylesheets %}
     <link rel="stylesheet" href="{{ asset('styles/login.css') }}">
 {% endblock %}
-
+ 
 {% block body %}
 <div class="login-page d-flex justify-content-center align-items-center">
-    <div class="login-card" style="max-width: 460px;">
+    <div class="login-card" id="login-card-registration">
 
         <h1 class="mb-3 text-center">RoomBooking</h1>
         <p class="subtitle text-center">Créez votre compte pour réserver une salle</p> 
@@ -26,39 +26,46 @@
             {# Firstname #}
             <div class="row g-3 mb-3">
                 <div class="col-6">
-                    <label class="form-label">{{ form_label(form.firstname) }}</label> {# => <label for="registration_form_firstname">Prénom</label>#}
+                    <label class="form-label label-registration">
+                        {{ form_label(form.firstname) }}
+                    </label> {# => <label for="registration_form_firstname">Prénom</label>#}
+                    
                     {{ form_widget(form.firstname) }}           {# => le champs d'input#}
 
                     {% if form_errors(form.firstname) %}
-                        <div class="form-error">{{ form_errors(form.firstname) }}</div> {# => affiche les erreurs de validation #}
+                        <div class="alert-error">{{ form_errors(form.firstname) }}</div> {# => affiche les erreurs de validation #}
                     {% endif %}
                 </div>
 
                 {# Lastname #}
                 <div class="col-6">
-                    <label class="form-label">{{ form_label(form.lastname) }}</label>
+                    <label class="form-label label-registration">
+                        {{ form_label(form.lastname) }}
+                    </label>
+
                     {{ form_widget(form.lastname) }}
 
                     {% if form_errors(form.lastname) %}
-                        <div class="form-error">{{ form_errors(form.lastname) }}</div> 
+                        <div class="alert-error">{{ form_errors(form.lastname) }}</div> 
                     {% endif %}
                 </div>
             </div>
 
             {# Email #}
             <div class="form-group mb-3">
-                {{ form_label(form.email, null, { label_attr: { class: 'form-label' } }) }}
+               
+                {{ form_label(form.email, null, { label_attr: { class: 'label-registration' } }) }}
 
                 {{ form_widget(form.email) }}
 
                 {% if form_errors(form.email) %}
-                    <div class="form-error">{{ form_errors(form.email) }}</div>
+                    <div class="alert-error">{{ form_errors(form.email) }}</div>
                 {% endif %}
             </div>
 
              {# Mot de passe #}
             <div class="form-group mb-3">
-                {{ form_label(form.password.first, null, { label_attr: { class: 'form-label' } }) }} 
+                {{ form_label(form.password.first, null, { label_attr: { class: 'label-registration' } }) }} 
                 {# <label for="registration_form_password_first" class="form-label"> Mot de passe </label>#}
 
                 <div class="input-group">
@@ -73,13 +80,13 @@
                 </div>
                 
                 {% if form_errors(form.password.first) %}
-                    <div class="form-error">{{ form_errors(form.password.first) }}</div>
+                    <div class="alert-error">{{ form_errors(form.password.first) }}</div>
                 {% endif %}
             </div>
 
             {# Confirmation de mot de passe #}
             <div class="form-group mb-4">
-                {{ form_label(form.password.second, null, { label_attr: { class: 'form-label' } }) }}
+                {{ form_label(form.password.second, null, { label_attr: { class: 'label-registration' } }) }}
 
                 <div class="input-group">
                     {{ form_widget(form.password.second) }}         {# champ "Confirmer" #}
@@ -93,11 +100,15 @@
                 </div>
 
                 {% if form_errors(form.password.second) %}
-                    <div class="form-error">{{ form_errors(form.password.second) }}</div>
+                    <div class="alert-error">{{ form_errors(form.password.second) }}</div>
                 {% endif %}
                 {% if form_errors(form.password) %}
-                    <div class="form-error">{{ form_errors(form.password) }}</div>  {# erreur de correspondance entre les deux champs #}
+                    <div class="alert-error">{{ form_errors(form.password) }}</div>  {# erreur de correspondance entre les deux champs #}
                 {% endif %}
+            </div>
+
+            <div class="field-hint mt-2 mb-3 label-reset-password">
+                🔒 12 caractères minimum — majuscule, minuscule, chiffre et caractère spécial requis.
             </div>
 
             <button type="submit" class="btn-login">
@@ -108,7 +119,7 @@
 
         <div class="login-footer">
             Déjà un compte ?
-            <a href="{{ path('app_login') }}" id="lien-vers-login">
+            <a href="{{ path('app_login') }}" class="lien-swtich-auth">
                 Se connecter
             </a>
         </div>

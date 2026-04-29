@@ -48,9 +48,16 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\OneToOne(mappedBy: 'user', cascade: ['persist', 'remove'])]
     private ?Student $student = null;
 
+    /**
+     * @var Collection<int, ResetPasswordToken>
+     */
+    #[ORM\OneToMany(targetEntity: ResetPasswordToken::class, mappedBy: 'user')]
+    private Collection $resetPasswordTokens;
+
     public function __construct()
     {
         $this->reservations = new ArrayCollection();
+        $this->resetPasswordTokens = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -204,6 +211,36 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
             $student->setUser($this);
         }
         $this->student = $student;
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, ResetPasswordToken>
+     */
+    public function getResetPasswordTokens(): Collection
+    {
+        return $this->resetPasswordTokens;
+    }
+
+    public function addResetPasswordToken(ResetPasswordToken $resetPasswordToken): static
+    {
+        if (!$this->resetPasswordTokens->contains($resetPasswordToken)) {
+            $this->resetPasswordTokens->add($resetPasswordToken);
+            $resetPasswordToken->setUser($this);
+        }
+
+        return $this;
+    }
+
+    public function removeResetPasswordToken(ResetPasswordToken $resetPasswordToken): static
+    {
+        if ($this->resetPasswordTokens->removeElement($resetPasswordToken)) {
+            // set the owning side to null (unless already changed)
+            if ($resetPasswordToken->getUser() === $this) {
+                $resetPasswordToken->setUser(null);
+            }
+        }
+
         return $this;
     }
 }

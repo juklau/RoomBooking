@@ -238,6 +238,33 @@ body {
     cursor: pointer;
 }
 
+/* all_reservations */
+#status-badge-passed{
+    background:#e2e8f0;
+    color:#64748b;
+}
+
+.table-fixed{
+    table-layout: fixed;
+    width: 100%;
+}
+
+.column-lg{
+    width: 18%;
+}
+
+.column-md{
+    width: 13%;
+}
+.column-md2{
+    width: 12%;
+}
+.column-sm{
+    width: 9%;
+}
+
+
+
 /*------------------------------------------------- Quick actions -----------------------------------*/
 .action-btn {
     background: #272d35;

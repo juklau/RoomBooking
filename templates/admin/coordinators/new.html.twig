@@ -101,13 +101,17 @@
                         {{ form_errors(form.password.second) }}
                     </div>
 
+                    <div class="field-hint mt-2 mb-5 label-create text">
+                        🔒 12 caractères minimum — majuscule, minuscule, chiffre et caractère spécial requis.
+                    </div>
+
                     {# Classe => select multiple#}
                     <div class="form-field">
                         {{ form_label(form.classes) }}
                         {{ form_widget(form.classes) }}
                         {{ form_errors(form.classes) }}
 
-                        <div class="field-hint">
+                        <div class="field-hint label-create mt-3 text-center">
                             Maintenez Ctrl (ou Cmd) pour sélectionner plusieurs classes.
                         </div>
                     </div>

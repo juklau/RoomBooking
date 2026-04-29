@@ -44,16 +44,16 @@
                 </div>
 
                 <div class="reservations-table shadow">
-                    <table class="table table-borderless mb-0">
+                    <table class="table table-borderless mb-0 table-fixed">
                         <thead>
                             <tr>
-                                <th class="text-center" style="width: 18%">Salle</th>
-                                <th class="text-center" style="width: 18%">Bénéficiaire</th>
-                                <th class="text-center" style="width: 18%">Classe</th>
-                                <th class="text-center" style="width: 12%">Début</th>
-                                <th class="text-center" style="width: 12%">Fin</th>
-                                <th class="text-center" style="width: 13%">Statut</th>
-                                <th class="text-center" style="width: 9%">Action</th>
+                                <th class="text-center column-lg">Salle</th>
+                                <th class="text-center column-lg">Bénéficiaire</th>
+                                <th class="text-center column-lg">Classe</th>
+                                <th class="text-center column-md2">Début</th>
+                                <th class="text-center column-md2">Fin</th>
+                                <th class="text-center column-md">Statut</th>
+                                <th class="text-center column-sm">Action</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -97,7 +97,7 @@
                                         {% if res.status == 'canceled' %}
                                             <span class="status-badge status-occupied"> Annulée <span>
                                         {% elseif res.status == 'passed' %}
-                                            <span class="status-badge" style="background:#e2e8f0;color:#64748b;"> Passée <span>
+                                            <span class="status-badge" id="status-badge-passed"> Passée <span>
                                         {% else %}
                                             <span class="status-badge status-available"> Réservée <span>
                                         {% endif %}

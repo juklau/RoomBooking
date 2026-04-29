@@ -11,7 +11,7 @@ use Symfony\Component\Validator\Constraints\Length;
 use Symfony\Component\Validator\Constraints\NotBlank;
 use Symfony\Component\Validator\Constraints\Regex;
 
-class ResetPasswordType extends AbstractType
+class ResetPasswordFormType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
@@ -22,7 +22,8 @@ class ResetPasswordType extends AbstractType
                     'label' => 'Nouveau mot de passe',
                     'attr'  => [
                         'placeholder' => '••••••••', 
-                        'class'       => 'form-control'
+                        'class'       => 'form-control',
+                        'autocomplete' => 'new-password',
                     ],
                 ],
                 'second_options' => [
@@ -37,7 +38,7 @@ class ResetPasswordType extends AbstractType
                     new NotBlank(message: 'Le mot de passe est obligatoire.'),
                     new Length(
                         min: 12,
-                        minMessage: 'Le mot de passe doit faire au moins 12 caractères.'
+                        minMessage: 'Le mot de passe doit faire au moins {{ limit }} caractères.'
                     ),
                     new Regex(
                         pattern: '/[a-z]/',
