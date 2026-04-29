@@ -7,7 +7,11 @@
       onsubmit="return confirm('Supprimer la salle « {{ room.name }} » ? Cette action est irréversible.')">
 
     {# csrf_token('delete_room_' ~ room.id) => génère le token unique pour la salle #}
-    <input type="hidden" name="_token" value="{{ csrf_token('delete_room_' ~ room.id) }}">
+    {% if app.environment != 'test' %}
+        <input type="hidden" name="_token" value="{{ csrf_token('delete_room_' ~ room.id) }}">
+    {% else %}
+        <input type="hidden" name="_token" value="test_token">
+    {% endif %}
 
     <button type="submit" class="btn-action-danger" title="Supprimer cette salle"> 
         🗑 

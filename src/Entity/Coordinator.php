@@ -61,7 +61,7 @@ class Coordinator
     {
         if (!$this->classes->contains($class)) {
             $this->classes->add($class);
-             // ← pas d'appel retour vers Classe <=> sinon j'aurais un boucle infinie de synchronisation entre les deux entités.
+             //pas d'appel retour vers Classe <=> sinon j'aurais un boucle infinie de synchronisation entre les deux entités.
         }
         return $this;
     }

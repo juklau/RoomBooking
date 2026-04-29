@@ -71,7 +71,7 @@ class Classe
 
             // Coordinator qui possède la relation, il faut 
             // le notifier sinon Doctrine ne persiste pas le lien en BDD.
-            $coordinator->addClasse($this);     // => synchronise l'autre côté // ← appelle le côté propriétaire
+            $coordinator->addClasse($this);     // => synchronise l'autre côté //appelle le côté propriétaire
         }
 
         return $this;

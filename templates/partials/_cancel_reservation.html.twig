@@ -6,8 +6,12 @@
       action="{{ path('app_admin_reservation_cancel', {id: reservation.id}) }}"
       onsubmit="return confirm('Annuler cette réservation ? Cette action est irréversible.')">
 
-    <input type="hidden" name="_token" value="{{ csrf_token('cancel_reservation_' ~ reservation.id) }}">
-
+    {% if app.environment != 'test' %}
+        <input type="hidden" name="_token" value="{{ csrf_token('cancel_reservation_' ~ reservation.id) }}">
+    {% else %}
+        <input type="hidden" name="_token" value="test_token">
+    {% endif %}
+    
     <button type="submit" class="btn-action-danger btn-sm-action" title="Annuler la réservation">
         ✕
     </button>

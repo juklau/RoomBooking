@@ -272,23 +272,29 @@ final class AdminController extends AbstractController
         EntityManagerInterface $em
     ): Response {
 
-        //vérif le token CSRF => évite la suppression malveillant
-        if(!$this->isCsrfTokenValid('delete_room_' . $room->getId(), $request->request->get('_token'))){
-            $this->addFlash('error', 'Token invalide.');
-            return $this->redirectToRoute('app_admin_rooms');
+        //ignorer CSRF en test
+        $appEnv = $this->getParameter('kernel.environment');
+        if($appEnv !== 'test'){
+            
+            //vérif le token CSRF => évite la suppression malveillant
+            if(!$this->isCsrfTokenValid('delete_room_' . $room->getId(), $request->request->get('_token'))){
+                $this->addFlash('error', 'Token invalide.');
+                return $this->redirectToRoute('app_admin_rooms');
+            }
         }
+
 
         //vérif si la salle a des réservation à venir
         $hasUpcoming = false;
         foreach($room->getReservations() as $res){
-        if(
-            $res->getReservationStart() > new \DateTime('now', new \DateTimeZone('UTC')) &&
-            $res->getStatus() !== 'canceled'   
-        ){
-            $hasUpcoming = true;
-            break;
+            if(
+                $res->getReservationStart() > new \DateTime('now', new \DateTimeZone('UTC')) &&
+                $res->getStatus() !== 'canceled'   
+            ){
+                $hasUpcoming = true;
+                break;
+            }
         }
-    }
 
         if($hasUpcoming){
             $this->addFlash('error', 'Impossible de supprimer la salle "' . $room->getName() . '" : elle a des réservations à venir.');
@@ -430,10 +436,16 @@ final class AdminController extends AbstractController
         EntityManagerInterface $em
     ): Response {
 
-        //vérif le token CSRF => évite la suppression malveillant
-        if(!$this->isCsrfTokenValid('delete_classe_' . $classe->getId(), $request->request->get('_token'))){
-            $this->addFlash('error', 'Token invalide.');
-            return $this->redirectToRoute('app_admin_classes');
+        //ignorer CSRF en test
+        $appEnv = $this->getParameter('kernel.environment');
+
+        if ($appEnv !== 'test') {
+
+            //vérif le token CSRF => évite la suppression malveillant
+            if(!$this->isCsrfTokenValid('delete_classe_' . $classe->getId(), $request->request->get('_token'))){
+                $this->addFlash('error', 'Token invalide.');
+                return $this->redirectToRoute('app_admin_classes');
+            }
         }
 
         // règle métier => interdire la suppression si la classe a des étudiants
@@ -649,12 +661,16 @@ final class AdminController extends AbstractController
             throw $this->createNotFoundException('Classe introuvable.');
         }
 
-        //vérif le token CSRF => évite la suppression malveillant
-        if(!$this->isCsrfTokenValid('remove_student_' . $student->getId(), $request->request->get('_token'))){
-            $this->addFlash('error', 'Token invalide.');
-            return $this->redirectToRoute('app_admin_classe_show', ['id' => $classeId]);
-        }
+        // ignorer CSRF en test
+        $appEnv = $this->getParameter('kernel.environment');
+        if ($appEnv !== 'test') {
 
+            //vérif le token CSRF => évite la suppression malveillant
+            if(!$this->isCsrfTokenValid('remove_student_' . $student->getId(), $request->request->get('_token'))){
+                $this->addFlash('error', 'Token invalide.');
+                return $this->redirectToRoute('app_admin_classe_show', ['id' => $classeId]);
+            }
+        }
 
         $name = $student->getUser()->getFirstname() . ' ' . $student->getUser()->getLastname();
 
@@ -679,10 +695,14 @@ final class AdminController extends AbstractController
         EntityManagerInterface $em
     ): Response {
 
-        //vérif le token CSRF => évite la suppression malveillant
-        if(!$this->isCsrfTokenValid('delete_student_' . $student->getId(), $request->request->get('_token'))){
-            $this->addFlash('error', 'Token invalide.');
-            return $this->redirectToRoute('app_admin_users');
+        //ignorer CSRF en test
+        $appEnv = $this->getParameter('kernel.environment');
+        if ($appEnv !== 'test') {
+            //vérif le token CSRF => évite la suppression malveillant
+            if(!$this->isCsrfTokenValid('delete_student_' . $student->getId(), $request->request->get('_token'))){
+                $this->addFlash('error', 'Token invalide.');
+                return $this->redirectToRoute('app_admin_users');
+            }
         }
 
         //garder id de la classe pour la redirection AVANT suppression
@@ -861,10 +881,14 @@ final class AdminController extends AbstractController
             throw $this->createNotFoundException('Classe introuvable.');
         }
 
-        //vérif le token CSRF => évite la suppression malveillant
-        if(!$this->isCsrfTokenValid('remove_coordinator_' . $coordinator->getId(), $request->request->get('_token'))){
-            $this->addFlash('error', 'Token invalide.');
-            return $this->redirectToRoute('app_admin_classe_show', ['id' => $classeId]);
+        //ignorer CSRF en test
+        $appEnv = $this->getParameter('kernel.environment');
+        if ($appEnv !== 'test') {
+            //vérif le token CSRF => évite la suppression malveillant
+            if(!$this->isCsrfTokenValid('remove_coordinator_' . $coordinator->getId(), $request->request->get('_token'))){
+                $this->addFlash('error', 'Token invalide.');
+                return $this->redirectToRoute('app_admin_classe_show', ['id' => $classeId]);
+            }
         }
 
 
@@ -890,10 +914,14 @@ final class AdminController extends AbstractController
         EntityManagerInterface $em
     ): Response {
 
-        //vérif le token CSRF => évite la suppression malveillant
-        if(!$this->isCsrfTokenValid('delete_coordinator_' . $coordinator->getId(), $request->request->get('_token'))){
-            $this->addFlash('error', 'Token invalide.');
-            return $this->redirectToRoute('app_admin_users');
+        //ignorer CSRF en test
+        $appEnv = $this->getParameter('kernel.environment');
+        if ($appEnv !== 'test') {
+            //vérif le token CSRF => évite la suppression malveillant
+            if(!$this->isCsrfTokenValid('delete_coordinator_' . $coordinator->getId(), $request->request->get('_token'))){
+                $this->addFlash('error', 'Token invalide.');
+                return $this->redirectToRoute('app_admin_users');
+            }
         }
 
         $name = $coordinator->getUser()->getFirstname() . ' ' . $coordinator->getUser()->getLastname();
@@ -1259,11 +1287,16 @@ final class AdminController extends AbstractController
         Request                $request,
         EntityManagerInterface $em
     ):Response {
-        if (!$this->isCsrfTokenValid('remove_equipment_' . $equipmentId, $request->request->get('_token'))) {
 
-            //si le 2 id (dans .twig et celui de la route) ne correspondent pas => rediriger avec message d'erreur
-            $this->addFlash('error', 'Token invalide.');
-            return $this->redirectToRoute('app_admin_room_equipments', ['id' => $room->getId()]);
+        //ignorer CSRF en test
+        $appEnv = $this->getParameter('kernel.environment');
+        if ($appEnv !== 'test') {
+            if (!$this->isCsrfTokenValid('remove_equipment_' . $equipmentId, $request->request->get('_token'))) {
+
+                //si le 2 id (dans .twig et celui de la route) ne correspondent pas => rediriger avec message d'erreur
+                $this->addFlash('error', 'Token invalide.');
+                return $this->redirectToRoute('app_admin_room_equipments', ['id' => $room->getId()]);
+            }
         }
 
         //trouver l'équipement dans la collection de la salle

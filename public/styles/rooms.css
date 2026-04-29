@@ -516,3 +516,10 @@
     font-size: 1rem;
     flex-shrink: 0;
 }
+
+
+/* -------------------------------------- Réservations ---------------------------------- */
+.label-available{
+    color:white !important;
+    margin-bottom: 10px; 
+}

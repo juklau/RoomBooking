@@ -142,12 +142,12 @@ final class AuthController extends AbstractController
                     $old->setUsed(true);
                 }
             
-
                 // créer un nouveau token
                 $token = new ResetPasswordToken();
                 $token->setToken(bin2hex(random_bytes(32)));
                 $token->setUser($user);
-                $token->setExpiresAt(new \DateTime('+1 hour'));
+                // $token->setExpiresAt(new \DateTime('+1 hour'));
+                $token->setExpiresAt(new \DateTime('+15 minutes'));
                 $token->setUsed(false);
 
                 $em->persist($token);
@@ -234,14 +234,7 @@ final class AuthController extends AbstractController
             'form'  => $form,
             'token' => $token,
         ]);
-
     }
-
-
-
-
-
-
 
 
 

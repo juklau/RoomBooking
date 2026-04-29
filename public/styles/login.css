@@ -141,10 +141,10 @@ label.form-label {
 #label-forgot-password,
 .label-reset-password,
 .label-registration,
+.label-available,
 .label-create{
     color:white !important;
-    margin-bottom: 10px;
-    
+    margin-bottom: 10px; 
 }
 
 
