@@ -163,7 +163,8 @@ final class AuthController extends AbstractController
                 );
 
                 $emailMessage = (new Email())
-                    ->from('noreply@roombooking.fr')
+                    //  ->from('noreply@roombooking.fr')
+                    ->from(new \Symfony\Component\Mime\Address('juklau83@gmail.com', 'RoomBooking'))
                     ->to($user->getEmail())
                     ->subject('Réinitialisation de votre mot de passe — RoomBooking')
                     ->html($this->renderView('emails/reset_password.html.twig', [
