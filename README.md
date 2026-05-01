@@ -38,22 +38,28 @@
 - CRUD complet des salles + gestion des équipements (ManyToMany)
 - CRUD des classes — ajout/retrait d'étudiants et de coordinateurs
 - Création de comptes étudiants et coordinateurs, réinitialisation des mots de passe
-- Réservation de salle pour n'importe quel utilisateur
+- Réservation de salle pour n'importe quel utilisateur (avec sélection de la classe)
+- Visualisation de toutes les réservations (tous utilisateurs confondus)
 - Annulation de toute réservation
 - Filtre de disponibilité par date et créneau
+- Réinitialisation de mot de passe pour n'importe quel utilisateur
 
 ### 🟢 Coordinateur (Intervenant)
 - Consultation et gestion de ses classes
 - Ajout/retrait d'étudiants dans ses classes
-- Réservation de salle pour lui-même ou ses étudiants
+- Réservation de salle pour lui-même ou ses étudiants (avec sélection de la classe)
 - Annulation de ses propres réservations
 - Filtre de disponibilité des salles
 
 ### 🔵 Étudiant
 - Consultation des salles avec disponibilité temps réel
-- Réservation de salle pour lui-même
+- Réservation de salle pour lui-même (avec sélection de la classe)
 - Annulation de ses propres réservations
 - Vue de sa classe et de ses camarades
+
+### Fonctionnalités transverses
+- Mot de passe oublié : envoi d'un lien de réinitialisation par email (token expirant à 15 minutes)
+- Détection automatique des réservations passées : statut `passed` appliqué toutes les heures via cron
 
 ---
 
@@ -66,6 +72,8 @@
 | Frontend | Twig + Bootstrap 5 + CSS par rôle |
 | Authentification | Symfony Security (firewalls, rôles, CSRF) |
 | Conteneurisation | Docker / docker-compose |
+| Envoi d'emails (local) | Mailtrap SMTP |
+| Envoi d'emails (serveur) | Brevo API v3 (`symfony/brevo-mailer`) |
 
 ---
 
@@ -203,6 +211,12 @@ DB_ROOT_PASSWORD=VotreMotDePasse!
 
 # URL de la base de données Doctrine
 DATABASE_URL="mysql://${DB_USER}:${DB_PASSWORD}@mysql:3306/${DB_NAME}?serverVersion=8.0&charset=utf8mb4"
+
+# Envoi d'emails — Mailtrap (local)
+MAILER_DSN=smtp://utilisateur:motdepasse@sandbox.smtp.mailtrap.io:2525
+
+# Envoi d'emails — Brevo (serveur uniquement, ne pas committer la clé)
+# MAILER_DSN=brevo+api://VOTRE_CLE_API@default
 ```
 
 ---
@@ -307,6 +321,8 @@ sha256sum -c roombooking_backup_YYYYMMDD_HHMMSS.tar.gz.sha256
 | Date minimale | À partir de la date et de l’heure actuelles (impossible de réserver dans le passé)  |
 | Conflit | Impossible de créer deux réservations qui se chevauchent |
 | Annulation | Soft delete — historique conservé, impossible si déjà commencée |
+| Classe obligatoire | Chaque réservation est associée à une classe (sélection dans le formulaire) |
+| Statut automatique | Les réservations dont la fin est passée passent automatiquement en `passed` (cron horaire) |
 | Suppression de classe | Uniquement si elle ne contient plus aucun étudiant |
 | Retrait d'utilisateur | Détachement de la classe uniquement — compte conservé en BDD |
 
@@ -315,7 +331,9 @@ sha256sum -c roombooking_backup_YYYYMMDD_HHMMSS.tar.gz.sha256
 ## Sécurité
 
 - Mots de passe hashés en **bcrypt**
+- Politique de mot de passe renforcée : 8 caractères minimum, majuscule, minuscule, chiffre, caractère spécial
 - Tokens **CSRF** sur tous les formulaires de suppression/annulation
+- Réinitialisation de mot de passe par token signé expirant après 15 minutes (usage unique)
 - Contrôle d'accès par rôle via `security.yaml` (`ROLE_ADMIN`, `ROLE_COORDINATOR`, `ROLE_USER`)
 - Vérification côté serveur de la propriété des ressources (un coordinateur ne peut accéder qu'à ses propres classes et réservations)
 
@@ -335,6 +353,17 @@ php bin/console doctrine:migrations:status
 
 # Hasher un mot de passe manuellement
 php bin/console security:hash-password
+
+# Passer manuellement les réservations passées au statut "passed"
+php bin/console app:reservations:update-status
+```
+
+### Cron serveur (réservations passées)
+
+La commande est exécutée automatiquement toutes les heures sur le serveur :
+
+```
+0 * * * * docker exec roombooking-web php bin/console app:reservations:update-status >> /var/log/roombooking_cron.log 2>&1
 ```
 
 ---
@@ -353,5 +382,5 @@ php bin/console security:hash-password
 ## Auteur
 
 **Klaudia Juhasz** — BTS SIO SLAM  
-MediaSchool IRIS Nice — Avril 2026  
+MediaSchool IRIS Nice — Avril/Mai 2026  
 Intervenant : Nicolas Choquet
