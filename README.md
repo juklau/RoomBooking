@@ -331,7 +331,7 @@ sha256sum -c roombooking_backup_YYYYMMDD_HHMMSS.tar.gz.sha256
 ## Sécurité
 
 - Mots de passe hashés en **bcrypt**
-- Politique de mot de passe renforcée : 8 caractères minimum, majuscule, minuscule, chiffre, caractère spécial
+- Politique de mot de passe renforcée : 12 caractères minimum, majuscule, minuscule, chiffre, caractère spécial
 - Tokens **CSRF** sur tous les formulaires de suppression/annulation
 - Réinitialisation de mot de passe par token signé expirant après 15 minutes (usage unique)
 - Contrôle d'accès par rôle via `security.yaml` (`ROLE_ADMIN`, `ROLE_COORDINATOR`, `ROLE_USER`)
