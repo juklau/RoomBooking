@@ -48,3 +48,7 @@ _byan-output/
 secrets/
 
 .github/agents/
+###> phpunit/phpunit ###
+/phpunit.xml
+/.phpunit.cache/
+###< phpunit/phpunit ###
